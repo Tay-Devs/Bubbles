@@ -1,0 +1,17 @@
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\GAToUnityCallbacks.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\MacroEnd.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\MacroHeaderBegin.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\MacroSourceBegin.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGAApplication.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGAConfiguration.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGADebug.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGAEvents.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGAInput.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGASoftKeyboard.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGASoftKeyboardCallbacks.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGATypes.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UGAVersion.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGACallbacks.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAConfigurationCallbacks.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAKeyEventCallbacks.h
+D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\UnityToGAMotionEventCallbacks.h
