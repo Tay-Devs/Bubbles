@@ -1,2 +1,0 @@
-D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
-D:\IAC\Project_IAC\Big_Projects\Inprogress\Bubbles\Bubbles\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt
