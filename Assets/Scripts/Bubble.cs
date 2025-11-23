@@ -5,6 +5,8 @@ using UnityEngine;
 public class Bubble : MonoBehaviour
 {
     public BubbleType type = BubbleType.Black;
+    public Action onTouch;
+    public bool visited = false;
 
     void Start()
     {
@@ -18,6 +20,16 @@ public class Bubble : MonoBehaviour
         {
             transform.Find(color.ToString()).gameObject.SetActive(color == type);
         }
+    }
+
+    public void Explode()
+    {
+        Destroy(gameObject);
+    }
+    private void OnMouseDown()
+    {
+        Debug.Log("Bubble Clicked");
+        onTouch?.Invoke();
     }
 }
 
