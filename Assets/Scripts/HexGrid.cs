@@ -67,7 +67,7 @@ public class HexGrid : MonoBehaviour
     {
         List<Bubble> newRow = new List<Bubble>();
         int numbeOfBubbles = y%2 == 0 ? width : width - 1;
-        Debug.Log(numbeOfBubbles);
+        //Debug.Log(numbeOfBubbles);
         for (int x = 0; x < numbeOfBubbles; x++)
         {
             GameObject go = Instantiate(bubblePrefab,transform);
@@ -79,7 +79,7 @@ public class HexGrid : MonoBehaviour
             
             newBubble.onTouch += () =>
             {
-                Debug.Log("Touched" + tempX + " " + y);
+                //Debug.Log("Touched" + tempX + " " + y);
                 ExploseAllBubblesAt(tempX, y);
             };
             newRow.Add(newBubble);
