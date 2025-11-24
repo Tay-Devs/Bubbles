@@ -4,25 +4,29 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Toggle))]
 public class ThemeToggle : MonoBehaviour
 {
-    [Header("Toggle Settings")]
-    [SerializeField] private bool dayIsOn = true; // True = Day when toggle is on, False = Night when toggle is on
-    
-    [Header("Optional Visual Elements")]
-    [SerializeField] private Image handleImage;
-    [SerializeField] private ThemeSprite handleThemeSprite;
-    [SerializeField] private Image backgroundImage;
-    [SerializeField] private ThemeSprite backgroundThemeSprite;
+    [Header("Toggle Checkmark")]
+    [SerializeField] private Image toggleImage; // The image that Unity would normally hide/show
+    [SerializeField] private ThemeSprite toggleThemeSprite; // Theme sprites for the checkmark
     
     private Toggle toggle;
+    private bool isUpdating = false;
     
     private void Awake()
     {
         toggle = GetComponent<Toggle>();
-        toggle.onValueChanged.AddListener(OnToggleValueChanged);
+        
+        // IMPORTANT: Remove the graphic from toggle so it doesn't control visibility
+        if (toggleImage != null && toggle.graphic == toggleImage)
+        {
+            toggle.graphic = null;
+        }
     }
     
     private void Start()
     {
+        // Subscribe to toggle changes
+        toggle.onValueChanged.AddListener(OnToggleValueChanged);
+        
         // Subscribe to theme changes
         ThemeManager.OnThemeChanged += OnThemeChanged;
         
@@ -32,46 +36,53 @@ public class ThemeToggle : MonoBehaviour
     
     private void OnDestroy()
     {
-        ThemeManager.OnThemeChanged -= OnThemeChanged;
         toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
+        ThemeManager.OnThemeChanged -= OnThemeChanged;
     }
     
     private void OnToggleValueChanged(bool isOn)
     {
-        // Convert toggle state to theme
-        ThemeMode newTheme = (isOn == dayIsOn) ? ThemeMode.Day : ThemeMode.Night;
+        // Prevent recursive updates
+        if (isUpdating) return;
+        
+        // Toggle ON = Day, Toggle OFF = Night
+        ThemeMode newTheme = isOn ? ThemeMode.Day : ThemeMode.Night;
         ThemeManager.Instance.SetTheme(newTheme);
     }
     
     private void OnThemeChanged(ThemeMode newTheme)
     {
-        // Update toggle visual state
         UpdateToggleState(newTheme);
     }
     
     private void UpdateToggleState(ThemeMode theme)
     {
-        // Update toggle isOn state without triggering the event
-        toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
-        toggle.isOn = (theme == ThemeMode.Day) == dayIsOn;
-        toggle.onValueChanged.AddListener(OnToggleValueChanged);
+        // Update toggle state without triggering the event
+        isUpdating = true;
+        toggle.isOn = (theme == ThemeMode.Day);
+        isUpdating = false;
         
-        // Update visual elements if assigned
+        // Update visual elements
         UpdateVisuals(theme);
     }
     
     private void UpdateVisuals(ThemeMode theme)
     {
-        // Update handle image if assigned
-        if (handleImage != null && handleThemeSprite != null)
+        // Update checkmark image (always visible, just change sprite)
+        if (toggleImage != null && toggleThemeSprite != null)
         {
-            handleImage.sprite = handleThemeSprite.GetSprite(theme);
+            toggleImage.sprite = toggleThemeSprite.GetSprite(theme);
+            toggleImage.enabled = true; // Ensure it's always visible
         }
-        
-        // Update background image if assigned
-        if (backgroundImage != null && backgroundThemeSprite != null)
+    }
+    
+    // Ensure checkmark stays visible when toggle state changes
+    private void Update()
+    {
+        if (toggleImage != null && !toggleImage.enabled)
         {
-            backgroundImage.sprite = backgroundThemeSprite.GetSprite(theme);
+            print("TETE");
+            toggleImage.enabled = true;
         }
     }
 }

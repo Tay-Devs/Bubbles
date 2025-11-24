@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
-  m_Name: Level - Background
+  m_Name: Gameplay - Aiming Arrow
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  nightSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  daySprite: {fileID: -5930951707620036388, guid: b20932b09f0ebc248b969a5f744bbfc9, type: 3}
+  nightSprite: {fileID: -3942467365544607731, guid: 2da350e239d52de42ad51253d50aa974, type: 3}
