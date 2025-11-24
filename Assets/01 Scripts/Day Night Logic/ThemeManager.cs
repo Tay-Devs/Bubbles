@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 
+[ExecuteAlways] // Run in edit mode
 public class ThemeManager : MonoBehaviour
 {
     // Singleton
@@ -12,7 +13,7 @@ public class ThemeManager : MonoBehaviour
             if (instance == null)
             {
                 instance = FindObjectOfType<ThemeManager>();
-                if (instance == null)
+                if (instance == null && Application.isPlaying)
                 {
                     GameObject go = new GameObject("ThemeManager");
                     instance = go.AddComponent<ThemeManager>();
@@ -35,24 +36,30 @@ public class ThemeManager : MonoBehaviour
     
     private void Awake()
     {
-        // Singleton pattern
-        if (instance != null && instance != this)
+        if (Application.isPlaying)
         {
-            Destroy(gameObject);
-            return;
+            // Singleton pattern
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            // Load saved theme preference
+            LoadThemePreference();
         }
-        
-        instance = this;
-        DontDestroyOnLoad(gameObject);
-        
-        // Load saved theme preference
-        LoadThemePreference();
     }
     
     private void Start()
     {
-        // Apply initial theme
-        ApplyTheme(currentTheme);
+        if (Application.isPlaying)
+        {
+            // Apply initial theme
+            ApplyTheme(currentTheme);
+        }
     }
     
     // Set theme directly
@@ -61,7 +68,12 @@ public class ThemeManager : MonoBehaviour
         if (currentTheme == newTheme) return;
         
         currentTheme = newTheme;
-        SaveThemePreference();
+        
+        if (Application.isPlaying)
+        {
+            SaveThemePreference();
+        }
+        
         ApplyTheme(newTheme);
     }
     
@@ -97,4 +109,38 @@ public class ThemeManager : MonoBehaviour
     // Utility methods
     public bool IsDay() => currentTheme == ThemeMode.Day;
     public bool IsNight() => currentTheme == ThemeMode.Night;
+    
+    // Update all themeable objects in scene (for editor use)
+    public void UpdateAllThemeables()
+    {
+        // Find all themeable UI images
+        ThemeableUIImage[] uiImages = FindObjectsOfType<ThemeableUIImage>();
+        foreach (var img in uiImages)
+        {
+            img.UpdatePreview();
+        }
+        
+        // Find all themeable sprites
+        ThemeableSprite[] sprites = FindObjectsOfType<ThemeableSprite>();
+        foreach (var sprite in sprites)
+        {
+            sprite.UpdatePreview();
+        }
+        
+        // Find all theme toggles
+        ThemeToggle[] toggles = FindObjectsOfType<ThemeToggle>();
+        foreach (var toggle in toggles)
+        {
+            toggle.UpdatePreview();
+        }
+    }
+    
+    // Called when values change in inspector
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            UpdateAllThemeables();
+        }
+    }
 }
