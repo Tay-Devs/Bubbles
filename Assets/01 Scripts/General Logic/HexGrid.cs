@@ -1,150 +1,178 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class HexGrid : MonoBehaviour
 {
-    public int width = 4;
-    public int height = 6;
-    private List<List<Bubble>> gridData;
-    //private List<Bubble>gridData;
-
+    [Header("Starting Grid Size")]
+    public int startingWidth = 8;
+    public int startingHeight = 10;
     public GameObject bubblePrefab;
-
-    private List<Vector2Int> adjectionPointsShort = new List<Vector2Int>()
-    {
-        Vector2Int.left,
-        Vector2Int.right,
-        Vector2Int.down,
-        Vector2Int.up,
-        new Vector2Int(1,-1), //bottom right
-        new Vector2Int(1,1), //bottom right
-    };
-    private List<Vector2Int> adjectionPointsLong = new List<Vector2Int>()
-    {
-        Vector2Int.left,
-        Vector2Int.right,
-        Vector2Int.down,
-        Vector2Int.up,
-        new Vector2Int(-1,-1), //bottom right
-        new Vector2Int(-1,1), //bottom right
-    };
     
+    private List<List<Bubble>> gridData;
+    
+    // Tracks how many columns were added to the left
+    // Grid data index 0 corresponds to world x = -xOffset
+    private int xOffset = 0;
+
     void Start()
     {
-        Populate();
+        GenerateGrid();
     }
 
-    private void Populate()
+    public void GenerateGrid()
     {
+        ClearGrid();
         gridData = new List<List<Bubble>>();
-        for (int i = 0; i < height; i++)
+        xOffset = 0;
+        
+        for (int y = 0; y < startingHeight; y++)
         {
-            List<Bubble> row = CreateRow(i); // count width 
+            List<Bubble> row = CreateRow(y, startingWidth);
             gridData.Add(row);
         }
-
-        PositionBubbles();
     }
 
-    private void PositionBubbles()
+    private List<Bubble> CreateRow(int y, int rowWidth)
     {
-        for (int y = 0; y < height; y++)
+        List<Bubble> row = new List<Bubble>();
+        bool isShortRow = y % 2 != 0;
+        int columnCount = isShortRow ? rowWidth - 1 : rowWidth;
+        
+        for (int x = 0; x < columnCount; x++)
         {
-            bool isShortRow = y % 2 != 0;
-            int numbeOfBubbles = isShortRow ? width - 1: width ;
-            for (int x = 0; x < numbeOfBubbles; x++)
-            {
-                Bubble bubble = gridData[y][x];
-                float offset = isShortRow? 0.5f : 0; 
-                bubble.transform.localPosition = new Vector3(x + offset, -y * 0.9f) ;
-            }    
-        }
-    }
-
-    private List<Bubble> CreateRow(int y)
-    {
-        List<Bubble> newRow = new List<Bubble>();
-        int numbeOfBubbles = y%2 == 0 ? width : width - 1;
-        //Debug.Log(numbeOfBubbles);
-        for (int x = 0; x < numbeOfBubbles; x++)
-        {
-            GameObject go = Instantiate(bubblePrefab,transform);
-            Bubble newBubble = go.GetComponent<Bubble>();
-            int randomIndex = Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length);
-            int tempX = x;
-            BubbleType randomType = (BubbleType)randomIndex;
-            newBubble.SetType(randomType);
+            GameObject go = Instantiate(bubblePrefab, transform);
+            Bubble bubble = go.GetComponent<Bubble>();
             
-            newBubble.onTouch += () =>
+            BubbleType randomType = (BubbleType)Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length);
+            bubble.SetType(randomType);
+            
+            float offset = isShortRow ? 0.5f : 0f;
+            bubble.transform.localPosition = new Vector3(x + offset, -y * 0.9f, 0f);
+            
+            row.Add(bubble);
+        }
+        
+        return row;
+    }
+
+    public Bubble GetBubbleAt(int x, int y)
+    {
+        if (y < 0 || y >= gridData.Count)
+            return null;
+        
+        int dataX = x + xOffset;
+        if (dataX < 0 || dataX >= gridData[y].Count)
+            return null;
+        
+        return gridData[y][dataX];
+    }
+
+    public Bubble GetBubbleAt(Vector2Int pos)
+    {
+        return GetBubbleAt(pos.x, pos.y);
+    }
+
+    public void ClearGrid()
+    {
+        if (gridData == null) return;
+        
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
             {
-                //Debug.Log("Touched" + tempX + " " + y);
-                ExploseAllBubblesAt(tempX, y);
-            };
-            newRow.Add(newBubble);
+                if (bubble != null)
+                    Destroy(bubble.gameObject);
+            }
         }
-        return newRow;
+        gridData.Clear();
+        xOffset = 0;
     }
 
-    private void ExploseAllBubblesAt(int x, int y)
+    // Convert world position to grid coordinates (can be negative)
+    public Vector2Int WorldToGridPosition(Vector3 worldPos)
     {
-        Bubble startBubble = gridData[y][x];
-        Debug.Log(startBubble.type);
-        Vector2Int startPosition = new Vector2Int(x, y);
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-        List<Vector2Int> result = GetRelevantBubbles(startBubble.type,startPosition,visited);
-        DestroyConnectdBubbles(result);
+        Vector3 localPos = worldPos - transform.position;
         
+        int y = Mathf.RoundToInt(-localPos.y / 0.9f);
+        y = Mathf.Max(0, y);
+        
+        bool isShortRow = y % 2 != 0;
+        float offset = isShortRow ? 0.5f : 0f;
+        int x = Mathf.RoundToInt(localPos.x - offset);
+        
+        return new Vector2Int(x, y);
     }
 
-    private void DestroyConnectdBubbles(List<Vector2Int> result)
+    // Convert grid coordinates to world position
+    public Vector3 GridToWorldPosition(int x, int y)
     {
-        result.ForEach(positionToDestroy =>
+        bool isShortRow = y % 2 != 0;
+        float offset = isShortRow ? 0.5f : 0f;
+        return transform.position + new Vector3(x + offset, -y * 0.9f, 0f);
+    }
+
+    // Expand grid rows if needed
+    private void EnsureRowExists(int y)
+    {
+        while (y >= gridData.Count)
         {
-            Bubble bubble = GetBubbleAt(positionToDestroy);
-            bubble.Explode();
-            gridData[positionToDestroy.y][positionToDestroy.x] = null;
-        });
+            gridData.Add(new List<Bubble>());
+        }
     }
 
-    private List<Vector2Int> GetRelevantBubbles(BubbleType type, Vector2Int position,HashSet<Vector2Int> visited)
+    // Expand grid to the left if x is negative
+    private void ExpandLeft(int amount)
     {
-         List<Vector2Int> relevantPositions= new List<Vector2Int>();
-         Bubble currentBubble = GetBubbleAt(position);
-         
-         // Check if current position is relevant
-         // if not , return empty list
-         if (currentBubble == null || currentBubble.type != type || visited.Contains(position))
-         {
-             return relevantPositions;
-         }
-         
-         visited.Add(position);
-         relevantPositions.Add(position);
-         // check neighbors for additional bubbles
-         List<Vector2Int> neighbors = position.y %2==0 ?adjectionPointsLong:adjectionPointsShort;
-         neighbors.ForEach(addition =>
-         {
-             List<Vector2Int> leftRelevantPositions = GetRelevantBubbles(type, position + addition,visited);
-             relevantPositions.AddRange(leftRelevantPositions);
-         });
-         
-         return relevantPositions;
-    }
-
-    private Bubble GetBubbleAt(Vector2Int position)
-    {
-        if (position.y >= height ||  position.y<0)
+        for (int y = 0; y < gridData.Count; y++)
         {
-            return null;
+            for (int i = 0; i < amount; i++)
+            {
+                gridData[y].Insert(0, null);
+            }
+        }
+        xOffset += amount;
+        Debug.Log($"Expanded grid left by {amount}, new xOffset: {xOffset}");
+    }
+
+    // Expand a specific row to fit x position (on the right side)
+    private void EnsureColumnExists(int dataX, int y)
+    {
+        while (dataX >= gridData[y].Count)
+        {
+            gridData[y].Add(null);
+        }
+    }
+
+    // Attach a bubble to the grid at nearest empty slot
+    public void AttachBubble(Bubble bubble, Vector3 worldPos)
+    {
+        Vector2Int gridPos = WorldToGridPosition(worldPos);
+        
+        // Expand rows if needed
+        EnsureRowExists(gridPos.y);
+        
+        // Handle left expansion if x is negative
+        if (gridPos.x < -xOffset)
+        {
+            int expandAmount = (-xOffset) - gridPos.x;
+            ExpandLeft(expandAmount);
         }
         
-        int numbeOfBubbles = position.y%2 == 0 ? width : width - 1;
-        if (position.x >= numbeOfBubbles ||  position.x<0)
-        {
-            return null;
-        }
-        return gridData[position.y][position.x];
+        // Convert to data index
+        int dataX = gridPos.x + xOffset;
+        
+        // Expand right if needed
+        EnsureColumnExists(dataX, gridPos.y);
+        
+        // Set position and parent
+        bubble.transform.SetParent(transform);
+        bubble.transform.position = GridToWorldPosition(gridPos.x, gridPos.y);
+        
+        // Add to grid
+        gridData[gridPos.y][dataX] = bubble;
+        
+        Debug.Log($"Attached bubble at grid ({gridPos.x}, {gridPos.y}), data index ({dataX}, {gridPos.y})");
     }
 }
