@@ -1,51 +1,36 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class HexGrid : MonoBehaviour
 {
-    [Header("Starting Grid Size")]
+    [Header("Grid Settings")]
     public int startingWidth = 8;
     public int startingHeight = 10;
     public GameObject bubblePrefab;
+    public int minMatchCount = 3;
     
-    [Header("Match Settings")]
-    public int minMatchCount = 3; // Minimum bubbles needed to pop
+    [Header("Destruction Animation")]
+    public float destructionDelay = 0.1f; // Delay between each bubble pop
+    
+    [Header("Debug")]
+    public bool enableDebugLogs = false;
     
     private List<List<Bubble>> gridData;
-    
-    // Tracks how many columns were added to the left
-    // Grid data index 0 corresponds to world x = -xOffset
     private int xOffset = 0;
     
-    // Neighbor offsets for hex grid (odd-r offset coordinates)
-    // Even rows (y % 2 == 0) - no horizontal offset
-    private static readonly Vector2Int[] evenRowNeighbors = new Vector2Int[]
-    {
-        new Vector2Int(-1, 0),  // Left
-        new Vector2Int(1, 0),   // Right
-        new Vector2Int(-1, -1), // Top-Left
-        new Vector2Int(0, -1),  // Top-Right
-        new Vector2Int(-1, 1),  // Bottom-Left
-        new Vector2Int(0, 1)    // Bottom-Right
-    };
-    
-    // Odd rows (y % 2 != 0) - shifted right by 0.5
-    private static readonly Vector2Int[] oddRowNeighbors = new Vector2Int[]
-    {
-        new Vector2Int(-1, 0),  // Left
-        new Vector2Int(1, 0),   // Right
-        new Vector2Int(0, -1),  // Top-Left
-        new Vector2Int(1, -1),  // Top-Right
-        new Vector2Int(0, 1),   // Bottom-Left
-        new Vector2Int(1, 1)    // Bottom-Right
+    // Hex neighbor offsets: [even row, odd row]
+    private static readonly Vector2Int[][] neighborOffsets = {
+        new[] { new Vector2Int(-1,0), new Vector2Int(1,0), new Vector2Int(-1,-1), new Vector2Int(0,-1), new Vector2Int(-1,1), new Vector2Int(0,1) },
+        new[] { new Vector2Int(-1,0), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(1,-1), new Vector2Int(0,1), new Vector2Int(1,1) }
     };
 
-    void Start()
-    {
-        GenerateGrid();
-    }
+    void Start() => GenerateGrid();
+    
+    void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
+    void LogWarning(string msg) { if (enableDebugLogs) Debug.LogWarning(msg); }
 
     public void GenerateGrid()
     {
@@ -55,447 +40,274 @@ public class HexGrid : MonoBehaviour
         
         for (int y = 0; y < startingHeight; y++)
         {
-            List<Bubble> row = CreateRow(y, startingWidth);
+            List<Bubble> row = new List<Bubble>();
+            bool isShortRow = y % 2 != 0;
+            int colCount = isShortRow ? startingWidth - 1 : startingWidth;
+            
+            for (int x = 0; x < colCount; x++)
+            {
+                Bubble bubble = Instantiate(bubblePrefab, transform).GetComponent<Bubble>();
+                bubble.SetType((BubbleType)Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length));
+                bubble.isAttached = true;
+                bubble.transform.localPosition = new Vector3(x + (isShortRow ? 0.5f : 0f), -y * 0.9f, 0f);
+                row.Add(bubble);
+            }
             gridData.Add(row);
         }
-    }
-
-    private List<Bubble> CreateRow(int y, int rowWidth)
-    {
-        List<Bubble> row = new List<Bubble>();
-        bool isShortRow = y % 2 != 0;
-        int columnCount = isShortRow ? rowWidth - 1 : rowWidth;
-        
-        for (int x = 0; x < columnCount; x++)
-        {
-            GameObject go = Instantiate(bubblePrefab, transform);
-            Bubble bubble = go.GetComponent<Bubble>();
-            
-            BubbleType randomType = (BubbleType)Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length);
-            bubble.SetType(randomType);
-            bubble.isAttached = true; // Mark as part of grid
-            
-            float offset = isShortRow ? 0.5f : 0f;
-            bubble.transform.localPosition = new Vector3(x + offset, -y * 0.9f, 0f);
-            
-            row.Add(bubble);
-        }
-        
-        return row;
-    }
-
-    public Bubble GetBubbleAt(int x, int y)
-    {
-        if (y < 0 || y >= gridData.Count)
-            return null;
-        
-        int dataX = x + xOffset;
-        if (dataX < 0 || dataX >= gridData[y].Count)
-            return null;
-        
-        return gridData[y][dataX];
-    }
-
-    public Bubble GetBubbleAt(Vector2Int pos)
-    {
-        return GetBubbleAt(pos.x, pos.y);
-    }
-    
-    // Check if a grid position is empty (no bubble or out of current bounds)
-    public bool IsPositionEmpty(int x, int y)
-    {
-        if (y < 0) return false; // Don't allow above row 0
-        
-        // If row doesn't exist yet, it's empty
-        if (y >= gridData.Count) return true;
-        
-        int dataX = x + xOffset;
-        
-        // If column doesn't exist in this row, it's empty
-        if (dataX < 0 || dataX >= gridData[y].Count) return true;
-        
-        // Check if there's a bubble there
-        return gridData[y][dataX] == null;
-    }
-    
-    public bool IsPositionEmpty(Vector2Int pos)
-    {
-        return IsPositionEmpty(pos.x, pos.y);
     }
 
     public void ClearGrid()
     {
         if (gridData == null) return;
-        
         foreach (var row in gridData)
-        {
             foreach (var bubble in row)
-            {
-                if (bubble != null)
-                    Destroy(bubble.gameObject);
-            }
-        }
+                if (bubble != null) Destroy(bubble.gameObject);
         gridData.Clear();
         xOffset = 0;
     }
 
-    // Convert world position to grid coordinates (can be negative)
-    public Vector2Int WorldToGridPosition(Vector3 worldPos)
+    // Grid access
+    public Bubble GetBubbleAt(Vector2Int pos) => GetBubbleAt(pos.x, pos.y);
+    public Bubble GetBubbleAt(int x, int y)
     {
-        Vector3 localPos = worldPos - transform.position;
-        
-        int y = Mathf.RoundToInt(-localPos.y / 0.9f);
-        y = Mathf.Max(0, y);
-        
-        bool isShortRow = y % 2 != 0;
-        float offset = isShortRow ? 0.5f : 0f;
-        int x = Mathf.RoundToInt(localPos.x - offset);
-        
-        return new Vector2Int(x, y);
+        if (y < 0 || y >= gridData.Count) return null;
+        int dataX = x + xOffset;
+        if (dataX < 0 || dataX >= gridData[y].Count) return null;
+        return gridData[y][dataX];
     }
 
-    // Convert grid coordinates to world position
-    public Vector3 GridToWorldPosition(int x, int y)
+    public bool IsEmpty(Vector2Int pos) => IsEmpty(pos.x, pos.y);
+    public bool IsEmpty(int x, int y)
     {
-        bool isShortRow = y % 2 != 0;
-        float offset = isShortRow ? 0.5f : 0f;
+        if (y < 0) return false;
+        if (y >= gridData.Count) return true;
+        int dataX = x + xOffset;
+        if (dataX < 0 || dataX >= gridData[y].Count) return true;
+        return gridData[y][dataX] == null;
+    }
+
+    // Coordinate conversion
+    public Vector2Int WorldToGrid(Vector3 worldPos)
+    {
+        Vector3 local = worldPos - transform.position;
+        int y = Mathf.Max(0, Mathf.RoundToInt(-local.y / 0.9f));
+        float offset = (y % 2 != 0) ? 0.5f : 0f;
+        return new Vector2Int(Mathf.RoundToInt(local.x - offset), y);
+    }
+
+    public Vector3 GridToWorld(Vector2Int pos) => GridToWorld(pos.x, pos.y);
+    public Vector3 GridToWorld(int x, int y)
+    {
+        float offset = (y % 2 != 0) ? 0.5f : 0f;
         return transform.position + new Vector3(x + offset, -y * 0.9f, 0f);
     }
 
-    // Expand grid rows if needed
-    private void EnsureRowExists(int y)
+    // Get hex neighbors
+    public List<Vector2Int> GetNeighbors(Vector2Int pos)
     {
-        while (y >= gridData.Count)
-        {
-            gridData.Add(new List<Bubble>());
-        }
+        var neighbors = new List<Vector2Int>();
+        foreach (var offset in neighborOffsets[pos.y % 2])
+            neighbors.Add(pos + offset);
+        return neighbors;
     }
 
-    // Expand grid to the left if x is negative
+    // Grid expansion
+    private void EnsureRowExists(int y) { while (y >= gridData.Count) gridData.Add(new List<Bubble>()); }
+    private void EnsureColumnExists(int dataX, int y) { while (dataX >= gridData[y].Count) gridData[y].Add(null); }
+    
     private void ExpandLeft(int amount)
     {
         for (int y = 0; y < gridData.Count; y++)
-        {
             for (int i = 0; i < amount; i++)
-            {
                 gridData[y].Insert(0, null);
-            }
-        }
         xOffset += amount;
-        Debug.Log($"Expanded grid left by {amount}, new xOffset: {xOffset}");
+        Log($"Expanded grid left by {amount}");
     }
 
-    // Expand a specific row to fit x position (on the right side)
-    private void EnsureColumnExists(int dataX, int y)
-    {
-        while (dataX >= gridData[y].Count)
-        {
-            gridData[y].Add(null);
-        }
-    }
-    
-    // Get all neighbor positions for a hex grid cell
-    public List<Vector2Int> GetNeighbors(int x, int y)
-    {
-        List<Vector2Int> neighbors = new List<Vector2Int>();
-        Vector2Int[] offsets = (y % 2 == 0) ? evenRowNeighbors : oddRowNeighbors;
-        
-        foreach (var offset in offsets)
-        {
-            neighbors.Add(new Vector2Int(x + offset.x, y + offset.y));
-        }
-        
-        return neighbors;
-    }
-    
-    public List<Vector2Int> GetNeighbors(Vector2Int pos)
-    {
-        return GetNeighbors(pos.x, pos.y);
-    }
-    
-    // Find the best empty position to attach a bubble given a world position
-    // Returns the nearest empty grid position, checking the target cell first, then neighbors
+    // Find best empty position for attachment
     public Vector2Int FindAttachPosition(Vector3 worldPos)
     {
-        Vector2Int targetPos = WorldToGridPosition(worldPos);
+        Vector2Int target = WorldToGrid(worldPos);
+        if (IsEmpty(target)) return target;
         
-        // If target position is empty, use it
-        if (IsPositionEmpty(targetPos))
+        float bestDist = float.MaxValue;
+        Vector2Int bestPos = target;
+        
+        foreach (var neighbor in GetNeighbors(target))
         {
-            return targetPos;
-        }
-        
-        // Target is occupied, find nearest empty neighbor
-        List<Vector2Int> neighbors = GetNeighbors(targetPos);
-        
-        float bestDistance = float.MaxValue;
-        Vector2Int bestPos = targetPos;
-        bool foundEmpty = false;
-        
-        foreach (var neighborPos in neighbors)
-        {
-            if (neighborPos.y < 0) continue; // Skip positions above the grid
-            
-            if (IsPositionEmpty(neighborPos))
+            if (neighbor.y >= 0 && IsEmpty(neighbor))
             {
-                Vector3 neighborWorld = GridToWorldPosition(neighborPos.x, neighborPos.y);
-                float distance = Vector3.Distance(worldPos, neighborWorld);
-                
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    bestPos = neighborPos;
-                    foundEmpty = true;
-                }
+                float dist = Vector3.Distance(worldPos, GridToWorld(neighbor));
+                if (dist < bestDist) { bestDist = dist; bestPos = neighbor; }
             }
         }
-        
-        if (!foundEmpty)
-        {
-            Debug.LogWarning($"No empty position found near {targetPos}, using target anyway");
-        }
-        
         return bestPos;
     }
 
-    // Attach a bubble to the grid at nearest empty slot
-    // Returns the grid position where it was attached
+    // Attach bubble to grid
     public Vector2Int AttachBubble(Bubble bubble, Vector3 worldPos)
     {
-        // Safety check - don't attach if already attached
         if (bubble.isAttached)
         {
-            Debug.LogWarning($"Bubble {bubble.type} is already attached, skipping");
+            LogWarning($"Bubble {bubble.type} already attached");
             return new Vector2Int(-1, -1);
         }
         
-        // Find the best empty position
-        Vector2Int gridPos = FindAttachPosition(worldPos);
+        Vector2Int pos = FindAttachPosition(worldPos);
+        EnsureRowExists(pos.y);
         
-        // Expand rows if needed
-        EnsureRowExists(gridPos.y);
+        if (pos.x < -xOffset) ExpandLeft((-xOffset) - pos.x);
         
-        // Handle left expansion if x is negative
-        if (gridPos.x < -xOffset)
-        {
-            int expandAmount = (-xOffset) - gridPos.x;
-            ExpandLeft(expandAmount);
-        }
+        int dataX = pos.x + xOffset;
+        EnsureColumnExists(dataX, pos.y);
         
-        // Convert to data index
-        int dataX = gridPos.x + xOffset;
-        
-        // Expand right if needed
-        EnsureColumnExists(dataX, gridPos.y);
-        
-        // Set position and parent
         bubble.transform.SetParent(transform);
-        bubble.transform.position = GridToWorldPosition(gridPos.x, gridPos.y);
-        
-        // Mark as attached
+        bubble.transform.position = GridToWorld(pos);
         bubble.isAttached = true;
+        gridData[pos.y][dataX] = bubble;
         
-        // Add to grid
-        gridData[gridPos.y][dataX] = bubble;
-        
-        Debug.Log($"Attached {bubble.type} bubble at grid ({gridPos.x}, {gridPos.y})");
-        
-        return gridPos;
+        Log($"Attached {bubble.type} at ({pos.x}, {pos.y})");
+        return pos;
     }
-    
-    // Flood fill to find all connected bubbles of the same color
-    // Returns list of grid positions with matching bubbles
-    public List<Vector2Int> FloodFillSameColor(Vector2Int startPos)
+
+    // Flood fill - finds connected bubbles, optionally matching a specific color
+    private List<Vector2Int> FloodFill(Vector2Int start, BubbleType? matchType = null)
     {
-        List<Vector2Int> matchedPositions = new List<Vector2Int>();
+        var result = new List<Vector2Int>();
+        var startBubble = GetBubbleAt(start);
+        if (startBubble == null) return result;
         
-        Bubble startBubble = GetBubbleAt(startPos);
-        if (startBubble == null)
-        {
-            Debug.LogWarning($"FloodFill: No bubble at start position {startPos}");
-            return matchedPositions;
-        }
-        
-        BubbleType targetType = startBubble.type;
-        Debug.Log($"FloodFill: Starting from {startPos}, looking for {targetType} bubbles");
-        
-        // Reset visited flags for all bubbles
-        ResetVisitedFlags();
-        
-        // BFS queue
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        queue.Enqueue(startPos);
+        ResetVisited();
+        var queue = new Queue<Vector2Int>();
+        queue.Enqueue(start);
         startBubble.visited = true;
         
         while (queue.Count > 0)
         {
-            Vector2Int current = queue.Dequeue();
-            matchedPositions.Add(current);
+            var current = queue.Dequeue();
+            result.Add(current);
             
-            // Check all neighbors
-            List<Vector2Int> neighbors = GetNeighbors(current);
-            foreach (var neighborPos in neighbors)
+            foreach (var neighbor in GetNeighbors(current))
             {
-                Bubble neighbor = GetBubbleAt(neighborPos);
+                var bubble = GetBubbleAt(neighbor);
+                if (bubble == null || bubble.visited) continue;
+                if (matchType.HasValue && bubble.type != matchType.Value) continue;
                 
-                // Skip if no bubble, already visited, or different color
-                if (neighbor == null) continue;
-                if (neighbor.visited) continue;
-                if (neighbor.type != targetType) continue;
-                
-                neighbor.visited = true;
-                queue.Enqueue(neighborPos);
+                bubble.visited = true;
+                queue.Enqueue(neighbor);
             }
         }
-        
-        return matchedPositions;
+        return result;
     }
-    
-    // Reset all visited flags
-    private void ResetVisitedFlags()
+
+    private void ResetVisited()
     {
         foreach (var row in gridData)
-        {
             foreach (var bubble in row)
-            {
-                if (bubble != null)
-                    bubble.visited = false;
-            }
-        }
+                if (bubble != null) bubble.visited = false;
     }
-    
-    // Check for matches and destroy if enough connected
-    // Returns true if bubbles were destroyed
+
+    // Check and destroy matches
     public bool CheckAndDestroyMatches(Vector2Int startPos)
     {
-        // Check for invalid position (returned when bubble was already attached)
-        if (startPos.x == -1 && startPos.y == -1)
-        {
-            Debug.LogWarning("CheckAndDestroyMatches called with invalid position, skipping");
-            return false;
-        }
+        if (startPos.x == -1) return false;
         
-        List<Vector2Int> matches = FloodFillSameColor(startPos);
+        var startBubble = GetBubbleAt(startPos);
+        if (startBubble == null) return false;
         
-        Debug.Log($"Found {matches.Count} matching bubbles");
+        var matches = FloodFill(startPos, startBubble.type);
+        Log($"Found {matches.Count} matching {startBubble.type} bubbles");
         
         if (matches.Count >= minMatchCount)
         {
-            // Destroy all matched bubbles
-            foreach (var pos in matches)
-            {
-                RemoveBubbleAt(pos);
-            }
-            
-            Debug.Log($"Destroyed {matches.Count} bubbles!");
-            
-            // After destroying, check for floating bubbles
-            DestroyFloatingBubbles();
-            
+            StartCoroutine(DestroyBubblesSequentially(matches, true));
             return true;
         }
-        
         return false;
     }
     
-    // Find all bubbles connected to the top row (row 0)
-    private HashSet<Vector2Int> FindConnectedToTop()
+    // Destroy bubbles one by one with delay
+    private IEnumerator DestroyBubblesSequentially(List<Vector2Int> positions, bool checkFloatingAfter)
     {
-        HashSet<Vector2Int> connected = new HashSet<Vector2Int>();
+        Log($"Destroying {positions.Count} bubbles sequentially");
         
-        if (gridData.Count == 0) return connected;
+        foreach (var pos in positions)
+        {
+            yield return new WaitForSeconds(destructionDelay);
+            RemoveBubbleAt(pos);
+        }
         
-        ResetVisitedFlags();
+        if (checkFloatingAfter)
+        {
+            DestroyFloatingBubbles();
+        }
+    }
+
+    // Destroy floating bubbles
+    public int DestroyFloatingBubbles()
+    {
+        if (gridData.Count == 0) return 0;
         
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        // Find all connected to top row
+        ResetVisited();
+        var connected = new HashSet<Vector2Int>();
+        var queue = new Queue<Vector2Int>();
         
-        // Start from all bubbles in row 0 (the anchor row)
         for (int dataX = 0; dataX < gridData[0].Count; dataX++)
         {
-            Bubble bubble = gridData[0][dataX];
+            var bubble = gridData[0][dataX];
             if (bubble != null && !bubble.visited)
             {
-                int worldX = dataX - xOffset;
-                Vector2Int pos = new Vector2Int(worldX, 0);
+                var pos = new Vector2Int(dataX - xOffset, 0);
                 bubble.visited = true;
                 queue.Enqueue(pos);
             }
         }
         
-        // BFS to find all connected bubbles (any color)
         while (queue.Count > 0)
         {
-            Vector2Int current = queue.Dequeue();
+            var current = queue.Dequeue();
             connected.Add(current);
             
-            List<Vector2Int> neighbors = GetNeighbors(current);
-            foreach (var neighborPos in neighbors)
+            foreach (var neighbor in GetNeighbors(current))
             {
-                Bubble neighbor = GetBubbleAt(neighborPos);
-                
-                if (neighbor == null) continue;
-                if (neighbor.visited) continue;
-                
-                neighbor.visited = true;
-                queue.Enqueue(neighborPos);
-            }
-        }
-        
-        return connected;
-    }
-    
-    // Destroy all bubbles not connected to the top row
-    public int DestroyFloatingBubbles()
-    {
-        HashSet<Vector2Int> connected = FindConnectedToTop();
-        List<Vector2Int> floatingPositions = new List<Vector2Int>();
-        
-        // Find all bubbles that are NOT connected
-        for (int y = 0; y < gridData.Count; y++)
-        {
-            for (int dataX = 0; dataX < gridData[y].Count; dataX++)
-            {
-                if (gridData[y][dataX] != null)
+                var bubble = GetBubbleAt(neighbor);
+                if (bubble != null && !bubble.visited)
                 {
-                    int worldX = dataX - xOffset;
-                    Vector2Int pos = new Vector2Int(worldX, y);
-                    
-                    if (!connected.Contains(pos))
-                    {
-                        floatingPositions.Add(pos);
-                    }
+                    bubble.visited = true;
+                    queue.Enqueue(neighbor);
                 }
             }
         }
         
-        // Destroy floating bubbles
-        foreach (var pos in floatingPositions)
+        // Find unconnected bubbles
+        var floating = new List<Vector2Int>();
+        for (int y = 0; y < gridData.Count; y++)
+            for (int dataX = 0; dataX < gridData[y].Count; dataX++)
+                if (gridData[y][dataX] != null)
+                {
+                    var pos = new Vector2Int(dataX - xOffset, y);
+                    if (!connected.Contains(pos)) floating.Add(pos);
+                }
+        
+        if (floating.Count > 0)
         {
-            RemoveBubbleAt(pos);
+            Log($"Found {floating.Count} floating bubbles");
+            StartCoroutine(DestroyBubblesSequentially(floating, false));
         }
         
-        if (floatingPositions.Count > 0)
-        {
-            Debug.Log($"Destroyed {floatingPositions.Count} floating bubbles!");
-        }
-        
-        return floatingPositions.Count;
+        return floating.Count;
     }
-    
-    // Remove a bubble from the grid and destroy it
-    public void RemoveBubbleAt(Vector2Int pos)
-    {
-        RemoveBubbleAt(pos.x, pos.y);
-    }
-    
+
+    // Remove bubble
+    public void RemoveBubbleAt(Vector2Int pos) => RemoveBubbleAt(pos.x, pos.y);
     public void RemoveBubbleAt(int x, int y)
     {
         if (y < 0 || y >= gridData.Count) return;
-        
         int dataX = x + xOffset;
         if (dataX < 0 || dataX >= gridData[y].Count) return;
         
-        Bubble bubble = gridData[y][dataX];
+        var bubble = gridData[y][dataX];
         if (bubble != null)
         {
             bubble.Explode();

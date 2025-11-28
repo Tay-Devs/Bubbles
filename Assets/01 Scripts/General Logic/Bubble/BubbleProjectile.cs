@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class BubbleProjectile : MonoBehaviour
 {
+    public bool enableDebugLogs = false;
+    
     private Rigidbody2D rb;
     private bool hasCollided = false;
     private HexGrid grid;
@@ -10,12 +12,8 @@ public class BubbleProjectile : MonoBehaviour
     void Awake()
     {
         myBubble = GetComponent<Bubble>();
-        
         rb = GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-        }
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
         
         rb.gravityScale = 0f;
         rb.linearDamping = 0f;
@@ -25,7 +23,10 @@ public class BubbleProjectile : MonoBehaviour
         rb.isKinematic = true;
         
         grid = FindFirstObjectByType<HexGrid>();
+        if (grid != null) enableDebugLogs = grid.enableDebugLogs;
     }
+    
+    void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
     
     public void Fire(Vector2 direction, float speed)
     {
@@ -40,23 +41,16 @@ public class BubbleProjectile : MonoBehaviour
     {
         if (hasCollided) return;
         
-        Debug.Log($"Projectile collided with: {collision.gameObject.name}");
-        
-        // Try to find Bubble component on the hit object or its parent
         Bubble hitBubble = collision.gameObject.GetComponent<Bubble>();
-        if (hitBubble == null)
-            hitBubble = collision.gameObject.GetComponentInParent<Bubble>();
+        if (hitBubble == null) hitBubble = collision.gameObject.GetComponentInParent<Bubble>();
         
-        // Attach if we hit a grid bubble (isAttached == true) OR if it has the Bubble tag
         bool hitGridBubble = (hitBubble != null && hitBubble.isAttached);
         bool hitBubbleTag = collision.gameObject.CompareTag("Bubble");
-        
-        Debug.Log($"hitBubble: {hitBubble != null}, isAttached: {(hitBubble != null ? hitBubble.isAttached : false)}, hasTag: {hitBubbleTag}");
         
         if (hitGridBubble || hitBubbleTag)
         {
             hasCollided = true;
-            Debug.Log($"Projectile ({myBubble.type}) collided, attaching to grid");
+            Log($"Projectile ({myBubble.type}) hit, attaching to grid");
             AttachToGrid();
         }
     }
@@ -80,10 +74,7 @@ public class BubbleProjectile : MonoBehaviour
     
     void Update()
     {
-        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
-        if (viewportPos.y > 2f)
-        {
+        if (Camera.main.WorldToViewportPoint(transform.position).y > 2f)
             Destroy(gameObject);
-        }
     }
 }
