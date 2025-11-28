@@ -1107,6 +1107,7 @@ MonoBehaviour:
   arrowDistance: 1
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
   shootSpeed: 15
+  shootCooldown: 1
 --- !u!4 &1949084648
 Transform:
   m_ObjectHideFlags: 0
@@ -1307,6 +1308,9 @@ MonoBehaviour:
   startingWidth: 6
   startingHeight: 8
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
+  minMatchCount: 3
+  destructionDelay: 0.25
+  enableDebugLogs: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

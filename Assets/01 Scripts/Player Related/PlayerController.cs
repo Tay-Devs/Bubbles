@@ -13,8 +13,15 @@ public class PlayerController : MonoBehaviour
     private GameObject currentBubble;
     public float shootSpeed = 15f;
     
+    [Header("Cooldown")]
+    public float shootCooldown = 0.5f;
+    private float lastShootTime = -Mathf.Infinity;
+    
+    private HexGrid grid;
+    
     void Start()
     {
+        grid = FindFirstObjectByType<HexGrid>();
         SpawnNewBubble();
     }
     
@@ -30,6 +37,12 @@ public class PlayerController : MonoBehaviour
     
     bool ShouldShoot()
     {
+        // Don't shoot while bubbles are being destroyed
+        if (grid != null && grid.IsDestroying) return false;
+        
+        // Don't shoot if still on cooldown
+        if (Time.time < lastShootTime + shootCooldown) return false;
+        
         // Touch device logic - shoot on finger lift
         if (Input.touchCount > 0)
         {
@@ -71,6 +84,8 @@ public class PlayerController : MonoBehaviour
     void Shoot()
     {
         if (currentBubble == null) return;
+        
+        lastShootTime = Time.time;
         
         Vector3 shootDirection = (aimArrow.transform.position - transform.position).normalized;
         

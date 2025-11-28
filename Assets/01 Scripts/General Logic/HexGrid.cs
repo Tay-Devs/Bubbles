@@ -20,6 +20,9 @@ public class HexGrid : MonoBehaviour
     
     private List<List<Bubble>> gridData;
     private int xOffset = 0;
+    private bool isDestroying = false; // True while destruction coroutine is running
+    
+    public bool IsDestroying => isDestroying; // Public getter for other scripts
     
     // Hex neighbor offsets: [even row, odd row]
     private static readonly Vector2Int[][] neighborOffsets = {
@@ -229,6 +232,7 @@ public class HexGrid : MonoBehaviour
     // Destroy bubbles one by one with delay
     private IEnumerator DestroyBubblesSequentially(List<Vector2Int> positions, bool checkFloatingAfter)
     {
+        isDestroying = true;
         Log($"Destroying {positions.Count} bubbles sequentially");
         
         foreach (var pos in positions)
@@ -239,14 +243,33 @@ public class HexGrid : MonoBehaviour
         
         if (checkFloatingAfter)
         {
-            DestroyFloatingBubbles();
+            yield return StartCoroutine(DestroyFloatingBubblesCoroutine());
+        }
+        
+        isDestroying = false;
+    }
+    
+    // Coroutine version for floating bubbles
+    private IEnumerator DestroyFloatingBubblesCoroutine()
+    {
+        var floating = GetFloatingBubbles();
+        
+        if (floating.Count > 0)
+        {
+            Log($"Found {floating.Count} floating bubbles");
+            foreach (var pos in floating)
+            {
+                yield return new WaitForSeconds(destructionDelay);
+                RemoveBubbleAt(pos);
+            }
         }
     }
 
-    // Destroy floating bubbles
-    public int DestroyFloatingBubbles()
+    // Get list of floating bubble positions
+    private List<Vector2Int> GetFloatingBubbles()
     {
-        if (gridData.Count == 0) return 0;
+        var floating = new List<Vector2Int>();
+        if (gridData.Count == 0) return floating;
         
         // Find all connected to top row
         ResetVisited();
@@ -281,7 +304,6 @@ public class HexGrid : MonoBehaviour
         }
         
         // Find unconnected bubbles
-        var floating = new List<Vector2Int>();
         for (int y = 0; y < gridData.Count; y++)
             for (int dataX = 0; dataX < gridData[y].Count; dataX++)
                 if (gridData[y][dataX] != null)
@@ -290,10 +312,18 @@ public class HexGrid : MonoBehaviour
                     if (!connected.Contains(pos)) floating.Add(pos);
                 }
         
+        return floating;
+    }
+    
+    // Destroy floating bubbles (public method for external calls)
+    public int DestroyFloatingBubbles()
+    {
+        var floating = GetFloatingBubbles();
+        
         if (floating.Count > 0)
         {
             Log($"Found {floating.Count} floating bubbles");
-            StartCoroutine(DestroyBubblesSequentially(floating, false));
+            StartCoroutine(DestroyFloatingBubblesCoroutine());
         }
         
         return floating.Count;

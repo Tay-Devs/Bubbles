@@ -26,10 +26,4 @@ public class Bubble : MonoBehaviour
     {
         Destroy(gameObject);
     }
-    
-    private void OnMouseDown()
-    {
-        Debug.Log("Bubble Clicked");
-        onTouch?.Invoke();
-    }
 }
