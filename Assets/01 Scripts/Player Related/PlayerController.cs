@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     [Header("Bubble")]
     public GameObject bubblePrefab;
     private GameObject currentBubble;
-    public float shootSpeed = 15f; // Increased default speed for better feel
+    public float shootSpeed = 15f;
     
     void Start()
     {
@@ -22,31 +22,31 @@ public class PlayerController : MonoBehaviour
     {
         UpdateAimRotation();
 
-
         if (ShouldShoot())
         {
             Shoot();   
         }
-
     }
+    
     bool ShouldShoot()
     {
-        //Touch device logic
+        // Touch device logic - shoot on finger lift
         if (Input.touchCount > 0)
         {
             Touch t = Input.GetTouch(0);
-            if (t.phase == TouchPhase.Began)
+            if (t.phase == TouchPhase.Ended)
                 return true;
         }
 
-        // Editor mouse, BUT only if no touches detected
+        // Editor mouse - shoot on mouse release
 #if UNITY_EDITOR
-        if (Input.mousePresent && Input.touchCount == 0 && Input.GetMouseButtonDown(0))
+        if (Input.mousePresent && Input.touchCount == 0 && Input.GetMouseButtonUp(0))
             return true;
 #endif
 
         return false;
     }
+    
     void UpdateAimRotation()
     {
         if (aimArrow == null) return;
@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f; // Just to be safe for 2D
+        mouseWorld.z = 0f;
 
         Vector3 direction = (mouseWorld - transform.position).normalized;
         float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
         if (col != null) col.enabled = true;
         
         Rigidbody2D rb = currentBubble.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.simulated = true; // Enable physics simulation
+        if (rb != null) rb.simulated = true;
         
         // Add projectile component and fire
         BubbleProjectile projectile = currentBubble.AddComponent<BubbleProjectile>();
@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
             // Ensure bubble has required components
             Collider2D col = currentBubble.GetComponent<Collider2D>();
             if (col == null) col = currentBubble.AddComponent<CircleCollider2D>();
-            col.enabled = false; // Disable for preview
+            col.enabled = false;
             
             Rigidbody2D rb = currentBubble.GetComponent<Rigidbody2D>();
             if (rb == null) 
@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
                 rb.gravityScale = 0f;
                 rb.linearDamping = 0f;
             }
-            rb.simulated = false; // Disable physics for preview
+            rb.simulated = false;
             
             // Random color
             Bubble bubble = currentBubble.GetComponent<Bubble>();

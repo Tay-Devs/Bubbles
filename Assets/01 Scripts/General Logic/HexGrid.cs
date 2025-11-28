@@ -388,10 +388,98 @@ public class HexGrid : MonoBehaviour
             }
             
             Debug.Log($"Destroyed {matches.Count} bubbles!");
+            
+            // After destroying, check for floating bubbles
+            DestroyFloatingBubbles();
+            
             return true;
         }
         
         return false;
+    }
+    
+    // Find all bubbles connected to the top row (row 0)
+    private HashSet<Vector2Int> FindConnectedToTop()
+    {
+        HashSet<Vector2Int> connected = new HashSet<Vector2Int>();
+        
+        if (gridData.Count == 0) return connected;
+        
+        ResetVisitedFlags();
+        
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        
+        // Start from all bubbles in row 0 (the anchor row)
+        for (int dataX = 0; dataX < gridData[0].Count; dataX++)
+        {
+            Bubble bubble = gridData[0][dataX];
+            if (bubble != null && !bubble.visited)
+            {
+                int worldX = dataX - xOffset;
+                Vector2Int pos = new Vector2Int(worldX, 0);
+                bubble.visited = true;
+                queue.Enqueue(pos);
+            }
+        }
+        
+        // BFS to find all connected bubbles (any color)
+        while (queue.Count > 0)
+        {
+            Vector2Int current = queue.Dequeue();
+            connected.Add(current);
+            
+            List<Vector2Int> neighbors = GetNeighbors(current);
+            foreach (var neighborPos in neighbors)
+            {
+                Bubble neighbor = GetBubbleAt(neighborPos);
+                
+                if (neighbor == null) continue;
+                if (neighbor.visited) continue;
+                
+                neighbor.visited = true;
+                queue.Enqueue(neighborPos);
+            }
+        }
+        
+        return connected;
+    }
+    
+    // Destroy all bubbles not connected to the top row
+    public int DestroyFloatingBubbles()
+    {
+        HashSet<Vector2Int> connected = FindConnectedToTop();
+        List<Vector2Int> floatingPositions = new List<Vector2Int>();
+        
+        // Find all bubbles that are NOT connected
+        for (int y = 0; y < gridData.Count; y++)
+        {
+            for (int dataX = 0; dataX < gridData[y].Count; dataX++)
+            {
+                if (gridData[y][dataX] != null)
+                {
+                    int worldX = dataX - xOffset;
+                    Vector2Int pos = new Vector2Int(worldX, y);
+                    
+                    if (!connected.Contains(pos))
+                    {
+                        floatingPositions.Add(pos);
+                    }
+                }
+            }
+        }
+        
+        // Destroy floating bubbles
+        foreach (var pos in floatingPositions)
+        {
+            RemoveBubbleAt(pos);
+        }
+        
+        if (floatingPositions.Count > 0)
+        {
+            Debug.Log($"Destroyed {floatingPositions.Count} floating bubbles!");
+        }
+        
+        return floatingPositions.Count;
     }
     
     // Remove a bubble from the grid and destroy it
