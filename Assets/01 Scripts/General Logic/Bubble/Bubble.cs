@@ -1,5 +1,4 @@
 using System;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class Bubble : MonoBehaviour
@@ -7,6 +6,7 @@ public class Bubble : MonoBehaviour
     public BubbleType type = BubbleType.Black;
     public Action onTouch;
     public bool visited = false;
+    public bool isAttached = false; // True once attached to grid
 
     void Start()
     {
@@ -26,11 +26,10 @@ public class Bubble : MonoBehaviour
     {
         Destroy(gameObject);
     }
+    
     private void OnMouseDown()
     {
         Debug.Log("Bubble Clicked");
         onTouch?.Invoke();
     }
 }
-
-

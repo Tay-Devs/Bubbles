@@ -5,9 +5,12 @@ public class BubbleProjectile : MonoBehaviour
     private Rigidbody2D rb;
     private bool hasCollided = false;
     private HexGrid grid;
+    private Bubble myBubble;
     
     void Awake()
     {
+        myBubble = GetComponent<Bubble>();
+        
         rb = GetComponent<Rigidbody2D>();
         if (rb == null)
         {
@@ -35,33 +38,43 @@ public class BubbleProjectile : MonoBehaviour
     
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Bubble") && !hasCollided)
+        if (hasCollided) return;
+        
+        Debug.Log($"Projectile collided with: {collision.gameObject.name}");
+        
+        // Try to find Bubble component on the hit object or its parent
+        Bubble hitBubble = collision.gameObject.GetComponent<Bubble>();
+        if (hitBubble == null)
+            hitBubble = collision.gameObject.GetComponentInParent<Bubble>();
+        
+        // Attach if we hit a grid bubble (isAttached == true) OR if it has the Bubble tag
+        bool hitGridBubble = (hitBubble != null && hitBubble.isAttached);
+        bool hitBubbleTag = collision.gameObject.CompareTag("Bubble");
+        
+        Debug.Log($"hitBubble: {hitBubble != null}, isAttached: {(hitBubble != null ? hitBubble.isAttached : false)}, hasTag: {hitBubbleTag}");
+        
+        if (hitGridBubble || hitBubbleTag)
         {
             hasCollided = true;
+            Debug.Log($"Projectile ({myBubble.type}) collided, attaching to grid");
             AttachToGrid();
         }
     }
     
     void AttachToGrid()
     {
-        // Stop movement
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.isKinematic = true;
         }
         
-        // Attach to grid at current position
-        if (grid != null)
+        if (grid != null && myBubble != null)
         {
-            Bubble bubble = GetComponent<Bubble>();
-            if (bubble != null)
-            {
-                grid.AttachBubble(bubble, transform.position);
-            }
+            Vector2Int attachedPos = grid.AttachBubble(myBubble, transform.position);
+            grid.CheckAndDestroyMatches(attachedPos);
         }
         
-        // Remove this component
         Destroy(this);
     }
     
