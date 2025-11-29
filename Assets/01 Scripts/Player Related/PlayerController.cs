@@ -37,6 +37,9 @@ public class PlayerController : MonoBehaviour
     
     bool ShouldShoot()
     {
+        // Don't shoot if game is not playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return false;
+        
         // Don't shoot while bubbles are being destroyed
         if (grid != null && grid.IsDestroying) return false;
         

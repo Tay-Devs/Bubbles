@@ -18,11 +18,14 @@ public class HexGrid : MonoBehaviour
     [Header("Debug")]
     public bool enableDebugLogs = false;
     
+    [Header("Lose Condition")]
+    public LoseZone loseZone;
+    
     private List<List<Bubble>> gridData;
     private int xOffset = 0;
-    private bool isDestroying = false; // True while destruction coroutine is running
+    private bool isDestroying = false;
     
-    public bool IsDestroying => isDestroying; // Public getter for other scripts
+    public bool IsDestroying => isDestroying;
     
     // Hex neighbor offsets: [even row, odd row]
     private static readonly Vector2Int[][] neighborOffsets = {
@@ -226,6 +229,9 @@ public class HexGrid : MonoBehaviour
             StartCoroutine(DestroyBubblesSequentially(matches, true));
             return true;
         }
+        
+        // No matches - check lose condition immediately
+        CheckLoseCondition();
         return false;
     }
     
@@ -247,6 +253,9 @@ public class HexGrid : MonoBehaviour
         }
         
         isDestroying = false;
+        
+        // Check lose condition after all destruction is complete
+        CheckLoseCondition();
     }
     
     // Coroutine version for floating bubbles
@@ -342,6 +351,26 @@ public class HexGrid : MonoBehaviour
         {
             bubble.Explode();
             gridData[y][dataX] = null;
+        }
+    }
+    
+    // Check if any bubble is in the lose zone
+    private void CheckLoseCondition()
+    {
+        if (loseZone == null || GameManager.Instance == null) return;
+        if (!GameManager.Instance.IsPlaying) return;
+        
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
+            {
+                if (bubble != null && loseZone.IsInLoseZone(bubble.transform.position))
+                {
+                    Log($"Bubble at {bubble.transform.position.y} is in lose zone (line at {loseZone.LoseLineY})");
+                    GameManager.Instance.GameOver();
+                    return;
+                }
+            }
         }
     }
 }
