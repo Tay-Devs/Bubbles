@@ -19,12 +19,14 @@ public class PlayerController : MonoBehaviour
     private float lastShootTime = -Mathf.Infinity;
     
     private HexGrid grid;
+    private Camera mainCam;
     private bool wasPressed = false;
     private Vector2 lastValidPointerPos;
     
     void Start()
     {
         grid = FindFirstObjectByType<HexGrid>();
+        mainCam = Camera.main;
         lastValidPointerPos = new Vector2(Screen.width / 2f, Screen.height / 2f);
         SpawnNewBubble();
     }
@@ -101,7 +103,7 @@ public class PlayerController : MonoBehaviour
     
     void UpdateAimRotation()
     {
-        if (aimArrow == null) return;
+        if (aimArrow == null || mainCam == null) return;
 
         // Use the last valid position
         Vector2 pointerPos = lastValidPointerPos;
@@ -111,7 +113,7 @@ public class PlayerController : MonoBehaviour
             pointerPos.y < 0 || pointerPos.y > Screen.height)
             return;
 
-        Vector3 pointerWorld = Camera.main.ScreenToWorldPoint(new Vector3(pointerPos.x, pointerPos.y, 0));
+        Vector3 pointerWorld = mainCam.ScreenToWorldPoint(new Vector3(pointerPos.x, pointerPos.y, 0));
         pointerWorld.z = 0f;
 
         Vector3 direction = (pointerWorld - transform.position).normalized;
