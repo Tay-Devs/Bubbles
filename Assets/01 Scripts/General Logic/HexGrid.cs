@@ -28,11 +28,89 @@ public class HexGrid : MonoBehaviour
     [Header("Lose Condition")]
     public LoseZone loseZone;
     
+    // Event fired when colors change (after destruction)
+    public System.Action onColorsChanged;
+    
     private List<List<Bubble>> gridData;
     private int xOffset = 0;
     private bool isDestroying = false;
     
     public bool IsDestroying => isDestroying;
+    
+    // Get all unique colors currently in the grid
+    public HashSet<BubbleType> GetAvailableColors()
+    {
+        var colors = new HashSet<BubbleType>();
+        
+        if (gridData == null) return colors;
+        
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
+            {
+                if (bubble != null)
+                {
+                    colors.Add(bubble.type);
+                }
+            }
+        }
+        
+        return colors;
+    }
+    
+    // Check if a specific color exists in the grid
+    public bool ColorExistsInGrid(BubbleType type)
+    {
+        if (gridData == null) return false;
+        
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
+            {
+                if (bubble != null && bubble.type == type)
+                {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    // Check if the grid is empty (all bubbles cleared)
+    public bool IsGridEmpty()
+    {
+        if (gridData == null) return true;
+        
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
+            {
+                if (bubble != null)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    // Check win condition - returns true if player won
+    private bool CheckWinCondition()
+    {
+        if (GameManager.Instance == null) return false;
+        if (!GameManager.Instance.IsPlaying) return false;
+        
+        if (IsGridEmpty())
+        {
+            Log("All bubbles cleared - Victory!");
+            GameManager.Instance.Victory();
+            return true;
+        }
+        
+        return false;
+    }
     
     // Hex neighbor offsets: [even row, odd row]
     private static readonly Vector2Int[][] neighborOffsets = {
@@ -297,6 +375,12 @@ public class HexGrid : MonoBehaviour
         
         isDestroying = false;
         
+        // Notify that colors may have changed
+        onColorsChanged?.Invoke();
+        
+        // Check win condition first (if grid empty, player wins)
+        if (CheckWinCondition()) yield break;
+        
         // Check lose condition after all destruction is complete
         CheckLoseCondition();
     }
@@ -421,25 +505,5 @@ public class HexGrid : MonoBehaviour
             }
         }
         return false;
-    }
-    
-    // Visualize grid bounds in Scene view
-    void OnDrawGizmos()
-    {
-        // Draw grid origin
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 0.2f);
-        
-        // Draw expected grid area
-        float gridWidth = startingWidth;
-        float gridHeight = startingHeight * 0.9f;
-        
-        Vector3 center = transform.position + new Vector3(gridWidth / 2f, -gridHeight / 2f, 0);
-        Vector3 size = new Vector3(gridWidth, gridHeight, 0.1f);
-        
-        Gizmos.color = new Color(0, 1, 0, 0.2f);
-        Gizmos.DrawCube(center, size);
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(center, size);
     }
 }

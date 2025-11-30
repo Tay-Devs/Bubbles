@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,17 +19,94 @@ public class PlayerController : MonoBehaviour
     public float shootCooldown = 0.5f;
     private float lastShootTime = -Mathf.Infinity;
     
+    [Header("Debug")]
+    public bool enableDebugLogs = false;
+    
     private HexGrid grid;
     private Camera mainCam;
     private bool wasPressed = false;
     private Vector2 lastValidPointerPos;
+    private List<BubbleType> availableColors = new List<BubbleType>();
     
     void Start()
     {
         grid = FindFirstObjectByType<HexGrid>();
         mainCam = Camera.main;
         lastValidPointerPos = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        
+        // Subscribe to color change events
+        if (grid != null)
+        {
+            grid.onColorsChanged += OnColorsChanged;
+            enableDebugLogs = grid.enableDebugLogs;
+        }
+        
+        // Initialize available colors from grid
+        UpdateAvailableColors();
+        
         SpawnNewBubble();
+    }
+    
+    void OnDestroy()
+    {
+        // Unsubscribe from events
+        if (grid != null)
+        {
+            grid.onColorsChanged -= OnColorsChanged;
+        }
+    }
+    
+    void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
+    
+    // Called when bubbles are destroyed and colors may have changed
+    void OnColorsChanged()
+    {
+        UpdateAvailableColors();
+        ValidateCurrentBubble();
+    }
+    
+    // Update the list of available colors from the grid
+    void UpdateAvailableColors()
+    {
+        availableColors.Clear();
+        
+        if (grid != null)
+        {
+            var gridColors = grid.GetAvailableColors();
+            availableColors.AddRange(gridColors);
+        }
+        
+        Log($"Available colors: {availableColors.Count} - [{string.Join(", ", availableColors)}]");
+    }
+    
+    // Check if current bubble's color is still valid, change if needed
+    void ValidateCurrentBubble()
+    {
+        if (currentBubble == null) return;
+        if (availableColors.Count == 0) return;
+        
+        Bubble bubble = currentBubble.GetComponent<Bubble>();
+        if (bubble == null) return;
+        
+        // If current color is no longer available, change it
+        if (!availableColors.Contains(bubble.type))
+        {
+            BubbleType newColor = GetRandomAvailableColor();
+            Log($"Current bubble color {bubble.type} no longer available, changing to {newColor}");
+            bubble.SetType(newColor);
+        }
+    }
+    
+    // Get a random color from available colors
+    BubbleType GetRandomAvailableColor()
+    {
+        if (availableColors.Count == 0)
+        {
+            // Fallback to any color if grid is empty (shouldn't happen normally)
+            return (BubbleType)Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
+        }
+        
+        return availableColors[Random.Range(0, availableColors.Count)];
     }
     
     void Update()
@@ -175,10 +253,12 @@ public class PlayerController : MonoBehaviour
             }
             rb.simulated = false;
             
-            // Random color
+            // Set random color from available colors only
             Bubble bubble = currentBubble.GetComponent<Bubble>();
             if (bubble != null)
-                bubble.SetType((BubbleType)Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length));
+            {
+                bubble.SetType(GetRandomAvailableColor());
+            }
         }
     }
 }

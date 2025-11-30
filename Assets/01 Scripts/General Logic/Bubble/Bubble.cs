@@ -6,19 +6,25 @@ public class Bubble : MonoBehaviour
     public BubbleType type = BubbleType.Black;
     public Action onTouch;
     public bool visited = false;
-    public bool isAttached = false; // True once attached to grid
+    public bool isAttached = false;
 
     void Start()
     {
         SetType(type);
     }
 
-    public void SetType(BubbleType type)
+    public void SetType(BubbleType newType)
     {
-        this.type = type;
+        this.type = newType;
+        
+        // Disable all color children, enable only the selected one
         foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
         {
-            transform.Find(color.ToString()).gameObject.SetActive(color == type);
+            Transform colorChild = transform.Find(color.ToString());
+            if (colorChild != null)
+            {
+                colorChild.gameObject.SetActive(color == newType);
+            }
         }
     }
 

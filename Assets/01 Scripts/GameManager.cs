@@ -5,7 +5,8 @@ public enum GameState
 {
     Playing,
     Paused,
-    GameOver
+    GameOver,
+    Victory
 }
 
 public class GameManager : MonoBehaviour
@@ -18,11 +19,13 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     public GameObject gameOverUI;
     public GameObject pauseMenuUI;
+    public GameObject victoryUI;
     
     [Header("Events")]
     public UnityEvent onGameOver;
     public UnityEvent onPause;
     public UnityEvent onResume;
+    public UnityEvent onVictory;
     
     public GameState CurrentState => currentState;
     public bool IsPlaying => currentState == GameState.Playing;
@@ -43,13 +46,14 @@ public class GameManager : MonoBehaviour
         // Make sure UI is in correct state at start
         if (gameOverUI != null) gameOverUI.SetActive(false);
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+        if (victoryUI != null) victoryUI.SetActive(false);
         
         currentState = GameState.Playing;
     }
     
     public void GameOver()
     {
-        if (currentState == GameState.GameOver) return;
+        if (currentState == GameState.GameOver || currentState == GameState.Victory) return;
         
         currentState = GameState.GameOver;
         Debug.Log("Game Over!");
@@ -57,6 +61,18 @@ public class GameManager : MonoBehaviour
         if (gameOverUI != null) gameOverUI.SetActive(true);
         
         onGameOver?.Invoke();
+    }
+    
+    public void Victory()
+    {
+        if (currentState == GameState.GameOver || currentState == GameState.Victory) return;
+        
+        currentState = GameState.Victory;
+        Debug.Log("Victory!");
+        
+        if (victoryUI != null) victoryUI.SetActive(true);
+        
+        onVictory?.Invoke();
     }
     
     public void Pause()
