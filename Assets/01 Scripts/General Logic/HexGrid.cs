@@ -12,6 +12,11 @@ public class HexGrid : MonoBehaviour
     public GameObject bubblePrefab;
     public int minMatchCount = 3;
     
+    [Header("Grid Positioning")]
+    public float leftOffset = 0.5f; // Distance from left screen edge
+    public float topOffset = 0.5f; // Distance from top screen edge
+    public bool autoPosition = true; // Auto position on start
+    
     [Header("Destruction Animation")]
     public float destructionDelay = 0.15f; // Starting delay between pops
     public float destructionDelayMultiplier = 0.85f; // Multiplier applied each pop (0.85 = 15% faster each time)
@@ -35,7 +40,33 @@ public class HexGrid : MonoBehaviour
         new[] { new Vector2Int(-1,0), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(1,-1), new Vector2Int(0,1), new Vector2Int(1,1) }
     };
 
-    void Start() => GenerateGrid();
+    void Start()
+    {
+        if (autoPosition) PositionGrid();
+        GenerateGrid();
+    }
+    
+    // Position grid based on screen boundaries
+    public void PositionGrid()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        
+        // Get screen bounds in world space
+        float screenHeight = 2f * cam.orthographicSize;
+        float screenWidth = screenHeight * cam.aspect;
+        Vector3 camPos = cam.transform.position;
+        
+        float leftEdge = camPos.x - screenWidth / 2f;
+        float topEdge = camPos.y + screenHeight / 2f;
+        
+        // Position grid with offsets
+        transform.position = new Vector3(
+            leftEdge + leftOffset,
+            topEdge - topOffset,
+            transform.position.z
+        );
+    }
     
     void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
     void LogWarning(string msg) { if (enableDebugLogs) Debug.LogWarning(msg); }
@@ -390,5 +421,25 @@ public class HexGrid : MonoBehaviour
             }
         }
         return false;
+    }
+    
+    // Visualize grid bounds in Scene view
+    void OnDrawGizmos()
+    {
+        // Draw grid origin
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, 0.2f);
+        
+        // Draw expected grid area
+        float gridWidth = startingWidth;
+        float gridHeight = startingHeight * 0.9f;
+        
+        Vector3 center = transform.position + new Vector3(gridWidth / 2f, -gridHeight / 2f, 0);
+        Vector3 size = new Vector3(gridWidth, gridHeight, 0.1f);
+        
+        Gizmos.color = new Color(0, 1, 0, 0.2f);
+        Gizmos.DrawCube(center, size);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(center, size);
     }
 }

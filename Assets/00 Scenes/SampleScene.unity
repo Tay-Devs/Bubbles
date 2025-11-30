@@ -1672,6 +1672,9 @@ MonoBehaviour:
   startingHeight: 8
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
   minMatchCount: 3
+  leftOffset: 0.5
+  topOffset: 1.5
+  autoPosition: 1
   destructionDelay: 0.4
   destructionDelayMultiplier: 0.85
   destructionDelayLimit: 0.075
