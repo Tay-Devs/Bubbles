@@ -41,6 +41,16 @@ public class BubbleProjectile : MonoBehaviour
     {
         if (hasCollided) return;
         
+        // Check if hit ceiling
+        if (collision.gameObject.CompareTag("Ceiling"))
+        {
+            hasCollided = true;
+            Log($"Projectile ({myBubble.type}) hit ceiling, attaching to grid");
+            AttachToGrid();
+            return;
+        }
+        
+        // Check if hit grid bubble
         Bubble hitBubble = collision.gameObject.GetComponent<Bubble>();
         if (hitBubble == null) hitBubble = collision.gameObject.GetComponentInParent<Bubble>();
         
@@ -50,7 +60,7 @@ public class BubbleProjectile : MonoBehaviour
         if (hitGridBubble || hitBubbleTag)
         {
             hasCollided = true;
-            Log($"Projectile ({myBubble.type}) hit, attaching to grid");
+            Log($"Projectile ({myBubble.type}) hit bubble, attaching to grid");
             AttachToGrid();
         }
     }
@@ -70,11 +80,5 @@ public class BubbleProjectile : MonoBehaviour
         }
         
         Destroy(this);
-    }
-    
-    void Update()
-    {
-        if (Camera.main.WorldToViewportPoint(transform.position).y > 2f)
-            Destroy(gameObject);
     }
 }
