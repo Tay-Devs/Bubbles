@@ -13,7 +13,9 @@ public class HexGrid : MonoBehaviour
     public int minMatchCount = 3;
     
     [Header("Destruction Animation")]
-    public float destructionDelay = 0.1f; // Delay between each bubble pop
+    public float destructionDelay = 0.15f; // Starting delay between pops
+    public float destructionDelayMultiplier = 0.85f; // Multiplier applied each pop (0.85 = 15% faster each time)
+    public float destructionDelayLimit = 0.03f; // Minimum delay (speed cap)
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
@@ -173,6 +175,13 @@ public class HexGrid : MonoBehaviour
         gridData[pos.y][dataX] = bubble;
         
         Log($"Attached {bubble.type} at ({pos.x}, {pos.y})");
+        
+        // Check lose condition immediately after attachment
+        if (CheckLoseCondition())
+        {
+            return new Vector2Int(-1, -1); // Signal game over, skip match checking
+        }
+        
         return pos;
     }
 
@@ -230,26 +239,29 @@ public class HexGrid : MonoBehaviour
             return true;
         }
         
-        // No matches - check lose condition immediately
-        CheckLoseCondition();
         return false;
     }
     
-    // Destroy bubbles one by one with delay
+    // Destroy bubbles one by one with diminishing delay
     private IEnumerator DestroyBubblesSequentially(List<Vector2Int> positions, bool checkFloatingAfter)
     {
         isDestroying = true;
         Log($"Destroying {positions.Count} bubbles sequentially");
         
+        float currentDelay = destructionDelay;
+        
         foreach (var pos in positions)
         {
-            yield return new WaitForSeconds(destructionDelay);
+            yield return new WaitForSeconds(currentDelay);
             RemoveBubbleAt(pos);
+            
+            // Apply diminishing delay
+            currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
         }
         
         if (checkFloatingAfter)
         {
-            yield return StartCoroutine(DestroyFloatingBubblesCoroutine());
+            yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay));
         }
         
         isDestroying = false;
@@ -258,18 +270,23 @@ public class HexGrid : MonoBehaviour
         CheckLoseCondition();
     }
     
-    // Coroutine version for floating bubbles
-    private IEnumerator DestroyFloatingBubblesCoroutine()
+    // Coroutine version for floating bubbles - continues from current delay
+    private IEnumerator DestroyFloatingBubblesCoroutine(float startingDelay)
     {
         var floating = GetFloatingBubbles();
         
         if (floating.Count > 0)
         {
             Log($"Found {floating.Count} floating bubbles");
+            float currentDelay = startingDelay;
+            
             foreach (var pos in floating)
             {
-                yield return new WaitForSeconds(destructionDelay);
+                yield return new WaitForSeconds(currentDelay);
                 RemoveBubbleAt(pos);
+                
+                // Continue diminishing delay
+                currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
             }
         }
     }
@@ -332,7 +349,7 @@ public class HexGrid : MonoBehaviour
         if (floating.Count > 0)
         {
             Log($"Found {floating.Count} floating bubbles");
-            StartCoroutine(DestroyFloatingBubblesCoroutine());
+            StartCoroutine(DestroyFloatingBubblesCoroutine(destructionDelay));
         }
         
         return floating.Count;
@@ -354,11 +371,11 @@ public class HexGrid : MonoBehaviour
         }
     }
     
-    // Check if any bubble is in the lose zone
-    private void CheckLoseCondition()
+    // Check if any bubble is in the lose zone - returns true if game over triggered
+    private bool CheckLoseCondition()
     {
-        if (loseZone == null || GameManager.Instance == null) return;
-        if (!GameManager.Instance.IsPlaying) return;
+        if (loseZone == null || GameManager.Instance == null) return false;
+        if (!GameManager.Instance.IsPlaying) return false;
         
         foreach (var row in gridData)
         {
@@ -368,9 +385,10 @@ public class HexGrid : MonoBehaviour
                 {
                     Log($"Bubble at {bubble.transform.position.y} is in lose zone (line at {loseZone.LoseLineY})");
                     GameManager.Instance.GameOver();
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
     }
 }

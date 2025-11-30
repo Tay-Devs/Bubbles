@@ -1028,7 +1028,7 @@ PrefabInstance:
       objectReference: {fileID: -5930951707620036388, guid: b20932b09f0ebc248b969a5f744bbfc9, type: 3}
     - target: {fileID: 7995389241861854468, guid: 10c4f08faca4f904a937f2fed0fc33b6, type: 3}
       propertyPath: m_SortingOrder
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -1570,7 +1570,7 @@ Transform:
   m_GameObject: {fileID: 2107963921}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 6.5, z: 0}
+  m_LocalPosition: {x: -3.63, y: 6.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1592,7 +1592,9 @@ MonoBehaviour:
   startingHeight: 8
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
   minMatchCount: 3
-  destructionDelay: 0.25
+  destructionDelay: 0.4
+  destructionDelayMultiplier: 0.85
+  destructionDelayLimit: 0.085
   enableDebugLogs: 0
   loseZone: {fileID: 1224630969}
 --- !u!1660057539 &9223372036854775807
