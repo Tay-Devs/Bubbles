@@ -17,6 +17,12 @@ public class HexGrid : MonoBehaviour
     public float topOffset = 0.5f; // Distance from top screen edge
     public bool autoPosition = true; // Auto position on start
     
+    [Header("Shot System")]
+    public int shotsBeforeNewRow = 5; // Misses before spawning new row
+    [SerializeField] private int currentShotsRemaining;
+    public System.Action<int, int> onShotsChanged; // (current, max) for UI
+    public System.Action onRowSpawned; // Event when new row spawns
+    
     [Header("Destruction Animation")]
     public float destructionDelay = 0.15f; // Starting delay between pops
     public float destructionDelayMultiplier = 0.85f; // Multiplier applied each pop (0.85 = 15% faster each time)
@@ -36,6 +42,8 @@ public class HexGrid : MonoBehaviour
     private bool isDestroying = false;
     
     public bool IsDestroying => isDestroying;
+    public int CurrentShots => currentShotsRemaining;
+    public int MaxShots => shotsBeforeNewRow;
     
     // Get all unique colors currently in the grid
     public HashSet<BubbleType> GetAvailableColors()
@@ -122,6 +130,7 @@ public class HexGrid : MonoBehaviour
     {
         if (autoPosition) PositionGrid();
         GenerateGrid();
+        ResetShots();
     }
     
     // Position grid based on screen boundaries
@@ -344,11 +353,279 @@ public class HexGrid : MonoBehaviour
         
         if (matches.Count >= minMatchCount)
         {
+            // Match found - destroy bubbles (shots NOT reset here)
             StartCoroutine(DestroyBubblesSequentially(matches, true));
             return true;
         }
         
+        // No match - consume a shot
+        ConsumeShot();
         return false;
+    }
+    
+    // Reset shot counter
+    public void ResetShots()
+    {
+        currentShotsRemaining = shotsBeforeNewRow;
+        onShotsChanged?.Invoke(currentShotsRemaining, shotsBeforeNewRow);
+        Log($"Shots reset to {currentShotsRemaining}");
+    }
+    
+    // Consume a shot, spawn new row if depleted
+    public void ConsumeShot()
+    {
+        currentShotsRemaining--;
+        onShotsChanged?.Invoke(currentShotsRemaining, shotsBeforeNewRow);
+        Log($"Shot consumed, {currentShotsRemaining} remaining");
+        
+        if (currentShotsRemaining <= 0)
+        {
+            SpawnNewRowAtTop();
+            ResetShots();
+        }
+    }
+    
+    // Spawn a new row at the top and push everything down
+    public void SpawnNewRowAtTop()
+    {
+        Log("Spawning new row at top");
+        
+        // Push all existing bubbles down
+        PushGridDown();
+        
+        // Create new row at position 0
+        List<Bubble> newRow = new List<Bubble>();
+        bool isShortRow = false; // Row 0 is always even (not short)
+        int colCount = startingWidth;
+        
+        // Get available colors for the new row
+        var availableColors = GetAvailableColors();
+        var colorList = new List<BubbleType>(availableColors);
+        
+        // If no colors available (shouldn't happen), use all colors
+        if (colorList.Count == 0)
+        {
+            foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
+            {
+                colorList.Add(color);
+            }
+        }
+        
+        for (int x = 0; x < colCount; x++)
+        {
+            Bubble bubble = Instantiate(bubblePrefab, transform).GetComponent<Bubble>();
+            BubbleType randomColor = colorList[Random.Range(0, colorList.Count)];
+            bubble.SetType(randomColor);
+            bubble.isAttached = true;
+            bubble.transform.localPosition = new Vector3(x, 0f, 0f);
+            newRow.Add(bubble);
+        }
+        
+        // Insert at beginning
+        gridData.Insert(0, newRow);
+        
+        // Update positions of all bubbles
+        UpdateAllBubblePositions();
+        
+        // Relocate any floating bubbles to valid positions
+        RelocateFloatingBubbles();
+        
+        // Check lose condition after adding new row
+        CheckLoseCondition();
+        
+        // Notify color change
+        onColorsChanged?.Invoke();
+        
+        // Notify that a new row was spawned
+        onRowSpawned?.Invoke();
+    }
+    
+    // Relocate floating bubbles to valid connected positions
+    private void RelocateFloatingBubbles()
+    {
+        int maxIterations = 100; // Safety limit
+        int iterations = 0;
+        
+        while (iterations < maxIterations)
+        {
+            iterations++;
+            
+            // Get current floating bubbles
+            var floating = GetFloatingBubbles();
+            
+            if (floating.Count == 0) break;
+            
+            // Get connected bubbles for reference
+            var connected = FindConnectedToTop();
+            
+            bool movedAny = false;
+            
+            foreach (var floatPos in floating)
+            {
+                var bubble = GetBubbleAt(floatPos);
+                if (bubble == null) continue;
+                
+                // Find a valid position to move to
+                Vector2Int? newPos = FindValidRelocationPosition(floatPos, connected);
+                
+                if (newPos.HasValue)
+                {
+                    MoveBubbleInGrid(floatPos, newPos.Value);
+                    Log($"Relocated bubble from {floatPos} to {newPos.Value}");
+                    movedAny = true;
+                    break; // Restart check since grid changed
+                }
+            }
+            
+            // If no moves were possible, try expanding search
+            if (!movedAny && floating.Count > 0)
+            {
+                // Force attach to nearest connected bubble's neighbor
+                foreach (var floatPos in floating)
+                {
+                    var bubble = GetBubbleAt(floatPos);
+                    if (bubble == null) continue;
+                    
+                    Vector2Int? forcePos = ForceRelocationPosition(floatPos, connected);
+                    if (forcePos.HasValue)
+                    {
+                        MoveBubbleInGrid(floatPos, forcePos.Value);
+                        Log($"Force relocated bubble from {floatPos} to {forcePos.Value}");
+                        movedAny = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!movedAny) break;
+        }
+    }
+    
+    // Find a valid position for a floating bubble to attach to
+    private Vector2Int? FindValidRelocationPosition(Vector2Int fromPos, HashSet<Vector2Int> connected)
+    {
+        // First, check neighbors of the floating bubble
+        var neighbors = GetNeighbors(fromPos);
+        float bestDist = float.MaxValue;
+        Vector2Int? bestPos = null;
+        
+        foreach (var neighbor in neighbors)
+        {
+            if (neighbor.y < 0) continue;
+            
+            // If neighbor is empty and would be connected to the grid
+            if (IsEmpty(neighbor) && IsAdjacentToConnected(neighbor, connected))
+            {
+                float dist = Vector2Int.Distance(fromPos, neighbor);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestPos = neighbor;
+                }
+            }
+        }
+        
+        return bestPos;
+    }
+    
+    // Force find a position by searching all connected bubbles' empty neighbors
+    private Vector2Int? ForceRelocationPosition(Vector2Int fromPos, HashSet<Vector2Int> connected)
+    {
+        float bestDist = float.MaxValue;
+        Vector2Int? bestPos = null;
+        
+        foreach (var connectedPos in connected)
+        {
+            var connectedNeighbors = GetNeighbors(connectedPos);
+            foreach (var neighbor in connectedNeighbors)
+            {
+                if (neighbor.y < 0) continue;
+                
+                if (IsEmpty(neighbor))
+                {
+                    float dist = Vector2Int.Distance(fromPos, neighbor);
+                    if (dist < bestDist)
+                    {
+                        bestDist = dist;
+                        bestPos = neighbor;
+                    }
+                }
+            }
+        }
+        
+        return bestPos;
+    }
+    
+    // Check if a position is adjacent to any connected bubble
+    private bool IsAdjacentToConnected(Vector2Int pos, HashSet<Vector2Int> connected)
+    {
+        var neighbors = GetNeighbors(pos);
+        foreach (var n in neighbors)
+        {
+            if (connected.Contains(n))
+                return true;
+        }
+        return false;
+    }
+    
+    // Move a bubble from one grid position to another
+    private void MoveBubbleInGrid(Vector2Int from, Vector2Int to)
+    {
+        var bubble = GetBubbleAt(from);
+        if (bubble == null) return;
+        
+        // Remove from old position
+        int fromDataX = from.x + xOffset;
+        if (from.y >= 0 && from.y < gridData.Count && fromDataX >= 0 && fromDataX < gridData[from.y].Count)
+        {
+            gridData[from.y][fromDataX] = null;
+        }
+        
+        // Ensure new position exists
+        EnsureRowExists(to.y);
+        if (to.x < -xOffset) ExpandLeft((-xOffset) - to.x);
+        int toDataX = to.x + xOffset;
+        EnsureColumnExists(toDataX, to.y);
+        
+        // Add to new position
+        gridData[to.y][toDataX] = bubble;
+        bubble.transform.position = GridToWorld(to);
+    }
+    
+    // Push all bubbles down by one row
+    private void PushGridDown()
+    {
+        // Move all bubble transforms down
+        foreach (var row in gridData)
+        {
+            foreach (var bubble in row)
+            {
+                if (bubble != null)
+                {
+                    bubble.transform.localPosition += new Vector3(0, -0.9f, 0);
+                }
+            }
+        }
+    }
+    
+    // Update all bubble positions based on their grid position
+    private void UpdateAllBubblePositions()
+    {
+        for (int y = 0; y < gridData.Count; y++)
+        {
+            bool isShortRow = y % 2 != 0;
+            float xOffset_local = isShortRow ? 0.5f : 0f;
+            
+            for (int dataX = 0; dataX < gridData[y].Count; dataX++)
+            {
+                var bubble = gridData[y][dataX];
+                if (bubble != null)
+                {
+                    int worldX = dataX - xOffset;
+                    bubble.transform.localPosition = new Vector3(worldX + xOffset_local, -y * 0.9f, 0f);
+                }
+            }
+        }
     }
     
     // Destroy bubbles one by one with diminishing delay
@@ -407,14 +684,13 @@ public class HexGrid : MonoBehaviour
     }
 
     // Get list of floating bubble positions
-    private List<Vector2Int> GetFloatingBubbles()
+    // Find all bubbles connected to the top row
+    private HashSet<Vector2Int> FindConnectedToTop()
     {
-        var floating = new List<Vector2Int>();
-        if (gridData.Count == 0) return floating;
-        
-        // Find all connected to top row
-        ResetVisited();
         var connected = new HashSet<Vector2Int>();
+        if (gridData.Count == 0) return connected;
+        
+        ResetVisited();
         var queue = new Queue<Vector2Int>();
         
         for (int dataX = 0; dataX < gridData[0].Count; dataX++)
@@ -443,6 +719,17 @@ public class HexGrid : MonoBehaviour
                 }
             }
         }
+        
+        return connected;
+    }
+    
+    // Get list of floating bubble positions (not connected to top)
+    private List<Vector2Int> GetFloatingBubbles()
+    {
+        var floating = new List<Vector2Int>();
+        if (gridData.Count == 0) return floating;
+        
+        var connected = FindConnectedToTop();
         
         // Find unconnected bubbles
         for (int y = 0; y < gridData.Count; y++)
@@ -506,4 +793,5 @@ public class HexGrid : MonoBehaviour
         }
         return false;
     }
+
 }

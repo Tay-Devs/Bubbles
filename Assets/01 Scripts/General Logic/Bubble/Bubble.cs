@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bubble : MonoBehaviour
 {
-    public BubbleType type = BubbleType.Black;
+    public BubbleType type = BubbleType.Blue;
     public Action onTouch;
     public bool visited = false;
     public bool isAttached = false;

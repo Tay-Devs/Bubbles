@@ -489,7 +489,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 11.75
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -878,7 +878,7 @@ Transform:
   m_GameObject: {fileID: 853257002}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 0}
+  m_LocalPosition: {x: 0, y: 10.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1159,7 +1159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4632966768358602450, guid: 10c4f08faca4f904a937f2fed0fc33b6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.34
+      value: -6.51
       objectReference: {fileID: 0}
     - target: {fileID: 4632966768358602450, guid: 10c4f08faca4f904a937f2fed0fc33b6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1237,7 +1237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51aea2906d017b348ad37c192006c531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoseZone
-  zoneWidth: 10
+  zoneWidth: 25.23
   zoneHeight: 0.5
   gizmoColor: {r: 1, g: 0, b: 0, a: 0.3}
   gizmoOutlineColor: {r: 1, g: 0, b: 0, a: 1}
@@ -1250,7 +1250,7 @@ Transform:
   m_GameObject: {fileID: 1224630968}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4.15, z: 0}
+  m_LocalPosition: {x: 0, y: -6.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1611,7 +1611,7 @@ MonoBehaviour:
   maxRotationAngle: 75
   arrowDistance: 1
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
-  shootSpeed: 15
+  shootSpeed: 20
   shootCooldown: 0.5
   enableDebugLogs: 0
 --- !u!4 &1949084648
@@ -1623,7 +1623,7 @@ Transform:
   m_GameObject: {fileID: 1949084646}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5.34, z: 0}
+  m_LocalPosition: {x: 0, y: -7.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1811,13 +1811,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b9bee81add23df4494ecab43c91b10b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HexGrid
-  startingWidth: 6
+  startingWidth: 10
   startingHeight: 8
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
   minMatchCount: 3
   leftOffset: 0.5
   topOffset: 1.5
   autoPosition: 1
+  shotsBeforeNewRow: 5
+  currentShotsRemaining: 0
   destructionDelay: 0.4
   destructionDelayMultiplier: 0.85
   destructionDelayLimit: 0.075

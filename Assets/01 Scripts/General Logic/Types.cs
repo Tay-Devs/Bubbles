@@ -1,4 +1,8 @@
 public enum BubbleType
 {
-    Red, Green, Blue, Yellow, Black
+    Red,
+    Green, 
+    Blue, 
+    Yellow,
+    Purple
 }
