@@ -75,8 +75,8 @@ public class BubbleProjectile : MonoBehaviour
         
         if (grid != null && myBubble != null)
         {
-            Vector2Int attachedPos = grid.AttachBubble(myBubble, transform.position);
-            grid.CheckAndDestroyMatches(attachedPos);
+            // Use the new attacher system
+            grid.BubbleAttacher.AttachAndCheckMatches(myBubble, transform.position);
         }
         
         Destroy(this);

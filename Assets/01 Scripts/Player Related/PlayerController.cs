@@ -34,22 +34,18 @@ public class PlayerController : MonoBehaviour
         mainCam = Camera.main;
         lastValidPointerPos = new Vector2(Screen.width / 2f, Screen.height / 2f);
         
-        // Subscribe to color change events
         if (grid != null)
         {
             grid.onColorsChanged += OnColorsChanged;
             enableDebugLogs = grid.enableDebugLogs;
         }
         
-        // Initialize available colors from grid
         UpdateAvailableColors();
-        
         SpawnNewBubble();
     }
     
     void OnDestroy()
     {
-        // Unsubscribe from events
         if (grid != null)
         {
             grid.onColorsChanged -= OnColorsChanged;
@@ -58,14 +54,12 @@ public class PlayerController : MonoBehaviour
     
     void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
     
-    // Called when bubbles are destroyed and colors may have changed
     void OnColorsChanged()
     {
         UpdateAvailableColors();
         ValidateCurrentBubble();
     }
     
-    // Update the list of available colors from the grid
     void UpdateAvailableColors()
     {
         availableColors.Clear();
@@ -79,7 +73,6 @@ public class PlayerController : MonoBehaviour
         Log($"Available colors: {availableColors.Count} - [{string.Join(", ", availableColors)}]");
     }
     
-    // Check if current bubble's color is still valid, change if needed
     void ValidateCurrentBubble()
     {
         if (currentBubble == null) return;
@@ -88,7 +81,6 @@ public class PlayerController : MonoBehaviour
         Bubble bubble = currentBubble.GetComponent<Bubble>();
         if (bubble == null) return;
         
-        // If current color is no longer available, change it
         if (!availableColors.Contains(bubble.type))
         {
             BubbleType newColor = GetRandomAvailableColor();
@@ -97,12 +89,10 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    // Get a random color from available colors
     BubbleType GetRandomAvailableColor()
     {
         if (availableColors.Count == 0)
         {
-            // Fallback to any color if grid is empty (shouldn't happen normally)
             return (BubbleType)Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
         }
         
@@ -111,7 +101,6 @@ public class PlayerController : MonoBehaviour
     
     void Update()
     {
-        // Update aim BEFORE checking shoot, and only when pressed
         if (IsPointerPressed())
         {
             lastValidPointerPos = GetPointerPosition();
@@ -124,16 +113,13 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    // Get pointer position (works for both mouse and touch)
     Vector2 GetPointerPosition()
     {
-        // Check touch first
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
         {
             return Touchscreen.current.primaryTouch.position.ReadValue();
         }
         
-        // Fall back to mouse
         if (Mouse.current != null)
         {
             return Mouse.current.position.ReadValue();
@@ -142,16 +128,13 @@ public class PlayerController : MonoBehaviour
         return lastValidPointerPos;
     }
     
-    // Check if pointer is currently pressed
     bool IsPointerPressed()
     {
-        // Check touch
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
         {
             return true;
         }
         
-        // Check mouse
         if (Mouse.current != null && Mouse.current.leftButton.isPressed)
         {
             return true;
@@ -162,16 +145,13 @@ public class PlayerController : MonoBehaviour
     
     bool ShouldShoot()
     {
-        // Don't shoot if game is not playing
         if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return false;
         
-        // Don't shoot while bubbles are being destroyed
+        // Use the new IsDestroying property
         if (grid != null && grid.IsDestroying) return false;
         
-        // Don't shoot if still on cooldown
         if (Time.time < lastShootTime + shootCooldown) return false;
         
-        // Detect release (was pressed, now not pressed)
         bool isPressed = IsPointerPressed();
         bool shouldShoot = wasPressed && !isPressed;
         wasPressed = isPressed;
@@ -183,10 +163,8 @@ public class PlayerController : MonoBehaviour
     {
         if (aimArrow == null || mainCam == null) return;
 
-        // Use the last valid position
         Vector2 pointerPos = lastValidPointerPos;
         
-        // Ignore if pointer is outside valid screen area
         if (pointerPos.x < 0 || pointerPos.x > Screen.width ||
             pointerPos.y < 0 || pointerPos.y > Screen.height)
             return;
@@ -211,22 +189,18 @@ public class PlayerController : MonoBehaviour
         
         Vector3 shootDirection = (aimArrow.transform.position - transform.position).normalized;
         
-        // Enable physics components
         Collider2D col = currentBubble.GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
         
         Rigidbody2D rb = currentBubble.GetComponent<Rigidbody2D>();
         if (rb != null) rb.simulated = true;
         
-        // Add projectile component and fire
         BubbleProjectile projectile = currentBubble.AddComponent<BubbleProjectile>();
         projectile.Fire(shootDirection, shootSpeed);
         
-        // Remove from player
         currentBubble.transform.SetParent(null);
         currentBubble = null;
         
-        // Spawn next bubble
         SpawnNewBubble();
     }
     
@@ -239,7 +213,6 @@ public class PlayerController : MonoBehaviour
         {
             currentBubble = Instantiate(bubblePrefab, transform.position, Quaternion.identity);
             
-            // Ensure bubble has required components
             Collider2D col = currentBubble.GetComponent<Collider2D>();
             if (col == null) col = currentBubble.AddComponent<CircleCollider2D>();
             col.enabled = false;
@@ -253,7 +226,6 @@ public class PlayerController : MonoBehaviour
             }
             rb.simulated = false;
             
-            // Set random color from available colors only
             Bubble bubble = currentBubble.GetComponent<Bubble>();
             if (bubble != null)
             {
