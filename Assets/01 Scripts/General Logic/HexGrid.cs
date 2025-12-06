@@ -120,10 +120,23 @@ public class HexGrid : MonoBehaviour
         return false;
     }
     
+    // Get the X offset for a given row
+    // Even rows (0, 2, 4...): no offset
+    // Odd rows (1, 3, 5...): +0.5 offset
+    private float GetRowXOffset(int y)
+    {
+        return (y % 2 == 0) ? 0f : 0.5f;
+    }
+    
     // Hex neighbor offsets: [even row, odd row]
+    // Even rows have no offset, odd rows have +0.5 offset
     private static readonly Vector2Int[][] neighborOffsets = {
-        new[] { new Vector2Int(-1,0), new Vector2Int(1,0), new Vector2Int(-1,-1), new Vector2Int(0,-1), new Vector2Int(-1,1), new Vector2Int(0,1) },
-        new[] { new Vector2Int(-1,0), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(1,-1), new Vector2Int(0,1), new Vector2Int(1,1) }
+        // Even row neighbors (no offset)
+        // Adjacent odd rows are shifted +0.5 right, so neighbors are at x-1 and x
+        new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(-1, 1), new Vector2Int(0, 1) },
+        // Odd row neighbors (+0.5 offset)
+        // Adjacent even rows have no offset, so neighbors are at x and x+1
+        new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(1, -1), new Vector2Int(0, 1), new Vector2Int(1, 1) }
     };
 
     void Start()
@@ -167,15 +180,16 @@ public class HexGrid : MonoBehaviour
         for (int y = 0; y < startingHeight; y++)
         {
             List<Bubble> row = new List<Bubble>();
-            bool isShortRow = y % 2 != 0;
-            int colCount = isShortRow ? startingWidth - 1 : startingWidth;
+            // All rows now have the same width
+            int colCount = startingWidth;
+            float rowOffset = GetRowXOffset(y);
             
             for (int x = 0; x < colCount; x++)
             {
                 Bubble bubble = Instantiate(bubblePrefab, transform).GetComponent<Bubble>();
                 bubble.SetType((BubbleType)Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length));
                 bubble.isAttached = true;
-                bubble.transform.localPosition = new Vector3(x + (isShortRow ? 0.5f : 0f), -y * 0.9f, 0f);
+                bubble.transform.localPosition = new Vector3(x + rowOffset, -y * 0.9f, 0f);
                 row.Add(bubble);
             }
             gridData.Add(row);
@@ -217,15 +231,15 @@ public class HexGrid : MonoBehaviour
     {
         Vector3 local = worldPos - transform.position;
         int y = Mathf.Max(0, Mathf.RoundToInt(-local.y / 0.9f));
-        float offset = (y % 2 != 0) ? 0.5f : 0f;
-        return new Vector2Int(Mathf.RoundToInt(local.x - offset), y);
+        float rowOffset = GetRowXOffset(y);
+        return new Vector2Int(Mathf.RoundToInt(local.x - rowOffset), y);
     }
 
     public Vector3 GridToWorld(Vector2Int pos) => GridToWorld(pos.x, pos.y);
     public Vector3 GridToWorld(int x, int y)
     {
-        float offset = (y % 2 != 0) ? 0.5f : 0f;
-        return transform.position + new Vector3(x + offset, -y * 0.9f, 0f);
+        float rowOffset = GetRowXOffset(y);
+        return transform.position + new Vector3(x + rowOffset, -y * 0.9f, 0f);
     }
 
     // Get hex neighbors
@@ -250,10 +264,14 @@ public class HexGrid : MonoBehaviour
         Log($"Expanded grid left by {amount}");
     }
 
-    // Find best empty position for attachment
+    // Find best empty position for attachment (constrained to grid width)
     public Vector2Int FindAttachPosition(Vector3 worldPos)
     {
         Vector2Int target = WorldToGrid(worldPos);
+        
+        // Clamp target to valid grid bounds
+        target.x = Mathf.Clamp(target.x, 0, startingWidth - 1);
+        
         if (IsEmpty(target)) return target;
         
         float bestDist = float.MaxValue;
@@ -261,7 +279,11 @@ public class HexGrid : MonoBehaviour
         
         foreach (var neighbor in GetNeighbors(target))
         {
-            if (neighbor.y >= 0 && IsEmpty(neighbor))
+            // Skip positions outside valid grid bounds
+            if (neighbor.x < 0 || neighbor.x >= startingWidth) continue;
+            if (neighbor.y < 0) continue;
+            
+            if (IsEmpty(neighbor))
             {
                 float dist = Vector3.Distance(worldPos, GridToWorld(neighbor));
                 if (dist < bestDist) { bestDist = dist; bestPos = neighbor; }
@@ -282,8 +304,7 @@ public class HexGrid : MonoBehaviour
         Vector2Int pos = FindAttachPosition(worldPos);
         EnsureRowExists(pos.y);
         
-        if (pos.x < -xOffset) ExpandLeft((-xOffset) - pos.x);
-        
+        // Position is already constrained to valid bounds by FindAttachPosition
         int dataX = pos.x + xOffset;
         EnsureColumnExists(dataX, pos.y);
         
@@ -395,8 +416,10 @@ public class HexGrid : MonoBehaviour
         
         // Create new row at position 0
         List<Bubble> newRow = new List<Bubble>();
-        bool isShortRow = false; // Row 0 is always even (not short)
+        // All rows have the same width now
         int colCount = startingWidth;
+        // Row 0 is even, so offset is -0.5
+        float rowOffset = GetRowXOffset(0);
         
         // Get available colors for the new row
         var availableColors = GetAvailableColors();
@@ -417,7 +440,7 @@ public class HexGrid : MonoBehaviour
             BubbleType randomColor = colorList[Random.Range(0, colorList.Count)];
             bubble.SetType(randomColor);
             bubble.isAttached = true;
-            bubble.transform.localPosition = new Vector3(x, 0f, 0f);
+            bubble.transform.localPosition = new Vector3(x + rowOffset, 0f, 0f);
             newRow.Add(bubble);
         }
         
@@ -511,7 +534,9 @@ public class HexGrid : MonoBehaviour
         
         foreach (var neighbor in neighbors)
         {
+            // Skip positions outside valid grid bounds
             if (neighbor.y < 0) continue;
+            if (neighbor.x < 0 || neighbor.x >= startingWidth) continue;
             
             // If neighbor is empty and would be connected to the grid
             if (IsEmpty(neighbor) && IsAdjacentToConnected(neighbor, connected))
@@ -539,7 +564,9 @@ public class HexGrid : MonoBehaviour
             var connectedNeighbors = GetNeighbors(connectedPos);
             foreach (var neighbor in connectedNeighbors)
             {
+                // Skip positions outside valid grid bounds
                 if (neighbor.y < 0) continue;
+                if (neighbor.x < 0 || neighbor.x >= startingWidth) continue;
                 
                 if (IsEmpty(neighbor))
                 {
@@ -574,6 +601,9 @@ public class HexGrid : MonoBehaviour
         var bubble = GetBubbleAt(from);
         if (bubble == null) return;
         
+        // Ensure destination is within bounds
+        if (to.x < 0 || to.x >= startingWidth) return;
+        
         // Remove from old position
         int fromDataX = from.x + xOffset;
         if (from.y >= 0 && from.y < gridData.Count && fromDataX >= 0 && fromDataX < gridData[from.y].Count)
@@ -583,7 +613,6 @@ public class HexGrid : MonoBehaviour
         
         // Ensure new position exists
         EnsureRowExists(to.y);
-        if (to.x < -xOffset) ExpandLeft((-xOffset) - to.x);
         int toDataX = to.x + xOffset;
         EnsureColumnExists(toDataX, to.y);
         
@@ -613,8 +642,7 @@ public class HexGrid : MonoBehaviour
     {
         for (int y = 0; y < gridData.Count; y++)
         {
-            bool isShortRow = y % 2 != 0;
-            float xOffset_local = isShortRow ? 0.5f : 0f;
+            float rowOffset = GetRowXOffset(y);
             
             for (int dataX = 0; dataX < gridData[y].Count; dataX++)
             {
@@ -622,7 +650,7 @@ public class HexGrid : MonoBehaviour
                 if (bubble != null)
                 {
                     int worldX = dataX - xOffset;
-                    bubble.transform.localPosition = new Vector3(worldX + xOffset_local, -y * 0.9f, 0f);
+                    bubble.transform.localPosition = new Vector3(worldX + rowOffset, -y * 0.9f, 0f);
                 }
             }
         }
@@ -683,7 +711,6 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    // Get list of floating bubble positions
     // Find all bubbles connected to the top row
     private HashSet<Vector2Int> FindConnectedToTop()
     {
