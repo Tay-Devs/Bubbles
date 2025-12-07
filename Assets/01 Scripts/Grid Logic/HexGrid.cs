@@ -14,6 +14,10 @@ public class HexGrid : MonoBehaviour
     [Header("Grid Positioning")]
     public float bubbleRadius = 0.5f; // Used for edge calculations
     public bool autoPosition = false; // Set false if using GridCameraFitter
+    public bool autoGenerate = true; // Set false if GridCameraFitter will call GenerateGrid
+    
+    [Header("Height Limit")]
+    public GridStartHeightLimit heightLimit; // Optional - stops grid generation at this Y position
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
@@ -56,6 +60,16 @@ public class HexGrid : MonoBehaviour
     void Start()
     {
         if (autoPosition) PositionGrid();
+        if (autoGenerate) 
+        {
+            GenerateGrid();
+            RowSystem.ResetShots();
+        }
+    }
+    
+    // Called by GridCameraFitter after height limit is positioned
+    public void InitializeGrid()
+    {
         GenerateGrid();
         RowSystem.ResetShots();
     }
@@ -104,9 +118,24 @@ public class HexGrid : MonoBehaviour
         
         for (int y = 0; y < startingHeight; y++)
         {
+            // Check if this row would be below the height limit
+            if (heightLimit != null)
+            {
+                // Calculate where the bottom of this row's bubbles would be
+                float rowY = transform.position.y - (y * rowHeight) - bubbleRadius;
+                
+                if (heightLimit.IsBelowLimit(rowY))
+                {
+                    Log($"Row {y} would be below height limit (rowY: {rowY}, limit: {heightLimit.LimitLineY}). Stopping at {y} rows.");
+                    break;
+                }
+            }
+            
             List<Bubble> row = CreateRow(y);
             gridData.Add(row);
         }
+        
+        Log($"Grid generated with {gridData.Count} rows");
     }
     
     public List<Bubble> CreateRow(int y, List<BubbleType> allowedColors = null)

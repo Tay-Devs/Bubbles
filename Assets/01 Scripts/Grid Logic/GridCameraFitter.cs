@@ -74,8 +74,9 @@ public class GridCameraFitter : MonoBehaviour
             grid.transform.position.z
         );
         
-        // Force HexGrid to not reposition itself
+        // Force HexGrid to not reposition or generate itself - we handle it
         grid.autoPosition = false;
+        grid.autoGenerate = false;
         
         // Refresh all UI world anchors now that camera is sized
         RefreshAllUIAnchors();
@@ -113,6 +114,13 @@ public class GridCameraFitter : MonoBehaviour
         {
             Debug.Log($"[GridCameraFitter] Refreshing anchor on: {anchor.gameObject.name}");
             anchor.Refresh();
+        }
+        
+        // Now that height limit is positioned, initialize the grid if it hasn't auto-generated
+        if (grid != null && !grid.autoGenerate)
+        {
+            Debug.Log("[GridCameraFitter] Initializing grid after anchors are positioned");
+            grid.InitializeGrid();
         }
     }
     
