@@ -12,10 +12,8 @@ public class HexGrid : MonoBehaviour
     public float rowHeight = 0.9f;
     
     [Header("Grid Positioning")]
-    public float leftOffset = 0.5f;
-    public float topOffset = 0.5f;
-    public bool autoPosition = true;
-    public RectTransform topUIBoundary; // UI panel that marks the top boundary
+    public float bubbleRadius = 0.5f; // Used for edge calculations
+    public bool autoPosition = false; // Set false if using GridCameraFitter
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
@@ -37,9 +35,9 @@ public class HexGrid : MonoBehaviour
     
     // Hex neighbor offsets: [even row, odd row]
     private static readonly Vector2Int[][] neighborOffsets = {
-        // Even row (no offset) - odd rows are +0.5 right
+        // Even row (no offset)
         new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(-1, 1), new Vector2Int(0, 1) },
-        // Odd row (+0.5 offset) - even rows have no offset
+        // Odd row (+0.5 offset)
         new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(1, -1), new Vector2Int(0, 1), new Vector2Int(1, 1) }
     };
 
@@ -68,37 +66,32 @@ public class HexGrid : MonoBehaviour
 
     #region Grid Positioning
     
+    // Get the total world width of the grid (for camera fitting)
+    public float GetGridWorldWidth()
+    {
+        // Grid spans from x=0 (even rows) to x=width-0.5 (odd rows rightmost)
+        // Add bubble radius on each side
+        return (width - 1) + 0.5f + (bubbleRadius * 2);
+    }
+    
+    // Simple positioning without UI boundary consideration
+    // Use GridCameraFitter for full control with UI boundaries
     public void PositionGrid()
     {
         Camera cam = Camera.main;
         if (cam == null) return;
         
-        // Get safe area in screen coordinates
-        Rect safeArea = Screen.safeArea;
+        float camLeft = cam.transform.position.x - (cam.orthographicSize * cam.aspect);
+        float gridOriginX = camLeft + bubbleRadius;
+        float topEdge = cam.transform.position.y + cam.orthographicSize;
         
-        // Convert safe area corners to world space
-        Vector3 safeBottomLeft = cam.ScreenToWorldPoint(new Vector3(safeArea.x, safeArea.y, 0));
-        Vector3 safeTopRight = cam.ScreenToWorldPoint(new Vector3(safeArea.xMax, safeArea.yMax, 0));
-        
-        float safeLeft = safeBottomLeft.x;
-        float topEdge = safeTopRight.y;
-        
-        // If UI boundary is set, use its bottom edge as the top
-        if (topUIBoundary != null)
-        {
-            Vector3[] corners = new Vector3[4];
-            topUIBoundary.GetWorldCorners(corners);
-            // corners[0] = bottom-left, corners[1] = top-left, corners[2] = top-right, corners[3] = bottom-right
-            // We want the bottom edge of the UI panel
-            topEdge = corners[0].y;
-        }
-        
-        // Position grid with offsets
         transform.position = new Vector3(
-            safeLeft + leftOffset,
-            topEdge - topOffset,
+            gridOriginX,
+            topEdge - 0.5f,
             transform.position.z
         );
+        
+        Log($"Grid positioned at {transform.position}");
     }
     
     #endregion
