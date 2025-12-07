@@ -14,6 +14,9 @@ public class PerformanceManager : MonoBehaviour
     public bool optimizePhysics = true;
     public float physicsTimeStep = 0.02f; // 50 physics updates per second
     
+    [Header("Debug")]
+    
+    public bool displayDebug = false;
     void Awake()
     {
         // Set target frame rate
@@ -45,7 +48,11 @@ public class PerformanceManager : MonoBehaviour
     
     void Start()
     {
-        LogPerformanceInfo();
+        if (displayDebug)
+        {
+            LogPerformanceInfo();
+        }
+       
     }
     
     void LogPerformanceInfo()

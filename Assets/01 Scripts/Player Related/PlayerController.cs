@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool wasPressed = false;
     private Vector2 lastValidPointerPos;
     private List<BubbleType> availableColors = new List<BubbleType>();
+    private UIWorldAnchor worldAnchor;
     
     void Start()
     {
@@ -41,7 +42,20 @@ public class PlayerController : MonoBehaviour
         }
         
         UpdateAvailableColors();
-        SpawnNewBubble();
+        
+        // Check if we have a UIWorldAnchor - if so, wait for it to position us first
+        worldAnchor = GetComponent<UIWorldAnchor>();
+        if (worldAnchor != null)
+        {
+            worldAnchor.onPositionApplied += OnPositionApplied;
+            // Don't spawn yet - wait for anchor to position us
+        }
+        else
+        {
+            // No anchor, spawn immediately
+            SpawnNewBubble();
+            UpdateAimArrowPosition();
+        }
     }
     
     void OnDestroy()
@@ -50,6 +64,26 @@ public class PlayerController : MonoBehaviour
         {
             grid.onColorsChanged -= OnColorsChanged;
         }
+        
+        if (worldAnchor != null)
+        {
+            worldAnchor.onPositionApplied -= OnPositionApplied;
+        }
+    }
+    
+    void OnPositionApplied()
+    {
+        Log("Position applied by UIWorldAnchor, spawning bubble");
+        SpawnNewBubble();
+        UpdateAimArrowPosition();
+    }
+    
+    void UpdateAimArrowPosition()
+    {
+        if (aimArrow == null) return;
+        // Position arrow at default angle (straight up)
+        aimArrow.transform.position = transform.position + new Vector3(0, arrowDistance, 0);
+        aimArrow.transform.rotation = Quaternion.identity;
     }
     
     void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }

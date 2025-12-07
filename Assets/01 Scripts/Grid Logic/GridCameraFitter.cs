@@ -76,9 +76,22 @@ public class GridCameraFitter : MonoBehaviour
         // Force HexGrid to not reposition itself
         grid.autoPosition = false;
         
+        // Refresh all UI world anchors now that camera is sized
+        RefreshAllUIAnchors();
+        
         Debug.Log($"Camera ortho: {requiredOrthoSize}, camY: {camY}, camTop: {camTop}, camBottom: {camBottom}");
         Debug.Log($"UI ratio: {uiBoundaryScreenRatio}, gridTopY: {gridTopY}, topOffset: {topOffset}, bubbleRadius: {bubbleRadius}");
         Debug.Log($"Final gridOriginY: {gridOriginY}, Grid at: {grid.transform.position}");
+    }
+    
+    private void RefreshAllUIAnchors()
+    {
+        var anchors = FindObjectsByType<UIWorldAnchor>(FindObjectsSortMode.None);
+        Debug.Log($"Found {anchors.Length} UI world anchors to refresh");
+        foreach (var anchor in anchors)
+        {
+            anchor.Refresh();
+        }
     }
     
     // Get the bottom edge of the UI boundary as a ratio of screen height (0 = bottom, 1 = top)
