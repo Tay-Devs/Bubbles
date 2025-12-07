@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 // Runs before HexGrid (-100) to set camera size before grid generates
 [DefaultExecutionOrder(-100)]
@@ -84,12 +85,33 @@ public class GridCameraFitter : MonoBehaviour
         Debug.Log($"Final gridOriginY: {gridOriginY}, Grid at: {grid.transform.position}");
     }
     
+    private bool needsAnchorRefresh = false;
+    
+    void Update()
+    {
+        if (needsAnchorRefresh)
+        {
+            needsAnchorRefresh = false;
+            DoRefreshAnchors();
+        }
+    }
+    
     private void RefreshAllUIAnchors()
     {
+        // Force all canvases to update their layout immediately
+        Canvas.ForceUpdateCanvases();
+        
+        // Wait for next frame so all Start() methods have run and subscribed to events
+        needsAnchorRefresh = true;
+    }
+    
+    private void DoRefreshAnchors()
+    {
         var anchors = FindObjectsByType<UIWorldAnchor>(FindObjectsSortMode.None);
-        Debug.Log($"Found {anchors.Length} UI world anchors to refresh");
+        Debug.Log($"[GridCameraFitter] Refreshing {anchors.Length} UI world anchors");
         foreach (var anchor in anchors)
         {
+            Debug.Log($"[GridCameraFitter] Refreshing anchor on: {anchor.gameObject.name}");
             anchor.Refresh();
         }
     }

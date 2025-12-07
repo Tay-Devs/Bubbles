@@ -1190,7 +1190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4632966768358602450, guid: 10c4f08faca4f904a937f2fed0fc33b6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.7997684
+      value: -14.056437
       objectReference: {fileID: 0}
     - target: {fileID: 4632966768358602450, guid: 10c4f08faca4f904a937f2fed0fc33b6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1284,7 +1284,7 @@ Transform:
   m_GameObject: {fileID: 1224630968}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -6.08, z: 0}
+  m_LocalPosition: {x: 0, y: -12.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1702,7 +1702,7 @@ MonoBehaviour:
   bubblePrefab: {fileID: 3721673634156578823, guid: 3980fae913b1c4443b759a7870f48ea4, type: 3}
   shootSpeed: 20
   shootCooldown: 0.5
-  enableDebugLogs: 0
+  enableDebugLogs: 1
 --- !u!4 &1949084648
 Transform:
   m_ObjectHideFlags: 0
@@ -1712,7 +1712,7 @@ Transform:
   m_GameObject: {fileID: 1949084646}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -7.8333325, z: 0}
+  m_LocalPosition: {x: 0, y: -15.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1735,7 +1735,7 @@ MonoBehaviour:
   gameCamera: {fileID: 519420031}
   anchorX: 1
   anchorY: 1
-  showDebug: 0
+  showDebug: 1
 --- !u!1 &1952232049
 GameObject:
   m_ObjectHideFlags: 0
@@ -1935,8 +1935,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 878620977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.2932593}
-  m_AnchorMax: {x: 1, y: 0.3417778}
+  m_AnchorMin: {x: 0, y: 0.26285186}
+  m_AnchorMax: {x: 1, y: 0.30585188}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2098,9 +2098,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridMatchSystem
   minMatchCount: 3
-  destructionDelay: 0.25
-  destructionDelayMultiplier: 0.9
-  destructionDelayLimit: 0.03
+  destructionDelay: 0.35
+  destructionDelayMultiplier: 0.85
+  destructionDelayLimit: 0.075
   loseZone: {fileID: 1224630969}
 --- !u!114 &2107963927
 MonoBehaviour:

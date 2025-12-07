@@ -48,10 +48,12 @@ public class PlayerController : MonoBehaviour
         if (worldAnchor != null)
         {
             worldAnchor.onPositionApplied += OnPositionApplied;
+            Debug.Log("[PlayerController] Subscribed to UIWorldAnchor.onPositionApplied, waiting for position...");
             // Don't spawn yet - wait for anchor to position us
         }
         else
         {
+            Debug.Log("[PlayerController] No UIWorldAnchor found, spawning immediately");
             // No anchor, spawn immediately
             SpawnNewBubble();
             UpdateAimArrowPosition();
@@ -73,7 +75,7 @@ public class PlayerController : MonoBehaviour
     
     void OnPositionApplied()
     {
-        Log("Position applied by UIWorldAnchor, spawning bubble");
+        Debug.Log($"[PlayerController] OnPositionApplied received! Position is now: {transform.position}");
         SpawnNewBubble();
         UpdateAimArrowPosition();
     }

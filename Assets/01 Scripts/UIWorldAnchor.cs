@@ -22,9 +22,8 @@ public class UIWorldAnchor : MonoBehaviour
     {
         if (gameCamera == null)
             gameCamera = Camera.main;
-            
-        // Small delay to ensure camera is set up
-        Invoke(nameof(ApplyAnchor), 0.05f);
+        
+        // GridCameraFitter will call Refresh() after camera is set up
     }
     
     public void ApplyAnchor()
@@ -67,6 +66,7 @@ public class UIWorldAnchor : MonoBehaviour
         transform.position = finalPos;
         
         // Notify listeners that position was applied
+        if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: Firing onPositionApplied event, listeners: {onPositionApplied?.GetInvocationList()?.Length ?? 0}");
         onPositionApplied?.Invoke();
     }
     
@@ -80,31 +80,68 @@ public class UIWorldAnchor : MonoBehaviour
             return Vector2.zero;
         }
         
-        // Get the center of the RectTransform in screen coordinates
+        // Get root canvas
+        Canvas rootCanvas = canvas.rootCanvas;
+        RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
+        
+        // Get the UI element's position in canvas space and convert to screen
         Vector3[] corners = new Vector3[4];
         uiAnchor.GetWorldCorners(corners);
-        Vector3 center = (corners[0] + corners[2]) * 0.5f;
+        Vector3 worldCenter = (corners[0] + corners[2]) * 0.5f;
         
-        if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        Vector2 screenPoint;
+        
+        if (rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
         {
-            // Overlay: corners are already screen coordinates
-            if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: Overlay mode, center = {center}");
-            return new Vector2(center.x, center.y);
+            // Overlay: world corners ARE screen coordinates
+            screenPoint = new Vector2(worldCenter.x, worldCenter.y);
+            if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: Overlay mode, screenPoint = {screenPoint}");
+        }
+        else if (rootCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+        {
+            // Screen Space Camera: canvas size matches screen size
+            // We can calculate screen position from the local position within canvas
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvasRect, 
+                new Vector2(Screen.width / 2f, Screen.height / 2f), 
+                rootCanvas.worldCamera, 
+                out Vector2 canvasCenter);
+            
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvasRect, 
+                Vector2.zero, 
+                rootCanvas.worldCamera, 
+                out Vector2 canvasOrigin);
+            
+            // Get local position of our anchor in canvas space
+            Vector3 localAnchorPos = canvasRect.InverseTransformPoint(worldCenter);
+            
+            // Calculate the scale factor (canvas units to screen pixels)
+            float canvasWidth = canvasRect.rect.width;
+            float canvasHeight = canvasRect.rect.height;
+            float scaleX = Screen.width / canvasWidth;
+            float scaleY = Screen.height / canvasHeight;
+            
+            // Convert local canvas position to screen position
+            // Canvas origin is at center, so we need to offset
+            screenPoint = new Vector2(
+                (localAnchorPos.x + canvasWidth * 0.5f) * scaleX,
+                (localAnchorPos.y + canvasHeight * 0.5f) * scaleY
+            );
+            
+            if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: ScreenSpaceCamera mode, localPos = {localAnchorPos}, canvasSize = ({canvasWidth}, {canvasHeight}), scale = ({scaleX}, {scaleY}), screenPoint = {screenPoint}");
         }
         else
         {
-            // Camera/World: need to convert world position to screen
-            Camera renderCam = canvas.worldCamera;
-            if (renderCam == null)
-            {
-                if (showDebug) Debug.LogWarning($"[UIWorldAnchor] {name}: Canvas has no render camera, using main camera");
-                renderCam = gameCamera;
-            }
-            
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(renderCam, center);
-            if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: Camera mode, center = {center}, screenPoint = {screenPoint}");
-            return screenPoint;
+            // World Space: use camera projection
+            Camera renderCam = rootCanvas.worldCamera ?? gameCamera;
+            Vector3 screenPos3D = renderCam.WorldToScreenPoint(worldCenter);
+            screenPoint = new Vector2(screenPos3D.x, screenPos3D.y);
+            if (showDebug) Debug.Log($"[UIWorldAnchor] {name}: WorldSpace mode, screenPoint = {screenPoint}");
         }
+        
+        return screenPoint;
     }
     
     // Call this from GridCameraFitter after camera is resized
