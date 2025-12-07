@@ -6,12 +6,63 @@ public class LoseZone : MonoBehaviour
     public float zoneWidth = 10f;
     public float zoneHeight = 0.5f;
     
+    [Header("Auto Size")]
+    public bool matchCameraWidth = true;
+    public Camera gameCamera;
+    
     [Header("Gizmo Settings")]
     public Color gizmoColor = new Color(1f, 0f, 0f, 0.3f);
     public Color gizmoOutlineColor = Color.red;
     
+    private UIWorldAnchor worldAnchor;
+    
     // Returns the Y position of the top of the lose zone
     public float LoseLineY => transform.position.y + zoneHeight / 2f;
+    
+    void Start()
+    {
+        if (gameCamera == null)
+            gameCamera = Camera.main;
+        
+        // Check if we have a UIWorldAnchor - if so, wait for it
+        worldAnchor = GetComponent<UIWorldAnchor>();
+        if (worldAnchor != null)
+        {
+            worldAnchor.onPositionApplied += OnPositionApplied;
+        }
+        else if (matchCameraWidth)
+        {
+            // No anchor, just update width now
+            UpdateWidth();
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (worldAnchor != null)
+        {
+            worldAnchor.onPositionApplied -= OnPositionApplied;
+        }
+    }
+    
+    void OnPositionApplied()
+    {
+        if (matchCameraWidth)
+        {
+            UpdateWidth();
+        }
+    }
+    
+    public void UpdateWidth()
+    {
+        if (gameCamera == null) return;
+        
+        // Calculate full camera width in world units
+        float cameraWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
+        zoneWidth = cameraWidth;
+        
+        Debug.Log($"[LoseZone] Width updated to {zoneWidth}");
+    }
     
     // Check if a world position is in the lose zone
     public bool IsInLoseZone(Vector3 worldPos)
