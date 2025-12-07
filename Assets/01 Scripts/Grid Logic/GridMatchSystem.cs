@@ -40,11 +40,18 @@ public class GridMatchSystem : MonoBehaviour
         
         if (matches.Count >= minMatchCount)
         {
+            // Match found - destroy bubbles (lose condition checked after destruction)
             StartCoroutine(DestroyBubblesSequentially(matches, true));
             return true;
         }
         
-        // No match - consume a shot
+        // No match - NOW check lose condition since no bubbles will be cleared
+        if (CheckLoseCondition())
+        {
+            return false;
+        }
+        
+        // No match and not lost - consume a shot
         grid.RowSystem.ConsumeShot();
         return false;
     }
@@ -107,6 +114,8 @@ public class GridMatchSystem : MonoBehaviour
         grid.onColorsChanged?.Invoke();
         
         if (CheckWinCondition()) yield break;
+        
+        // Check lose condition after destruction - bubbles in lose zone may have been cleared
         CheckLoseCondition();
     }
     

@@ -9,7 +9,7 @@ public class GridBubbleAttacher : MonoBehaviour
         grid = GetComponent<HexGrid>();
     }
 
-    // Attach a bubble to the grid and check for matches
+    // Attach a bubble to the grid
     public Vector2Int AttachBubble(Bubble bubble, Vector3 worldPos)
     {
         if (bubble.isAttached)
@@ -29,12 +29,7 @@ public class GridBubbleAttacher : MonoBehaviour
         
         grid.Log($"Attached {bubble.type} at ({pos.x}, {pos.y})");
         
-        // Check lose condition immediately after attachment
-        if (grid.MatchSystem.CheckLoseCondition())
-        {
-            return new Vector2Int(-1, -1);
-        }
-        
+        // Don't check lose condition here - let match system handle it after checking for matches
         return pos;
     }
     
