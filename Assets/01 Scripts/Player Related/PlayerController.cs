@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     [Header("Cooldown")]
     public float shootCooldown = 0.5f;
     private float lastShootTime = -Mathf.Infinity;
+    private float resumeGraceTime = 0f; // Prevents firing right after resume
+    private const float RESUME_GRACE_DURATION = 0.1f;
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
@@ -39,6 +41,12 @@ public class PlayerController : MonoBehaviour
         {
             grid.onColorsChanged += OnColorsChanged;
             enableDebugLogs = grid.enableDebugLogs;
+        }
+        
+        // Subscribe to resume event to prevent accidental firing
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.onResume.AddListener(OnGameResume);
         }
         
         UpdateAvailableColors();
@@ -71,6 +79,18 @@ public class PlayerController : MonoBehaviour
         {
             worldAnchor.onPositionApplied -= OnPositionApplied;
         }
+        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.onResume.RemoveListener(OnGameResume);
+        }
+    }
+    
+    void OnGameResume()
+    {
+        // Set grace period to prevent firing when clicking resume button
+        resumeGraceTime = Time.unscaledTime + RESUME_GRACE_DURATION;
+        wasPressed = false; // Reset press state
     }
     
     void OnPositionApplied()
@@ -187,6 +207,9 @@ public class PlayerController : MonoBehaviour
         if (grid != null && grid.IsDestroying) return false;
         
         if (Time.time < lastShootTime + shootCooldown) return false;
+        
+        // Grace period after resume to prevent accidental firing
+        if (Time.unscaledTime < resumeGraceTime) return false;
         
         bool isPressed = IsPointerPressed();
         bool shouldShoot = wasPressed && !isPressed;
