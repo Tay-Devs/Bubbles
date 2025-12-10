@@ -40,6 +40,12 @@ public class GridMatchSystem : MonoBehaviour
         
         if (matches.Count >= minMatchCount)
         {
+            // Award score for matched bubbles
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddMatchScore(matches.Count);
+            }
+            
             // Match found - destroy bubbles (lose condition checked after destruction)
             StartCoroutine(DestroyBubblesSequentially(matches, true));
             return true;
@@ -126,6 +132,13 @@ public class GridMatchSystem : MonoBehaviour
         if (floating.Count > 0)
         {
             grid.Log($"Found {floating.Count} floating bubbles");
+            
+            // Award score for floating bubbles before destroying
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddFloatingScore(floating.Count);
+            }
+            
             float currentDelay = startingDelay;
             
             foreach (var pos in floating)
@@ -155,6 +168,13 @@ public class GridMatchSystem : MonoBehaviour
         if (floating.Count > 0)
         {
             grid.Log($"Found {floating.Count} floating bubbles");
+            
+            // Award score for floating bubbles
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddFloatingScore(floating.Count);
+            }
+            
             StartCoroutine(DestroyFloatingBubblesCoroutine(destructionDelay));
         }
         
