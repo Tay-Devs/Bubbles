@@ -15,6 +15,9 @@ public class GridMatchSystem : MonoBehaviour
     [Header("Lose Condition")]
     public LoseZone loseZone;
     
+    [Header("Score Popup")]
+    public GameObject scorePopupPrefab;
+    
     private HexGrid grid;
     private bool isDestroying = false;
     
@@ -40,14 +43,8 @@ public class GridMatchSystem : MonoBehaviour
         
         if (matches.Count >= minMatchCount)
         {
-            // Award score for matched bubbles
-            if (ScoreManager.Instance != null)
-            {
-                ScoreManager.Instance.AddMatchScore(matches.Count);
-            }
-            
-            // Match found - destroy bubbles (lose condition checked after destruction)
-            StartCoroutine(DestroyBubblesSequentially(matches, true));
+            // Match found - destroy bubbles with per-bubble scoring
+            StartCoroutine(DestroyMatchedBubblesSequentially(matches));
             return true;
         }
         
@@ -96,24 +93,40 @@ public class GridMatchSystem : MonoBehaviour
 
     #region Destruction
     
-    private IEnumerator DestroyBubblesSequentially(List<Vector2Int> positions, bool checkFloatingAfter)
+    // Destroys matched bubbles one at a time, awarding scaled points per bubble.
+    // Uses per-bubble scaling: first 3 get base points, then increasing multipliers.
+    private IEnumerator DestroyMatchedBubblesSequentially(List<Vector2Int> positions)
     {
         isDestroying = true;
-        grid.Log($"Destroying {positions.Count} bubbles sequentially");
+        grid.Log($"Destroying {positions.Count} matched bubbles sequentially");
         
         float currentDelay = destructionDelay;
+        int lastPoints = 0;
         
-        foreach (var pos in positions)
+        for (int i = 0; i < positions.Count; i++)
         {
             yield return new WaitForSeconds(currentDelay);
-            RemoveBubbleAt(pos);
+            
+            // Get bubble position before destroying it
+            Vector3 bubbleWorldPos = grid.GridToWorld(positions[i]);
+            
+            RemoveBubbleAt(positions[i]);
+            
+            // Award score and spawn popup
+            if (ScoreManager.Instance != null)
+            {
+                int points = ScoreManager.Instance.GetMatchBubblePoints(i);
+                ScoreManager.Instance.AddScore(points);
+                SpawnScorePopup(bubbleWorldPos, points, i);
+                lastPoints = points;
+            }
+            
             currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
         }
         
-        if (checkFloatingAfter)
-        {
-            yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay));
-        }
+        // Pass match count and last points to continue combo for floating bubbles
+        int matchCount = positions.Count;
+        yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay, matchCount, lastPoints));
         
         isDestroying = false;
         
@@ -125,29 +138,60 @@ public class GridMatchSystem : MonoBehaviour
         CheckLoseCondition();
     }
     
-    private IEnumerator DestroyFloatingBubblesCoroutine(float startingDelay)
+    // Destroys floating bubbles one at a time with multiplicative scoring.
+    // Continues combo index and scoring from the matched bubbles that triggered this.
+    private IEnumerator DestroyFloatingBubblesCoroutine(float startingDelay, int startingComboIndex = 0, int lastMatchPoints = 0)
     {
         var floating = GetFloatingBubbles();
         
         if (floating.Count > 0)
         {
-            grid.Log($"Found {floating.Count} floating bubbles");
-            
-            // Award score for floating bubbles before destroying
-            if (ScoreManager.Instance != null)
-            {
-                ScoreManager.Instance.AddFloatingScore(floating.Count);
-            }
+            grid.Log($"Found {floating.Count} floating bubbles, continuing from combo index {startingComboIndex}");
             
             float currentDelay = startingDelay;
             
-            foreach (var pos in floating)
+            for (int i = 0; i < floating.Count; i++)
             {
                 yield return new WaitForSeconds(currentDelay);
-                RemoveBubbleAt(pos);
+                
+                // Get bubble position before destroying it
+                Vector3 bubbleWorldPos = grid.GridToWorld(floating[i]);
+                
+                RemoveBubbleAt(floating[i]);
+                
+                // Award score and spawn popup, continuing combo from match
+                if (ScoreManager.Instance != null)
+                {
+                    int points;
+                    if (lastMatchPoints > 0)
+                    {
+                        // Continue from last match points with multiplicative scaling
+                        points = ScoreManager.Instance.GetFloatingBubblePointsFromBase(i, lastMatchPoints);
+                    }
+                    else
+                    {
+                        // Fallback to default floating scoring
+                        points = ScoreManager.Instance.GetFloatingBubblePoints(i);
+                    }
+                    
+                    ScoreManager.Instance.AddScore(points);
+                    
+                    // Continue combo index from where match left off
+                    int comboIndex = startingComboIndex + i;
+                    SpawnScorePopup(bubbleWorldPos, points, comboIndex);
+                }
+                
                 currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
             }
         }
+    }
+    
+    // Spawns a score popup at the given position showing the points earned.
+    // ComboIndex controls text size scaling - higher = bigger text.
+    private void SpawnScorePopup(Vector3 position, int points, int comboIndex = 0)
+    {
+        if (scorePopupPrefab == null) return;
+        ScorePopup.Create(scorePopupPrefab, position, points, comboIndex);
     }
     
     public void RemoveBubbleAt(Vector2Int pos) => RemoveBubbleAt(pos.x, pos.y);
@@ -168,14 +212,8 @@ public class GridMatchSystem : MonoBehaviour
         if (floating.Count > 0)
         {
             grid.Log($"Found {floating.Count} floating bubbles");
-            
-            // Award score for floating bubbles
-            if (ScoreManager.Instance != null)
-            {
-                ScoreManager.Instance.AddFloatingScore(floating.Count);
-            }
-            
-            StartCoroutine(DestroyFloatingBubblesCoroutine(destructionDelay));
+            // Called standalone, so no combo continuation
+            StartCoroutine(DestroyFloatingBubblesCoroutine(destructionDelay, 0, 0));
         }
         
         return floating.Count;
