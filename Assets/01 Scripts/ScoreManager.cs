@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -8,7 +9,12 @@ public class ScoreManager : MonoBehaviour
     
     [Header("UI")]
     public TMP_Text scoreText;
-    public string scoreFormat = "{0:N0}"; // Formats with commas (1,000)
+    [TextArea(2, 4)]
+    public string scoreFormat = "Score\n{0:N0}"; // Supports multiline, {0:N0} formats with commas
+    
+    [Header("Animation")]
+    public float countDuration = 0.3f; // How long the number takes to count up
+    public Ease countEase = Ease.OutQuad;
     
     [Header("Match Scoring (Per-Bubble Scaling)")]
     public int basePointsPerBubble = 10;
@@ -24,10 +30,12 @@ public class ScoreManager : MonoBehaviour
     
     // Events
     public Action<int, int> onScoreChanged; // (newScore, pointsAdded)
-    public Action<int> onMatchScore; // points from a match
-    public Action<int> onFloatingScore; // points from floating bubbles
+    public Action<int> onBubbleScore; // points from a single bubble pop
     
     private int currentScore;
+    private float displayedScore; // For smooth animation
+    private Tweener countTween;
+    
     public int CurrentScore => currentScore;
 
     void Awake()
@@ -42,87 +50,86 @@ public class ScoreManager : MonoBehaviour
     
     void Start()
     {
+        displayedScore = currentScore;
         UpdateScoreDisplay();
     }
-
-    // Calculates and adds score for matched bubbles using per-bubble scaling.
-    // Bubbles 1 to minMatch get base points, each additional bubble gets an increasing multiplier.
-    // Returns total points awarded for this match.
-    public int AddMatchScore(int bubbleCount)
+    
+    void OnDestroy()
     {
-        if (bubbleCount <= 0) return 0;
-        
-        int totalPoints = 0;
-        
-        for (int i = 0; i < bubbleCount; i++)
-        {
-            float multiplier;
-            
-            if (i < minMatchCount)
-            {
-                // First N bubbles get base multiplier
-                multiplier = 1f;
-            }
-            else
-            {
-                // Each bubble beyond min gets increasing multiplier
-                // Bubble 4: 1.5, Bubble 5: 2.0, Bubble 6: 2.5, etc.
-                multiplier = 1f + ((i - minMatchCount + 1) * scalingIncrement);
-            }
-            
-            int bubblePoints = Mathf.RoundToInt(basePointsPerBubble * multiplier);
-            totalPoints += bubblePoints;
-            
-            Log($"Bubble {i + 1}: {basePointsPerBubble} x {multiplier:F1} = {bubblePoints}");
-        }
-        
-        AddScore(totalPoints);
-        onMatchScore?.Invoke(totalPoints);
-        
-        Log($"Match total: {bubbleCount} bubbles = {totalPoints} points");
-        return totalPoints;
+        countTween?.Kill();
     }
 
-    // Calculates and adds score for floating bubbles using multiplicative scaling.
-    // Each successive bubble is worth exponentially more (base * multiplier^index).
-    // Returns total points awarded for floating bubbles.
-    public int AddFloatingScore(int bubbleCount)
+    // Calculates points for a single matched bubble based on its index in the match.
+    // Index 0-2 get base points, index 3+ get increasing multipliers.
+    // Call this for each bubble as it pops to get individual points.
+    public int GetMatchBubblePoints(int bubbleIndex)
     {
-        if (bubbleCount <= 0) return 0;
+        float multiplier;
         
-        int totalPoints = 0;
-        
-        for (int i = 0; i < bubbleCount; i++)
+        if (bubbleIndex < minMatchCount)
         {
-            // Exponential growth: base * multiplier^i
-            // Bubble 1: 15, Bubble 2: 22, Bubble 3: 33, etc. (with 1.5x multiplier)
-            float multiplier = Mathf.Pow(floatingMultiplier, i);
-            int bubblePoints = Mathf.RoundToInt(floatingBasePoints * multiplier);
-            totalPoints += bubblePoints;
-            
-            Log($"Floating {i + 1}: {floatingBasePoints} x {multiplier:F2} = {bubblePoints}");
+            multiplier = 1f;
+        }
+        else
+        {
+            // Bubble 3 (index 3): 1.5x, Bubble 4: 2.0x, etc.
+            multiplier = 1f + ((bubbleIndex - minMatchCount + 1) * scalingIncrement);
         }
         
-        AddScore(totalPoints);
-        onFloatingScore?.Invoke(totalPoints);
-        
-        Log($"Floating total: {bubbleCount} bubbles = {totalPoints} points");
-        return totalPoints;
+        int points = Mathf.RoundToInt(basePointsPerBubble * multiplier);
+        Log($"Match bubble {bubbleIndex + 1}: {basePointsPerBubble} x {multiplier:F1} = {points}");
+        return points;
     }
 
-    // Adds points directly to score and updates display.
-    // Use AddMatchScore or AddFloatingScore for gameplay scoring.
+    // Calculates points for a single floating bubble based on its index.
+    // Uses exponential growth: base * multiplier^index.
+    // Call this for each floating bubble as it pops.
+    public int GetFloatingBubblePoints(int bubbleIndex)
+    {
+        float multiplier = Mathf.Pow(floatingMultiplier, bubbleIndex);
+        int points = Mathf.RoundToInt(floatingBasePoints * multiplier);
+        Log($"Floating bubble {bubbleIndex + 1}: {floatingBasePoints} x {multiplier:F2} = {points}");
+        return points;
+    }
+
+    // Adds points and animates the score display using DOTween.
+    // The number smoothly counts up to the new total.
     public void AddScore(int points)
     {
+        if (points <= 0) return;
+        
         currentScore += points;
         onScoreChanged?.Invoke(currentScore, points);
-        UpdateScoreDisplay();
+        onBubbleScore?.Invoke(points);
+        
+        AnimateScoreDisplay();
+        
+        Log($"Added {points} points, total: {currentScore}");
+    }
+
+    // Animates the displayed score counting up to currentScore.
+    // Kills any existing tween and starts fresh to handle rapid additions.
+    private void AnimateScoreDisplay()
+    {
+        countTween?.Kill();
+        
+        countTween = DOTween.To(
+            () => displayedScore,
+            x => {
+                displayedScore = x;
+                UpdateScoreDisplay();
+            },
+            currentScore,
+            countDuration
+        ).SetEase(countEase);
     }
 
     // Resets score to zero. Call this when starting a new game.
     public void ResetScore()
     {
+        countTween?.Kill();
         currentScore = 0;
+        displayedScore = 0;
         onScoreChanged?.Invoke(currentScore, 0);
         UpdateScoreDisplay();
         Log("Score reset");
@@ -132,7 +139,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = string.Format(scoreFormat, currentScore);
+            scoreText.text = string.Format(scoreFormat, Mathf.RoundToInt(displayedScore));
         }
     }
     
