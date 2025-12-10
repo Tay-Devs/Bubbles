@@ -91,6 +91,17 @@ public class ScoreManager : MonoBehaviour
         Log($"Floating bubble {bubbleIndex + 1}: {floatingBasePoints} x {multiplier:F2} = {points}");
         return points;
     }
+    
+    // Calculates floating bubble points using a custom base value.
+    // Use this to continue scoring from the last matched bubble's points.
+    // Formula: customBase * multiplier^(bubbleIndex+1) to apply multiplier immediately.
+    public int GetFloatingBubblePointsFromBase(int bubbleIndex, int customBasePoints)
+    {
+        float multiplier = Mathf.Pow(floatingMultiplier, bubbleIndex + 1);
+        int points = Mathf.RoundToInt(customBasePoints * multiplier);
+        Log($"Floating bubble {bubbleIndex + 1}: {customBasePoints} x {multiplier:F2} = {points}");
+        return points;
+    }
 
     // Adds points and animates the score display using DOTween.
     // The number smoothly counts up to the new total.

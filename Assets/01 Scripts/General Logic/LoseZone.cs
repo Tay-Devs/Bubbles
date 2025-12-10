@@ -60,8 +60,6 @@ public class LoseZone : MonoBehaviour
         // Calculate full camera width in world units
         float cameraWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
         zoneWidth = cameraWidth;
-        
-        Debug.Log($"[LoseZone] Width updated to {zoneWidth}");
     }
     
     // Check if a world position is in the lose zone
