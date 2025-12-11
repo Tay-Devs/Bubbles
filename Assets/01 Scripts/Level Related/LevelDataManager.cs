@@ -37,11 +37,12 @@ public class LevelDataManager : MonoBehaviour
     }
     void Start()
     {
+       
         // Add test data - remove this after testing!
         if (clearSaveOnStart)
         {
+           
             ClearSave();
-        
             // Simulate completing some levels
             CompleteLevel(1, 3);
             CompleteLevel(2, 2);

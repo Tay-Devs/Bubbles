@@ -76,6 +76,25 @@ public class HexGrid : MonoBehaviour
         }
     }
     
+    private List<BubbleType> GetLevelAvailableColors()
+    {
+        if (LevelLoader.Instance != null)
+        {
+            var colors = LevelLoader.Instance.GetAvailableColors();
+            if (colors != null && colors.Length > 0)
+            {
+                return new List<BubbleType>(colors);
+            }
+        }
+    
+        // Fallback to all colors
+        var allColors = new List<BubbleType>();
+        foreach (BubbleType color in System.Enum.GetValues(typeof(BubbleType)))
+        {
+            allColors.Add(color);
+        }
+        return allColors;
+    }
     // Called by GridCameraFitter after height limit is positioned
     public void InitializeGrid()
     {

@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     public UnityEvent onResume;
     public UnityEvent onVictory;
     public UnityEvent<WinConditionType> onWinConditionSet;
-    public UnityEvent<int> onSurvivalRowSpawned; // (totalRowsSpawned)
+    public UnityEvent<int> onSurvivalRowSpawned;
     
     public GameState CurrentState => currentState;
     public bool IsPlaying => currentState == GameState.Playing;
@@ -91,16 +91,12 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] Win condition: {winCondition}{conditionInfo}");
     }
     
-    // Called by GridRowSystem when a survival row is spawned.
-    // Tracks total rows for future star rating system.
     public void OnSurvivalRowSpawned(int totalRowsSpawned)
     {
         onSurvivalRowSpawned?.Invoke(totalRowsSpawned);
         Debug.Log($"[GameManager] Survival row spawned. Total: {totalRowsSpawned}");
     }
     
-    // Called by GridMatchSystem when all bubbles are cleared.
-    // Handles win/loss logic based on active win condition.
     public void OnAllBubblesCleared()
     {
         if (!IsPlaying) return;
@@ -109,7 +105,7 @@ public class GameManager : MonoBehaviour
         {
             case WinConditionType.ClearAllBubbles:
                 Debug.Log("[GameManager] All bubbles cleared - Victory!");
-                Victory();
+                Victory(true);
                 break;
                 
             case WinConditionType.ReachTargetScore:
@@ -121,19 +117,17 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Victory();
+                    Victory(true);
                 }
                 break;
                 
             case WinConditionType.Survival:
                 Debug.Log("[GameManager] All bubbles cleared in survival - Victory!");
-                Victory();
+                Victory(true);
                 break;
         }
     }
     
-    // Called by GridMatchSystem after destruction sequence completes.
-    // Returns true if victory was triggered.
     public bool CheckScoreVictory()
     {
         if (!IsPlaying) return false;
@@ -144,15 +138,13 @@ public class GameManager : MonoBehaviour
         if (currentScore >= targetScore)
         {
             Debug.Log($"[GameManager] Target score {targetScore} reached! Score: {currentScore}");
-            Victory();
+            Victory(false);
             return true;
         }
         
         return false;
     }
     
-    // Returns the total rows survived for star rating calculation.
-    // Call this when game ends to get final survival stats.
     public int GetSurvivalRowsCount()
     {
         var grid = FindFirstObjectByType<HexGrid>();
@@ -170,17 +162,30 @@ public class GameManager : MonoBehaviour
         currentState = GameState.GameOver;
         Debug.Log("Game Over!");
         
+        // Notify LevelLoader
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.OnLevelLost();
+        }
+        
         if (gameOverUI != null) gameOverUI.SetActive(true);
         
         onGameOver?.Invoke();
     }
     
-    public void Victory()
+    // Victory with flag for whether all bubbles were cleared.
+    public void Victory(bool clearedAllBubbles = false)
     {
         if (currentState == GameState.GameOver || currentState == GameState.Victory) return;
         
         currentState = GameState.Victory;
         Debug.Log("Victory!");
+        
+        // Notify LevelLoader
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.OnLevelWon(clearedAllBubbles);
+        }
         
         if (victoryUI != null) victoryUI.SetActive(true);
         
@@ -211,15 +216,33 @@ public class GameManager : MonoBehaviour
         onResume?.Invoke();
     }
     
+    // Now uses LevelLoader for restart.
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.RestartLevel();
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
     
+    // Now uses LevelLoader to return to level select.
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(0);
+        
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.ReturnToLevelSelect();
+        }
+        else
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 }

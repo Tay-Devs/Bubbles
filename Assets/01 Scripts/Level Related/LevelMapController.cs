@@ -7,6 +7,13 @@ public class LevelMapController : MonoBehaviour
 {
     public static LevelMapController Instance { get; private set; }
     
+    [Header("Data References")]
+    public LevelDatabase levelDatabase;
+    public GameSession gameSession;
+    
+    [Header("Scene")]
+    public string gameSceneName = "Game";
+    
     [Header("Node Settings")]
     public LevelNode nodePrefab;
     public int poolSize = 20;
@@ -27,7 +34,7 @@ public class LevelMapController : MonoBehaviour
     
     [Header("Buffer Settings")]
     public int topBufferNodes = 3;
-    public float bottomBufferScreens = 1f; // Keep nodes for this many screens below visible area
+    public float bottomBufferScreens = 1f;
     
     private List<LevelNode> nodePool = new List<LevelNode>();
     private Dictionary<int, LevelNode> activeNodes = new Dictionary<int, LevelNode>();
@@ -37,12 +44,13 @@ public class LevelMapController : MonoBehaviour
     private int lowestVisibleLevel = 1;
     private int highestVisibleLevel = 1;
     
-    // Input tracking
     private Vector2 lastPointerPosition;
     private bool isDragging = false;
     
-    // Cached random positions for each level
     private Dictionary<int, float> cachedXPositions = new Dictionary<int, float>();
+    
+    // Total levels available from database
+    private int totalLevels = 0;
     
     void Awake()
     {
@@ -56,9 +64,29 @@ public class LevelMapController : MonoBehaviour
     
     void Start()
     {
+        // Get total level count from database
+        if (levelDatabase != null)
+        {
+            totalLevels = levelDatabase.LevelCount;
+            Debug.Log($"[LevelMapController] Database has {totalLevels} levels");
+        }
+        else
+        {
+            Debug.LogError("[LevelMapController] LevelDatabase is not assigned!");
+            totalLevels = 10; // Fallback
+        }
+        
+        CheckForResults();
         InitializePool();
         CalculateViewport();
-        ScrollToLevel(LevelDataManager.Instance.GetHighestUnlockedLevel());
+        
+        // Scroll to highest unlocked level, but cap at total levels
+        int targetLevel = Mathf.Min(
+            LevelDataManager.Instance.GetHighestUnlockedLevel(),
+            totalLevels
+        );
+        ScrollToLevel(targetLevel);
+        
         RefreshVisibleNodes();
     }
     
@@ -67,19 +95,40 @@ public class LevelMapController : MonoBehaviour
         HandleScrollInput();
     }
     
-    // Creates the initial pool of reusable level nodes.
+    private void CheckForResults()
+    {
+        if (gameSession == null || !gameSession.hasResults) return;
+        
+        if (gameSession.selectedLevel != null && LevelDataManager.Instance != null)
+        {
+            int levelNum = gameSession.selectedLevel.levelNumber;
+            
+            if (gameSession.levelWon || gameSession.starsEarned > 0)
+            {
+                LevelDataManager.Instance.CompleteLevel(levelNum, gameSession.starsEarned);
+                Debug.Log($"[LevelMapController] Saved results for level {levelNum}: {gameSession.starsEarned} stars");
+            }
+        }
+        
+        gameSession.ClearResults();
+    }
+    
     private void InitializePool()
     {
-        for (int i = 0; i < poolSize; i++)
+        // Pool size should be at least enough for visible + buffer, but not more than total levels
+        int actualPoolSize = Mathf.Min(poolSize, totalLevels);
+        
+        for (int i = 0; i < actualPoolSize; i++)
         {
             LevelNode node = Instantiate(nodePrefab);
             node.transform.SetParent(contentArea, false);
             node.gameObject.SetActive(false);
             nodePool.Add(node);
         }
+        
+        Debug.Log($"[LevelMapController] Created pool of {actualPoolSize} nodes");
     }
     
-    // Calculates viewport height for culling calculations.
     private void CalculateViewport()
     {
         if (contentArea != null)
@@ -92,7 +141,6 @@ public class LevelMapController : MonoBehaviour
         }
     }
     
-    // Handles touch and mouse scroll input using new Input System.
     private void HandleScrollInput()
     {
         float scrollDelta = 0f;
@@ -131,37 +179,44 @@ public class LevelMapController : MonoBehaviour
         }
     }
     
-    // Scrolls the map by the given delta and refreshes visible nodes.
     public void Scroll(float delta)
     {
         currentScrollY += delta;
-        currentScrollY = Mathf.Max(0, currentScrollY);
+        
+        // Clamp scroll between level 1 and max level
+        float maxScrollY = (totalLevels - 1) * nodeSpacingY;
+        currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
         
         RefreshVisibleNodes();
     }
     
-    // Instantly scrolls to center a specific level on screen.
     public void ScrollToLevel(int levelNumber)
     {
+        // Clamp to valid level range
+        levelNumber = Mathf.Clamp(levelNumber, 1, totalLevels);
+        
         currentScrollY = (levelNumber - 1) * nodeSpacingY - (viewportHeight / 2f);
-        currentScrollY = Mathf.Max(0, currentScrollY);
+        
+        float maxScrollY = (totalLevels - 1) * nodeSpacingY;
+        currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
         
         RefreshVisibleNodes();
     }
     
     // Calculates which levels should be visible and updates node pool.
-    // Uses larger buffer for bottom to keep early levels loaded longer.
+    // Only creates nodes for levels that exist in the database.
     private void RefreshVisibleNodes()
     {
-        // Calculate bottom buffer in node count based on screen size
         float bottomBufferPixels = viewportHeight * bottomBufferScreens;
         int bottomBufferNodeCount = Mathf.CeilToInt(bottomBufferPixels / nodeSpacingY);
         
-        // Bottom level: keep nodes for extra screens below
+        // Calculate visible range, clamped to actual level count
         int bottomLevel = Mathf.Max(1, Mathf.FloorToInt(currentScrollY / nodeSpacingY) - bottomBufferNodeCount);
-        
-        // Top level: standard buffer above visible area
         int topLevel = Mathf.CeilToInt((currentScrollY + viewportHeight) / nodeSpacingY) + topBufferNodes;
+        
+        // Clamp to database level count
+        bottomLevel = Mathf.Clamp(bottomLevel, 1, totalLevels);
+        topLevel = Mathf.Clamp(topLevel, 1, totalLevels);
         
         lowestVisibleLevel = bottomLevel;
         highestVisibleLevel = topLevel;
@@ -181,9 +236,11 @@ public class LevelMapController : MonoBehaviour
             ReturnNodeToPool(level);
         }
         
-        // Add nodes for visible levels
+        // Add nodes for visible levels (only if they exist in database)
         for (int level = bottomLevel; level <= topLevel; level++)
         {
+            if (level > totalLevels) break; // Don't create nodes beyond database
+            
             if (!activeNodes.ContainsKey(level))
             {
                 SpawnNodeForLevel(level);
@@ -200,11 +257,17 @@ public class LevelMapController : MonoBehaviour
         }
     }
     
-    // Spawns or reuses a node for the given level number.
     private void SpawnNodeForLevel(int level)
     {
+        // Don't spawn if level doesn't exist
+        if (level < 1 || level > totalLevels) return;
+        
         LevelNode node = GetNodeFromPool();
-        if (node == null) return;
+        if (node == null)
+        {
+            Debug.LogWarning($"[LevelMapController] No available node in pool for level {level}");
+            return;
+        }
         
         bool unlocked = LevelDataManager.Instance.IsLevelUnlocked(level);
         int stars = LevelDataManager.Instance.GetStarsForLevel(level);
@@ -216,7 +279,6 @@ public class LevelMapController : MonoBehaviour
         activeNodes[level] = node;
     }
     
-    // Positions a node based on its level number using zigzag pattern.
     private void UpdateNodePosition(LevelNode node, int level)
     {
         float x = GetXPositionForLevel(level);
@@ -225,7 +287,6 @@ public class LevelMapController : MonoBehaviour
         node.transform.localPosition = new Vector3(x, y, 0);
     }
     
-    // Returns the X position for a level using cached random zigzag pattern.
     public float GetXPositionForLevel(int level)
     {
         if (!cachedXPositions.ContainsKey(level))
@@ -248,13 +309,11 @@ public class LevelMapController : MonoBehaviour
         return cachedXPositions[level];
     }
     
-    // Returns the Y position for a level (simple linear spacing).
     public float GetYPositionForLevel(int level)
     {
         return (level - 1) * nodeSpacingY;
     }
     
-    // Gets an inactive node from the pool.
     private LevelNode GetNodeFromPool()
     {
         foreach (var node in nodePool)
@@ -269,7 +328,6 @@ public class LevelMapController : MonoBehaviour
         return null;
     }
     
-    // Returns a node to the pool for reuse.
     private void ReturnNodeToPool(int level)
     {
         if (activeNodes.ContainsKey(level))
@@ -279,13 +337,33 @@ public class LevelMapController : MonoBehaviour
         }
     }
     
-    // Loads the game scene with the selected level.
+    // Called by LevelNode when clicked.
     public void LoadLevel(int levelNumber)
     {
-        PlayerPrefs.SetInt("SelectedLevel", levelNumber);
-        PlayerPrefs.Save();
+        Debug.Log($"[LevelMapController] LoadLevel called for level {levelNumber}");
         
-        Debug.Log($"[LevelMapController] Loading level {levelNumber}");
-        SceneManager.LoadScene("GameScene");
+        if (levelDatabase == null)
+        {
+            Debug.LogError("[LevelMapController] LevelDatabase is not assigned!");
+            return;
+        }
+        
+        if (gameSession == null)
+        {
+            Debug.LogError("[LevelMapController] GameSession is not assigned!");
+            return;
+        }
+        
+        LevelConfig config = levelDatabase.GetLevel(levelNumber);
+        if (config == null)
+        {
+            Debug.LogError($"[LevelMapController] Level {levelNumber} not found in database!");
+            return;
+        }
+        
+        gameSession.SelectLevel(config);
+        
+        Debug.Log($"[LevelMapController] Loading scene: {gameSceneName}");
+        SceneManager.LoadScene(gameSceneName);
     }
 }

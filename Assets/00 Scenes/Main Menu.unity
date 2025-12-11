@@ -170,8 +170,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4943396, g: 0.4943396, b: 0.4943396, a: 0.11764706}
-  m_RaycastTarget: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 0.11764706}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -500,7 +500,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 2b6048cdc196a4d40a4b475c7052974a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -814,17 +814,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25e329c6d5170d4cb9b6fe9b8a5504c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelMapController
+  levelDatabase: {fileID: 11400000, guid: 41b0aa36fa44f3f4ca685a1890962a98, type: 2}
+  gameSession: {fileID: 11400000, guid: d4ac345ae0e254341a5e9f8bacb55d9a, type: 2}
+  gameSceneName: GameScene
   nodePrefab: {fileID: 3843670037560537773, guid: db752daf02593584ea6958f93341a5fe, type: 3}
   poolSize: 50
   nodeSpacingY: 150
   minX: -300
   maxX: 300
-  zigzagVariation: 100
+  zigzagVariation: 200
   contentArea: {fileID: 1788794493}
   scrollSpeed: 500
   dragSensitivity: 1
   pathRenderer: {fileID: 579318683}
-  bufferNodes: 3
+  topBufferNodes: 3
+  bottomBufferScreens: 1
 --- !u!1 &1788794492
 GameObject:
   m_ObjectHideFlags: 0

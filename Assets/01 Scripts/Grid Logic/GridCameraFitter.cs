@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Runs before HexGrid (-100) to set camera size before grid generates
+// Runs before HexGrid (-100) but after LevelLoader (-200)
 [DefaultExecutionOrder(-100)]
 public class GridCameraFitter : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class GridCameraFitter : MonoBehaviour
     public float horizontalPadding = 0f;
     
     [Header("Vertical Settings")]
-    public float topOffset = 0.5f; // Distance below UI boundary (or top of screen if no UI)
+    public float topOffset = 0.5f; // Distance below UI boundary
     
     void Start()
     {
@@ -30,25 +30,31 @@ public class GridCameraFitter : MonoBehaviour
     
     public void FitAndPositionGrid()
     {
-        if (targetCamera == null || grid == null) return;
+        if (targetCamera == null || grid == null)
+        {
+            Debug.LogError("[GridCameraFitter] Missing camera or grid!");
+            return;
+        }
+        
+        Debug.Log($"[GridCameraFitter] Fitting camera for grid width: {grid.width}");
         
         // Step 1: Get UI boundary position as a screen ratio BEFORE changing camera
         float uiBoundaryScreenRatio = GetUIBoundaryScreenRatio();
         
         // Step 2: Calculate and set camera size to fit grid width
+        // Grid width: columns 0 to (width-1), plus 0.5 offset for odd rows, plus bubble radius on each side
         float gridWorldWidth = (grid.width - 1) + 0.5f + (bubbleRadius * 2) + (horizontalPadding * 2);
         float screenAspect = (float)Screen.width / Screen.height;
         float requiredOrthoSize = gridWorldWidth / (2f * screenAspect);
         
         targetCamera.orthographicSize = requiredOrthoSize;
         
-        // Step 3: Now convert the screen ratio back to world position with new camera size
+        // Step 3: Convert screen ratio back to world position with new camera size
         float camY = targetCamera.transform.position.y;
         float camTop = camY + requiredOrthoSize;
         float camBottom = camY - requiredOrthoSize;
         float camHeight = requiredOrthoSize * 2f;
         
-        // UI boundary in world space (ratio 1 = top, ratio 0 = bottom)
         float gridTopY;
         if (uiBoundaryScreenRatio > 0)
         {
@@ -62,8 +68,6 @@ public class GridCameraFitter : MonoBehaviour
         }
         
         // Step 4: Position the grid
-        // Grid origin is where bubble CENTERS start, so subtract bubble radius
-        // to ensure the top edge of bubbles is below the UI boundary
         float camLeft = targetCamera.transform.position.x - (requiredOrthoSize * screenAspect);
         float gridOriginX = camLeft + bubbleRadius + horizontalPadding;
         float gridOriginY = gridTopY - topOffset - bubbleRadius;
@@ -74,16 +78,14 @@ public class GridCameraFitter : MonoBehaviour
             grid.transform.position.z
         );
         
-        // Force HexGrid to not reposition or generate itself - we handle it
+        // Prevent HexGrid from repositioning itself
         grid.autoPosition = false;
         grid.autoGenerate = false;
         
-        // Refresh all UI world anchors now that camera is sized
+        // Refresh UI anchors
         RefreshAllUIAnchors();
         
-        Debug.Log($"Camera ortho: {requiredOrthoSize}, camY: {camY}, camTop: {camTop}, camBottom: {camBottom}");
-        Debug.Log($"UI ratio: {uiBoundaryScreenRatio}, gridTopY: {gridTopY}, topOffset: {topOffset}, bubbleRadius: {bubbleRadius}");
-        Debug.Log($"Final gridOriginY: {gridOriginY}, Grid at: {grid.transform.position}");
+        Debug.Log($"[GridCameraFitter] Camera ortho: {requiredOrthoSize}, Grid at: {grid.transform.position}");
     }
     
     private bool needsAnchorRefresh = false;
@@ -99,10 +101,7 @@ public class GridCameraFitter : MonoBehaviour
     
     private void RefreshAllUIAnchors()
     {
-        // Force all canvases to update their layout immediately
         Canvas.ForceUpdateCanvases();
-        
-        // Wait for next frame so all Start() methods have run and subscribed to events
         needsAnchorRefresh = true;
     }
     
@@ -112,19 +111,18 @@ public class GridCameraFitter : MonoBehaviour
         Debug.Log($"[GridCameraFitter] Refreshing {anchors.Length} UI world anchors");
         foreach (var anchor in anchors)
         {
-            Debug.Log($"[GridCameraFitter] Refreshing anchor on: {anchor.gameObject.name}");
             anchor.Refresh();
         }
         
-        // Now that height limit is positioned, initialize the grid if it hasn't auto-generated
+        // Initialize grid after anchors are positioned
         if (grid != null && !grid.autoGenerate)
         {
-            Debug.Log("[GridCameraFitter] Initializing grid after anchors are positioned");
+            Debug.Log("[GridCameraFitter] Initializing grid");
             grid.InitializeGrid();
         }
     }
     
-    // Get the bottom edge of the UI boundary as a ratio of screen height (0 = bottom, 1 = top)
+    // Get the bottom edge of the UI boundary as a ratio of screen height
     private float GetUIBoundaryScreenRatio()
     {
         if (topUIBoundary == null) return -1f;
@@ -135,24 +133,19 @@ public class GridCameraFitter : MonoBehaviour
         Vector3[] corners = new Vector3[4];
         topUIBoundary.GetWorldCorners(corners);
         
-        // corners[0] = bottom-left, we want its Y position
+        // corners[0] = bottom-left
         Vector3 bottomLeft = corners[0];
-        
         float screenY;
         
         if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
         {
-            // For overlay canvas, GetWorldCorners already returns screen coordinates
             screenY = bottomLeft.y;
         }
         else
         {
-            // For camera or world space canvas, convert to screen coordinates
             Camera canvasCam = canvas.worldCamera != null ? canvas.worldCamera : targetCamera;
             screenY = canvasCam.WorldToScreenPoint(bottomLeft).y;
         }
-        
-        Debug.Log($"UI boundary screenY: {screenY}, Screen.height: {Screen.height}, ratio: {screenY / Screen.height}");
         
         return screenY / Screen.height;
     }

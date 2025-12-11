@@ -8,7 +8,7 @@ public class LevelNode : MonoBehaviour
     public TMP_Text levelNumberText;
     public Button levelButton;
     public Image nodeBackground;
-    public GameObject[] starIcons; // Assign 3 star GameObjects
+    public GameObject[] starIcons;
     
     [Header("Lock State")]
     public GameObject lockIcon;
@@ -22,8 +22,41 @@ public class LevelNode : MonoBehaviour
     public int LevelNumber => levelNumber;
     public Vector3 Position => transform.position;
     
-    // Sets up the node with level number and current progress.
-    // Updates visuals based on unlock state and stars earned.
+    void Awake()
+    {
+        // Auto-find button on this GameObject
+        if (levelButton == null)
+        {
+            levelButton = GetComponent<Button>();
+        }
+        
+        // Disable raycast on child elements so they don't block the button
+        DisableChildRaycasts();
+    }
+    
+    // Disables Raycast Target on all child graphics to prevent blocking button clicks.
+    private void DisableChildRaycasts()
+    {
+        // Disable on all child Images
+        Image[] images = GetComponentsInChildren<Image>(true);
+        foreach (var img in images)
+        {
+            // Skip if this is the button's target graphic
+            if (levelButton != null && img == levelButton.targetGraphic)
+            {
+                continue;
+            }
+            img.raycastTarget = false;
+        }
+        
+        // Disable on all child TMP texts
+        TMP_Text[] texts = GetComponentsInChildren<TMP_Text>(true);
+        foreach (var txt in texts)
+        {
+            txt.raycastTarget = false;
+        }
+    }
+    
     public void Setup(int level, bool unlocked, int starsEarned)
     {
         levelNumber = level;
@@ -36,9 +69,13 @@ public class LevelNode : MonoBehaviour
         
         if (levelButton != null)
         {
-            levelButton.interactable = unlocked;
             levelButton.onClick.RemoveAllListeners();
             levelButton.onClick.AddListener(OnNodeClicked);
+            levelButton.interactable = unlocked;
+        }
+        else
+        {
+            Debug.LogWarning($"[LevelNode] Level {level} has no Button component!");
         }
         
         UpdateLockVisual(unlocked);
@@ -46,7 +83,6 @@ public class LevelNode : MonoBehaviour
         UpdateNodeColor(unlocked, starsEarned > 0);
     }
     
-    // Shows or hides the lock icon based on unlock state.
     private void UpdateLockVisual(bool unlocked)
     {
         if (lockIcon != null)
@@ -60,7 +96,6 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    // Updates star icons to show earned stars.
     private void UpdateStars(int starsEarned)
     {
         if (starIcons == null) return;
@@ -74,7 +109,6 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    // Changes node background color based on state.
     private void UpdateNodeColor(bool unlocked, bool completed)
     {
         if (nodeBackground == null) return;
@@ -93,12 +127,22 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    // Called when the node button is clicked.
     private void OnNodeClicked()
     {
-        if (!isUnlocked) return;
+        Debug.Log($"[LevelNode] Button clicked for level {levelNumber}, unlocked: {isUnlocked}");
         
-        Debug.Log($"[LevelNode] Level {levelNumber} clicked");
-        LevelMapController.Instance?.LoadLevel(levelNumber);
+        if (!isUnlocked)
+        {
+            Debug.Log("[LevelNode] Level is locked, ignoring click");
+            return;
+        }
+        
+        if (LevelMapController.Instance == null)
+        {
+            Debug.LogError("[LevelNode] LevelMapController.Instance is null!");
+            return;
+        }
+        
+        LevelMapController.Instance.LoadLevel(levelNumber);
     }
 }
