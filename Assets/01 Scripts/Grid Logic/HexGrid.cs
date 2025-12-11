@@ -63,7 +63,16 @@ public class HexGrid : MonoBehaviour
         if (autoGenerate) 
         {
             GenerateGrid();
-            RowSystem.ResetShots();
+        
+            if (GameManager.Instance != null && 
+                GameManager.Instance.ActiveWinCondition == WinConditionType.Survival)
+            {
+                RowSystem.ResetSurvival();
+            }
+            else
+            {
+                RowSystem.ResetShots();
+            }
         }
     }
     
@@ -71,7 +80,16 @@ public class HexGrid : MonoBehaviour
     public void InitializeGrid()
     {
         GenerateGrid();
-        RowSystem.ResetShots();
+    
+        if (GameManager.Instance != null && 
+            GameManager.Instance.ActiveWinCondition == WinConditionType.Survival)
+        {
+            RowSystem.ResetSurvival();
+        }
+        else
+        {
+            RowSystem.ResetShots();
+        }
     }
     
     // Logging
