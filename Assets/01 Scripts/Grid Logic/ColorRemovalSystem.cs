@@ -9,6 +9,7 @@ public class ColorRemovalSystem : MonoBehaviour
     
     [Header("Animation")]
     public GameObject colorRemovedEffect;
+    public bool isEffectDurationOn = false;
     public float effectDuration = 2f;
     
     [Header("Debug")]
@@ -114,9 +115,13 @@ public class ColorRemovalSystem : MonoBehaviour
         }
         
         // Show effect
-        if (colorRemovedEffect != null)
+        if (colorRemovedEffect != null && isEffectDurationOn)
         {
             StartCoroutine(ShowEffect());
+        }
+        else if(colorRemovedEffect != null && !isEffectDurationOn)
+        {
+            ShowAnimation();
         }
         
         // Fire event
@@ -129,7 +134,11 @@ public class ColorRemovalSystem : MonoBehaviour
         yield return new WaitForSeconds(effectDuration);
         colorRemovedEffect.SetActive(false);
     }
-    
+    private void ShowAnimation()
+    {
+        colorRemovedEffect.SetActive(true);
+    }
+
     // Resets the system for a new game.
     public void Reset()
     {
