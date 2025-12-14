@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3843670037560537773
 MonoBehaviour:
@@ -56,10 +56,13 @@ MonoBehaviour:
   levelNumberText: {fileID: 246481561677512224}
   levelButton: {fileID: 1703652249643969881}
   nodeBackground: {fileID: 1543256526007017035}
-  starImages: []
-  starEarnedSprite: {fileID: 0}
-  starUnearnedSprite: {fileID: 0}
-  useColors: 1
+  starImages:
+  - {fileID: 6446618704985018747}
+  - {fileID: 7131977733615727828}
+  - {fileID: 4527346565408028942}
+  starEarnedSprite: {fileID: 5401138180001511480, guid: a84e6ab145473b1448b06a4d5e961f2e, type: 3}
+  starUnearnedSprite: {fileID: -1953872357253898577, guid: 0d49cb127ee776f42a226094b86a27e6, type: 3}
+  useColors: 0
   starEarnedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   starUnearnedColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.5}
   lockIcon: {fileID: 8454010055481255037}
@@ -145,10 +148,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3272941429194860456}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3889786662809496072
 CanvasRenderer:
@@ -222,8 +225,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 20}
-  m_SizeDelta: {x: 25, y: 25}
+  m_AnchoredPosition: {x: 0, y: 22.1}
+  m_SizeDelta: {x: 53, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3223519987509062137
 CanvasRenderer:
@@ -297,8 +300,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000015258789, y: 0.00005340576}
-  m_SizeDelta: {x: 0, y: -0.000015259}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &214991277430011593
 CanvasRenderer:
@@ -330,8 +333,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5d4973718765bc14a97c92ee6c69cd1a, type: 2}
+  m_sharedMaterial: {fileID: 384894914908900418, guid: 5d4973718765bc14a97c92ee6c69cd1a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -355,7 +358,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30.8
+  m_fontSize: 41.35
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -433,8 +436,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 12.5, y: 15}
-  m_SizeDelta: {x: 25, y: 25}
+  m_AnchoredPosition: {x: 0, y: 5}
+  m_SizeDelta: {x: 53, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7648491076372080301
 CanvasRenderer:
@@ -508,8 +511,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -12.5, y: 15}
-  m_SizeDelta: {x: 25, y: 25}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 53, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4751515165914960329
 CanvasRenderer:
@@ -582,10 +585,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3272941429194860456}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5929851105547468689
 CanvasRenderer:

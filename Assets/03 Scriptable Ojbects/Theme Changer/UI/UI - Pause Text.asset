@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
   m_Name: UI - Pause Text
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 0}
+  daySprite: {fileID: -8676662354133159563, guid: f696afdf2ceff5048b2f2946381f7aee, type: 3}
   nightSprite: {fileID: 0}

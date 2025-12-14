@@ -822,8 +822,8 @@ MonoBehaviour:
   nodeSpacingY: 300
   horizontalPadding: 0.1
   bottomPaddingPercent: 0.1
-  pathNoise: 0.2
-  zigzagStrength: 0.5
+  pathNoise: 0.15
+  zigzagStrength: 0.6
   contentArea: {fileID: 1788794493}
   scrollSpeed: 500
   dragSensitivity: 1

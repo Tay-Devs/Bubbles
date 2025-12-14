@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
   m_Name: UI - Restart Button
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 0}
+  daySprite: {fileID: 8603463730464341970, guid: 50637dade7c41f54e8f166f831fd9e87, type: 3}
   nightSprite: {fileID: 0}
