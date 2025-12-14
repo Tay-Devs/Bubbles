@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,14 +16,21 @@ public class PlayerController : MonoBehaviour
     private GameObject currentBubble;
     public float shootSpeed = 15f;
     
+    [Header("Next Bubble Preview")]
+    public Transform nextBubblePreviewParent; // Optional: parent for world space preview
+    private GameObject nextBubblePreview;
+    private BubbleType nextBubbleType;
+    
     [Header("Cooldown")]
-    public float shootCooldown = 0.5f;
-    private float lastShootTime = -Mathf.Infinity;
-    private float resumeGraceTime = 0f; // Prevents firing right after resume
+    private float resumeGraceTime = 0f;
     private const float RESUME_GRACE_DURATION = 0.1f;
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
+    
+    // Events
+    public static event Action onBubbleConnected;
+    public static event Action<BubbleType> onNextBubbleChanged; // UI can subscribe to this
     
     private HexGrid grid;
     private Camera mainCam;
@@ -30,6 +38,11 @@ public class PlayerController : MonoBehaviour
     private Vector2 lastValidPointerPos;
     private List<BubbleType> availableColors = new List<BubbleType>();
     private UIWorldAnchor worldAnchor;
+    
+    private bool isBubbleFlying = false;
+    
+    public bool IsBubbleFlying => isBubbleFlying;
+    public BubbleType NextBubbleType => nextBubbleType;
     
     void Start()
     {
@@ -43,7 +56,6 @@ public class PlayerController : MonoBehaviour
             enableDebugLogs = grid.enableDebugLogs;
         }
         
-        // Subscribe to resume event to prevent accidental firing
         if (GameManager.Instance != null)
         {
             GameManager.Instance.onResume.AddListener(OnGameResume);
@@ -51,20 +63,16 @@ public class PlayerController : MonoBehaviour
         
         UpdateAvailableColors();
         
-        // Check if we have a UIWorldAnchor - if so, wait for it to position us first
         worldAnchor = GetComponent<UIWorldAnchor>();
         if (worldAnchor != null)
         {
             worldAnchor.onPositionApplied += OnPositionApplied;
             Debug.Log("[PlayerController] Subscribed to UIWorldAnchor.onPositionApplied, waiting for position...");
-            // Don't spawn yet - wait for anchor to position us
         }
         else
         {
             Debug.Log("[PlayerController] No UIWorldAnchor found, spawning immediately");
-            // No anchor, spawn immediately
-            SpawnNewBubble();
-            UpdateAimArrowPosition();
+            InitializeBubbles();
         }
     }
     
@@ -88,22 +96,33 @@ public class PlayerController : MonoBehaviour
     
     void OnGameResume()
     {
-        // Set grace period to prevent firing when clicking resume button
         resumeGraceTime = Time.unscaledTime + RESUME_GRACE_DURATION;
-        wasPressed = false; // Reset press state
+        wasPressed = false;
     }
     
     void OnPositionApplied()
     {
         Debug.Log($"[PlayerController] OnPositionApplied received! Position is now: {transform.position}");
+        InitializeBubbles();
+    }
+    
+    // Initializes current bubble and next bubble preview.
+    void InitializeBubbles()
+    {
+        // Generate first "next" bubble type
+        nextBubbleType = GetRandomAvailableColor();
+        
+        // Spawn current bubble (uses nextBubbleType, then generates new next)
         SpawnNewBubble();
         UpdateAimArrowPosition();
+        
+        // Create preview if parent is assigned
+        CreateNextBubblePreview();
     }
     
     void UpdateAimArrowPosition()
     {
         if (aimArrow == null) return;
-        // Position arrow at default angle (straight up)
         aimArrow.transform.position = transform.position + new Vector3(0, arrowDistance, 0);
         aimArrow.transform.rotation = Quaternion.identity;
     }
@@ -114,6 +133,7 @@ public class PlayerController : MonoBehaviour
     {
         UpdateAvailableColors();
         ValidateCurrentBubble();
+        ValidateNextBubble();
     }
     
     void UpdateAvailableColors()
@@ -145,14 +165,31 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    // Validates that next bubble type is still available in grid.
+    // If not, picks a new random available color.
+    void ValidateNextBubble()
+    {
+        if (availableColors.Count == 0) return;
+        
+        if (!availableColors.Contains(nextBubbleType))
+        {
+            BubbleType newColor = GetRandomAvailableColor();
+            Log($"Next bubble color {nextBubbleType} no longer available, changing to {newColor}");
+            nextBubbleType = newColor;
+            
+            UpdateNextBubblePreview();
+            onNextBubbleChanged?.Invoke(nextBubbleType);
+        }
+    }
+    
     BubbleType GetRandomAvailableColor()
     {
         if (availableColors.Count == 0)
         {
-            return (BubbleType)Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
+            return (BubbleType)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
         }
         
-        return availableColors[Random.Range(0, availableColors.Count)];
+        return availableColors[UnityEngine.Random.Range(0, availableColors.Count)];
     }
     
     void Update()
@@ -203,12 +240,10 @@ public class PlayerController : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return false;
         
-        // Use the new IsDestroying property
         if (grid != null && grid.IsDestroying) return false;
         
-        if (Time.time < lastShootTime + shootCooldown) return false;
+        if (isBubbleFlying) return false;
         
-        // Grace period after resume to prevent accidental firing
         if (Time.unscaledTime < resumeGraceTime) return false;
         
         bool isPressed = IsPointerPressed();
@@ -244,7 +279,8 @@ public class PlayerController : MonoBehaviour
     {
         if (currentBubble == null) return;
         
-        lastShootTime = Time.time;
+        isBubbleFlying = true;
+        Log("[PlayerController] Bubble fired, waiting for connection...");
         
         Vector3 shootDirection = (aimArrow.transform.position - transform.position).normalized;
         
@@ -263,6 +299,15 @@ public class PlayerController : MonoBehaviour
         SpawnNewBubble();
     }
     
+    public void OnBubbleConnectedToGrid()
+    {
+        isBubbleFlying = false;
+        Log("[PlayerController] Bubble connected to grid");
+        
+        onBubbleConnected?.Invoke();
+    }
+    
+    // Spawns current bubble using nextBubbleType, then generates new next bubble.
     void SpawnNewBubble()
     {
         if (currentBubble != null)
@@ -288,8 +333,49 @@ public class PlayerController : MonoBehaviour
             Bubble bubble = currentBubble.GetComponent<Bubble>();
             if (bubble != null)
             {
-                bubble.SetType(GetRandomAvailableColor());
+                // Use the pre-determined next bubble type
+                bubble.SetType(nextBubbleType);
             }
+            
+            // Generate new next bubble type
+            nextBubbleType = GetRandomAvailableColor();
+            UpdateNextBubblePreview();
+            onNextBubbleChanged?.Invoke(nextBubbleType);
+            
+            Log($"[PlayerController] Spawned bubble, next will be: {nextBubbleType}");
+        }
+    }
+    
+    // Creates a preview bubble in world space if parent is assigned.
+    void CreateNextBubblePreview()
+    {
+        if (nextBubblePreviewParent == null || bubblePrefab == null) return;
+        
+        if (nextBubblePreview != null)
+            Destroy(nextBubblePreview);
+        
+        nextBubblePreview = Instantiate(bubblePrefab, nextBubblePreviewParent);
+        nextBubblePreview.transform.localPosition = Vector3.zero;
+        
+        // Disable physics
+        Collider2D col = nextBubblePreview.GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+        
+        Rigidbody2D rb = nextBubblePreview.GetComponent<Rigidbody2D>();
+        if (rb != null) rb.simulated = false;
+        
+        UpdateNextBubblePreview();
+    }
+    
+    // Updates the preview bubble's color to match nextBubbleType.
+    void UpdateNextBubblePreview()
+    {
+        if (nextBubblePreview == null) return;
+        
+        Bubble bubble = nextBubblePreview.GetComponent<Bubble>();
+        if (bubble != null)
+        {
+            bubble.SetType(nextBubbleType);
         }
     }
 }

@@ -12,14 +12,16 @@ public class GridRowSystem : MonoBehaviour
     [SerializeField] private int survivalRowsSpawned = 0;
     [SerializeField] private float survivalTimer = 0f;
     [SerializeField] private float currentInterval;
+    [SerializeField] private bool rowPending = false; // Waiting for bubble to connect
     
     // Events
-    public Action<int, int> onShotsChanged; // (current, max)
+    public Action<int, int> onShotsChanged;
     public Action onRowSpawned;
-    public Action<int> onSurvivalRowSpawned; // (totalRowsSpawned)
-    public Action<float> onSurvivalIntervalChanged; // (newInterval)
+    public Action<int> onSurvivalRowSpawned;
+    public Action<float> onSurvivalIntervalChanged;
     
     private HexGrid grid;
+    private PlayerController playerController;
     
     public int CurrentShots => currentShotsRemaining;
     public int MaxShots => shotsBeforeNewRow;
@@ -34,6 +36,19 @@ public class GridRowSystem : MonoBehaviour
         grid = GetComponent<HexGrid>();
     }
     
+    void Start()
+    {
+        playerController = FindFirstObjectByType<PlayerController>();
+        
+        // Subscribe to bubble connected event
+        PlayerController.onBubbleConnected += OnBubbleConnected;
+    }
+    
+    void OnDestroy()
+    {
+        PlayerController.onBubbleConnected -= OnBubbleConnected;
+    }
+    
     void Update()
     {
         if (!IsSurvivalMode) return;
@@ -44,26 +59,56 @@ public class GridRowSystem : MonoBehaviour
 
     #region Survival Mode
     
-    // Updates the survival timer and spawns rows when interval is reached.
-    // Pauses timer while bubbles are being destroyed (chain reactions).
+    // Updates the survival timer. If bubble is flying when interval is reached,
+    // marks row as pending instead of spawning immediately.
     private void UpdateSurvivalTimer()
     {
-        if (grid.IsDestroying)
-        {
-            return;
-        }
+        // Pause during destruction animations
+        if (grid.IsDestroying) return;
+        
+        // If row is pending, don't increment timer - wait for bubble to connect
+        if (rowPending) return;
         
         survivalTimer += Time.deltaTime;
         
         if (survivalTimer >= currentInterval)
         {
-            survivalTimer = 0f;
-            SpawnSurvivalRow();
+            // Check if bubble is flying
+            bool bubbleFlying = playerController != null && playerController.IsBubbleFlying;
+            
+            if (bubbleFlying)
+            {
+                // Mark as pending, timer stops here
+                rowPending = true;
+                grid.Log("[GridRowSystem] Row spawn pending - waiting for bubble to connect");
+            }
+            else
+            {
+                // No bubble flying, spawn immediately
+                SpawnSurvivalRow();
+                survivalTimer = 0f;
+            }
         }
     }
     
+    // Called when a flying bubble connects to the grid.
+    // If a row spawn was pending, spawns it now and resets timer.
+    private void OnBubbleConnected()
+    {
+        if (!IsSurvivalMode) return;
+        if (!rowPending) return;
+        
+        grid.Log("[GridRowSystem] Bubble connected - spawning pending row");
+        
+        // Spawn the pending row
+        SpawnSurvivalRow();
+        
+        // Reset timer to start new cycle
+        survivalTimer = 0f;
+        rowPending = false;
+    }
+    
     // Spawns a new row and reduces the interval for next spawn.
-    // Interval decreases until it reaches the minimum value.
     private void SpawnSurvivalRow()
     {
         SpawnNewRowAtTop();
@@ -91,6 +136,7 @@ public class GridRowSystem : MonoBehaviour
     {
         survivalRowsSpawned = 0;
         survivalTimer = 0f;
+        rowPending = false;
         currentInterval = GameManager.Instance != null 
             ? GameManager.Instance.SurvivalStartingInterval 
             : 10f;
@@ -136,7 +182,6 @@ public class GridRowSystem : MonoBehaviour
     #region Row Spawning
     
     // Spawns a new row at the top, pushing existing bubbles down.
-    // Handles floating bubble relocation and lose condition check.
     public void SpawnNewRowAtTop()
     {
         grid.Log("Spawning new row at top");

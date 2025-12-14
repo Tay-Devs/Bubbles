@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 1
   levelName: Level 1
-  gridWidth: 10
+  gridWidth: 9
   gridHeight: 6
   availableColors: 00000000010000000200000003000000
   winCondition: 0

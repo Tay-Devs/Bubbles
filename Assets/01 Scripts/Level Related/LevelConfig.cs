@@ -21,14 +21,13 @@ public class LevelConfig : ScriptableObject
     
     // Clear All Bubbles settings (time-based stars)
     [Header("Clear All Settings")]
-    public float threeStarTime = 90f;   // 1.5 minutes
-    public float twoStarTime = 150f;    // 2.5 minutes
-    public float oneStarTime = 300f;    // 5 minutes
+    public float threeStarTime = 90f;
+    public float twoStarTime = 150f;
+    public float oneStarTime = 300f;
     
     // Score settings
     [Header("Score Settings")]
     public int targetScore = 1000;
-    // Stars: 1 star = 1/3, 2 stars = 2/3, 3 stars = full score
     
     // Survival settings
     [Header("Survival Settings")]
@@ -40,18 +39,25 @@ public class LevelConfig : ScriptableObject
     public int threeStarRows = 15;
     
     // Calculates stars earned based on win condition and performance.
-    // Returns 0-3 stars depending on how well the player did.
-    public int CalculateStars(float completionTime = 0f, int score = 0, int rowsSurvived = 0, bool clearedAllBubbles = false)
+    // For ClearAllBubbles: must win to get stars.
+    // For ReachTargetScore: must reach target to get stars.
+    // For Survival: can earn stars even on loss based on rows survived.
+    public int CalculateStars(bool won, float completionTime = 0f, int score = 0, int rowsSurvived = 0, bool clearedAllBubbles = false)
     {
         switch (winCondition)
         {
             case WinConditionType.ClearAllBubbles:
+                // Must win to get stars in this mode
+                if (!won) return 0;
                 return CalculateClearAllStars(completionTime);
                 
             case WinConditionType.ReachTargetScore:
+                // Must reach target score to get stars
+                if (!won && score < targetScore) return 0;
                 return CalculateScoreStars(score);
                 
             case WinConditionType.Survival:
+                // Can earn stars based on rows survived even if lost
                 return CalculateSurvivalStars(rowsSurvived, clearedAllBubbles);
                 
             default:
@@ -60,7 +66,6 @@ public class LevelConfig : ScriptableObject
     }
     
     // Calculates stars for Clear All mode based on completion time.
-    // Faster completion = more stars.
     private int CalculateClearAllStars(float completionTime)
     {
         if (completionTime <= threeStarTime) return 3;
@@ -70,7 +75,6 @@ public class LevelConfig : ScriptableObject
     }
     
     // Calculates stars for Score mode based on points earned.
-    // 3 stars = full target, 2 stars = 2/3, 1 star = 1/3.
     private int CalculateScoreStars(int score)
     {
         if (score >= targetScore) return 3;
@@ -80,7 +84,6 @@ public class LevelConfig : ScriptableObject
     }
     
     // Calculates stars for Survival mode based on rows survived.
-    // Clearing all bubbles grants automatic 3 stars.
     private int CalculateSurvivalStars(int rowsSurvived, bool clearedAllBubbles)
     {
         if (clearedAllBubbles) return 3;
@@ -90,7 +93,6 @@ public class LevelConfig : ScriptableObject
         return 0;
     }
     
-    // Returns the score needed for a specific star count.
     public int GetScoreForStars(int stars)
     {
         switch (stars)
@@ -102,7 +104,6 @@ public class LevelConfig : ScriptableObject
         }
     }
     
-    // Returns the time limit for a specific star count.
     public float GetTimeForStars(int stars)
     {
         switch (stars)
@@ -114,7 +115,6 @@ public class LevelConfig : ScriptableObject
         }
     }
     
-    // Returns the rows needed for a specific star count.
     public int GetRowsForStars(int stars)
     {
         switch (stars)

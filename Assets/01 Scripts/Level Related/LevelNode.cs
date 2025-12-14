@@ -8,13 +8,29 @@ public class LevelNode : MonoBehaviour
     public TMP_Text levelNumberText;
     public Button levelButton;
     public Image nodeBackground;
-    public GameObject[] starIcons;
+    
+    [Header("Star References")]
+    public Image[] starImages;
+    
+    [Header("Star Sprites")]
+    public Sprite starEarnedSprite;
+    public Sprite starUnearnedSprite;
+    
+    [Header("Or Use Colors (if no sprites)")]
+    public bool useColors = false;
+    public Color starEarnedColor = Color.yellow;
+    public Color starUnearnedColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
     
     [Header("Lock State")]
     public GameObject lockIcon;
+    public GameObject starsContainer;
     public Color lockedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     public Color unlockedColor = Color.white;
     public Color completedColor = new Color(0.8f, 1f, 0.8f, 1f);
+    
+    [Header("Level Number Display")]
+    public Color lockedTextColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+    public Color unlockedTextColor = Color.white;
     
     private int levelNumber;
     private bool isUnlocked;
@@ -24,24 +40,19 @@ public class LevelNode : MonoBehaviour
     
     void Awake()
     {
-        // Auto-find button on this GameObject
         if (levelButton == null)
         {
             levelButton = GetComponent<Button>();
         }
         
-        // Disable raycast on child elements so they don't block the button
         DisableChildRaycasts();
     }
     
-    // Disables Raycast Target on all child graphics to prevent blocking button clicks.
     private void DisableChildRaycasts()
     {
-        // Disable on all child Images
         Image[] images = GetComponentsInChildren<Image>(true);
         foreach (var img in images)
         {
-            // Skip if this is the button's target graphic
             if (levelButton != null && img == levelButton.targetGraphic)
             {
                 continue;
@@ -49,7 +60,6 @@ public class LevelNode : MonoBehaviour
             img.raycastTarget = false;
         }
         
-        // Disable on all child TMP texts
         TMP_Text[] texts = GetComponentsInChildren<TMP_Text>(true);
         foreach (var txt in texts)
         {
@@ -73,13 +83,10 @@ public class LevelNode : MonoBehaviour
             levelButton.onClick.AddListener(OnNodeClicked);
             levelButton.interactable = unlocked;
         }
-        else
-        {
-            Debug.LogWarning($"[LevelNode] Level {level} has no Button component!");
-        }
         
         UpdateLockVisual(unlocked);
-        UpdateStars(starsEarned);
+        UpdateLevelNumberColor(unlocked);
+        UpdateStars(starsEarned, unlocked);
         UpdateNodeColor(unlocked, starsEarned > 0);
     }
     
@@ -90,21 +97,42 @@ public class LevelNode : MonoBehaviour
             lockIcon.SetActive(!unlocked);
         }
         
-        if (levelNumberText != null)
-        {
-            levelNumberText.gameObject.SetActive(unlocked);
-        }
+        // Level number is always visible now
     }
     
-    private void UpdateStars(int starsEarned)
+    // Updates level number text color based on lock state.
+    private void UpdateLevelNumberColor(bool unlocked)
     {
-        if (starIcons == null) return;
+        if (levelNumberText == null) return;
         
-        for (int i = 0; i < starIcons.Length; i++)
+        levelNumberText.color = unlocked ? unlockedTextColor : lockedTextColor;
+    }
+    
+    private void UpdateStars(int starsEarned, bool unlocked)
+    {
+        if (starsContainer != null)
         {
-            if (starIcons[i] != null)
+            starsContainer.SetActive(unlocked);
+        }
+        
+        if (starImages == null) return;
+        
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            if (starImages[i] == null) continue;
+            
+            starImages[i].gameObject.SetActive(true);
+            
+            bool isEarned = i < starsEarned;
+            
+            if (useColors)
             {
-                starIcons[i].SetActive(i < starsEarned);
+                starImages[i].color = isEarned ? starEarnedColor : starUnearnedColor;
+            }
+            else
+            {
+                starImages[i].sprite = isEarned ? starEarnedSprite : starUnearnedSprite;
+                starImages[i].color = Color.white;
             }
         }
     }

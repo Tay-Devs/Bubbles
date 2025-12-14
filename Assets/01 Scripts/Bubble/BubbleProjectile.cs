@@ -8,6 +8,7 @@ public class BubbleProjectile : MonoBehaviour
     private bool hasCollided = false;
     private HexGrid grid;
     private Bubble myBubble;
+    private PlayerController playerController;
     
     void Awake()
     {
@@ -23,6 +24,8 @@ public class BubbleProjectile : MonoBehaviour
         rb.isKinematic = true;
         
         grid = FindFirstObjectByType<HexGrid>();
+        playerController = FindFirstObjectByType<PlayerController>();
+        
         if (grid != null) enableDebugLogs = grid.enableDebugLogs;
     }
     
@@ -41,7 +44,6 @@ public class BubbleProjectile : MonoBehaviour
     {
         if (hasCollided) return;
         
-        // Check if hit ceiling
         if (collision.gameObject.CompareTag("Ceiling"))
         {
             hasCollided = true;
@@ -50,7 +52,6 @@ public class BubbleProjectile : MonoBehaviour
             return;
         }
         
-        // Check if hit grid bubble
         Bubble hitBubble = collision.gameObject.GetComponent<Bubble>();
         if (hitBubble == null) hitBubble = collision.gameObject.GetComponentInParent<Bubble>();
         
@@ -65,6 +66,7 @@ public class BubbleProjectile : MonoBehaviour
         }
     }
     
+    // Stops the bubble, attaches to grid, and notifies PlayerController.
     void AttachToGrid()
     {
         if (rb != null)
@@ -75,8 +77,13 @@ public class BubbleProjectile : MonoBehaviour
         
         if (grid != null && myBubble != null)
         {
-            // Use the new attacher system
             grid.BubbleAttacher.AttachAndCheckMatches(myBubble, transform.position);
+        }
+        
+        // Notify PlayerController that bubble has connected
+        if (playerController != null)
+        {
+            playerController.OnBubbleConnectedToGrid();
         }
         
         Destroy(this);

@@ -56,14 +56,19 @@ MonoBehaviour:
   levelNumberText: {fileID: 246481561677512224}
   levelButton: {fileID: 1703652249643969881}
   nodeBackground: {fileID: 1543256526007017035}
-  starIcons:
-  - {fileID: 3893674900167190091}
-  - {fileID: 3809003230252090937}
-  - {fileID: 8298598912582922883}
+  starImages: []
+  starEarnedSprite: {fileID: 0}
+  starUnearnedSprite: {fileID: 0}
+  useColors: 1
+  starEarnedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  starUnearnedColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.5}
   lockIcon: {fileID: 8454010055481255037}
-  lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  starsContainer: {fileID: 8877895621443951894}
+  lockedColor: {r: 0, g: 0, b: 0, a: 1}
   unlockedColor: {r: 1, g: 1, b: 1, a: 1}
   completedColor: {r: 0.8, g: 1, b: 0.8, a: 1}
+  lockedTextColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  unlockedTextColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1703652249643969881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,13 +355,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.5
+  m_fontSize: 30.8
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

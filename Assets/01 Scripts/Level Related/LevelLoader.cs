@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Runs FIRST to set grid size before anything else
 [DefaultExecutionOrder(-200)]
 public class LevelLoader : MonoBehaviour
 {
@@ -37,7 +36,6 @@ public class LevelLoader : MonoBehaviour
         }
         Instance = this;
         
-        // Load and apply config in Awake so grid size is set before GridCameraFitter runs
         LoadLevelFromSession();
     }
     
@@ -46,7 +44,6 @@ public class LevelLoader : MonoBehaviour
         levelStartTime = Time.time;
     }
     
-    // Loads level config from GameSession or uses fallback.
     private void LoadLevelFromSession()
     {
         if (gameSession != null && gameSession.selectedLevel != null)
@@ -68,12 +65,10 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"[LevelLoader] Loaded level {currentLevel.levelNumber}: {currentLevel.levelName}");
     }
     
-    // Applies all settings from LevelConfig to game systems.
     private void ApplyLevelConfig()
     {
         if (currentLevel == null) return;
         
-        // Apply grid settings - this must happen before GridCameraFitter.Start()
         if (hexGrid != null)
         {
             hexGrid.width = currentLevel.gridWidth;
@@ -85,7 +80,6 @@ public class LevelLoader : MonoBehaviour
             Debug.LogError("[LevelLoader] HexGrid reference is missing!");
         }
         
-        // Apply win condition settings
         if (gameManager != null)
         {
             gameManager.winCondition = currentLevel.winCondition;
@@ -106,7 +100,6 @@ public class LevelLoader : MonoBehaviour
         }
     }
     
-    // Returns available bubble colors for this level.
     public BubbleType[] GetAvailableColors()
     {
         if (currentLevel != null && currentLevel.availableColors.Count > 0)
@@ -117,6 +110,7 @@ public class LevelLoader : MonoBehaviour
         return (BubbleType[])System.Enum.GetValues(typeof(BubbleType));
     }
     
+    // Called when player wins.
     public void OnLevelWon(bool clearedAllBubbles = false)
     {
         if (levelComplete) return;
@@ -126,6 +120,7 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"[LevelLoader] Level won with {stars} stars!");
     }
     
+    // Called when player loses.
     public void OnLevelLost()
     {
         if (levelComplete) return;
@@ -135,6 +130,8 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"[LevelLoader] Level lost with {stars} stars");
     }
     
+    // Calculates stars and stores results in GameSession.
+    // Passes won flag so ClearAllBubbles mode returns 0 stars on loss.
     private int CalculateAndStoreResults(bool won, bool clearedAllBubbles)
     {
         if (currentLevel == null || gameSession == null) return 0;
@@ -143,7 +140,8 @@ public class LevelLoader : MonoBehaviour
         int score = ScoreManager.Instance != null ? ScoreManager.Instance.CurrentScore : 0;
         int rowsSurvived = gameManager != null ? gameManager.GetSurvivalRowsCount() : 0;
         
-        int stars = currentLevel.CalculateStars(completionTime, score, rowsSurvived, clearedAllBubbles);
+        // Pass won flag to CalculateStars
+        int stars = currentLevel.CalculateStars(won, completionTime, score, rowsSurvived, clearedAllBubbles);
         
         gameSession.SetResults(won, stars, score, completionTime, rowsSurvived);
         

@@ -42,12 +42,12 @@ public class LevelDataManager : MonoBehaviour
         if (clearSaveOnStart)
         {
            
-            ClearSave();
+            /*ClearSave();
             // Simulate completing some levels
             CompleteLevel(1, 3);
             CompleteLevel(2, 2);
             CompleteLevel(3, 3);
-            CompleteLevel(4, 1);
+            CompleteLevel(4, 1);*/
         }
     }
     // Returns the star requirement for a specific level.

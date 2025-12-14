@@ -819,11 +819,10 @@ MonoBehaviour:
   gameSceneName: GameScene
   nodePrefab: {fileID: 3843670037560537773, guid: db752daf02593584ea6958f93341a5fe, type: 3}
   poolSize: 50
-  nodeSpacingY: 300
-  horizontalPadding: 0.1
-  bottomPaddingPercent: 0.1
-  pathNoise: 0.2
-  zigzagStrength: 0.5
+  nodeSpacingY: 150
+  minX: -300
+  maxX: 300
+  zigzagVariation: 200
   contentArea: {fileID: 1788794493}
   scrollSpeed: 500
   dragSensitivity: 1
