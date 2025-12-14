@@ -36,10 +36,10 @@ public class HexGrid : MonoBehaviour
     public GridMatchSystem MatchSystem { get; private set; }
     public GridRowSystem RowSystem { get; private set; }
     public GridBubbleAttacher BubbleAttacher { get; private set; }
+    public ColorRemovalSystem ColorRemoval { get; private set; }
     
     public bool IsDestroying => MatchSystem != null && MatchSystem.IsDestroying;
     
-    // Hex neighbor offsets: [even row, odd row]
     private static readonly Vector2Int[][] neighborOffsets = {
         new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(-1, 1), new Vector2Int(0, 1) },
         new[] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(1, -1), new Vector2Int(0, 1), new Vector2Int(1, 1) }
@@ -47,38 +47,50 @@ public class HexGrid : MonoBehaviour
 
     void Awake()
     {
+        // Initialize sub-systems
         MatchSystem = GetComponent<GridMatchSystem>();
         RowSystem = GetComponent<GridRowSystem>();
         BubbleAttacher = GetComponent<GridBubbleAttacher>();
+        ColorRemoval = GetComponent<ColorRemovalSystem>();
         
         if (MatchSystem == null) MatchSystem = gameObject.AddComponent<GridMatchSystem>();
         if (RowSystem == null) RowSystem = gameObject.AddComponent<GridRowSystem>();
         if (BubbleAttacher == null) BubbleAttacher = gameObject.AddComponent<GridBubbleAttacher>();
+        if (ColorRemoval == null) ColorRemoval = gameObject.AddComponent<ColorRemovalSystem>();
+        
+        // Initialize ColorRemoval with grid reference
+        ColorRemoval.Initialize(this);
     }
     
     void Start()
     {
-        // Cache level colors at start
         CacheLevelColors();
         
         if (autoPosition) PositionGrid();
         if (autoGenerate) 
         {
             GenerateGrid();
-        
-            if (GameManager.Instance != null && 
-                GameManager.Instance.ActiveWinCondition == WinConditionType.Survival)
-            {
-                RowSystem.ResetSurvival();
-            }
-            else
-            {
-                RowSystem.ResetShots();
-            }
+            InitializeRowSystem();
         }
     }
     
-    // Caches level colors from LevelLoader or falls back to all colors.
+    // Initializes the row system based on win condition.
+    private void InitializeRowSystem()
+    {
+        if (GameManager.Instance != null && 
+            GameManager.Instance.ActiveWinCondition == WinConditionType.Survival)
+        {
+            RowSystem.ResetSurvival();
+        }
+        else
+        {
+            RowSystem.ResetShots();
+        }
+        
+        // Initialize color tracking after grid is generated
+        ColorRemoval.InitializePreviousColors();
+    }
+    
     private void CacheLevelColors()
     {
         levelColors = new List<BubbleType>();
@@ -94,7 +106,6 @@ public class HexGrid : MonoBehaviour
             }
         }
         
-        // Fallback to all colors
         foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
         {
             levelColors.Add(color);
@@ -102,7 +113,6 @@ public class HexGrid : MonoBehaviour
         Log($"[HexGrid] Using fallback (all colors): {string.Join(", ", levelColors)}");
     }
     
-    // Returns the cached level colors for spawning bubbles.
     public List<BubbleType> GetLevelColors()
     {
         if (levelColors == null || levelColors.Count == 0)
@@ -112,23 +122,12 @@ public class HexGrid : MonoBehaviour
         return levelColors;
     }
     
-    // Called by GridCameraFitter after height limit is positioned
+    // Called by GridCameraFitter after positioning
     public void InitializeGrid()
     {
-        // Re-cache colors in case they weren't ready before
         CacheLevelColors();
-        
         GenerateGrid();
-    
-        if (GameManager.Instance != null && 
-            GameManager.Instance.ActiveWinCondition == WinConditionType.Survival)
-        {
-            RowSystem.ResetSurvival();
-        }
-        else
-        {
-            RowSystem.ResetShots();
-        }
+        InitializeRowSystem();
     }
     
     public void Log(string msg) { if (enableDebugLogs) Debug.Log(msg); }
@@ -167,7 +166,6 @@ public class HexGrid : MonoBehaviour
     {
         ClearGrid();
         
-        // Use cached level colors for all rows
         List<BubbleType> colors = GetLevelColors();
         
         Log($"[HexGrid] Generating grid with colors: {string.Join(", ", colors)}");
@@ -185,7 +183,6 @@ public class HexGrid : MonoBehaviour
                 }
             }
             
-            // Pass the level colors to CreateRow
             List<Bubble> row = CreateRow(y, colors);
             gridData.Add(row);
         }
@@ -193,13 +190,11 @@ public class HexGrid : MonoBehaviour
         Log($"Grid generated with {gridData.Count} rows");
     }
     
-    // Creates a row of bubbles. Uses level colors if none provided.
     public List<Bubble> CreateRow(int y, List<BubbleType> allowedColors = null)
     {
         List<Bubble> row = new List<Bubble>();
         float rowOffset = GetRowXOffset(y);
         
-        // Use level colors if none provided
         if (allowedColors == null || allowedColors.Count == 0)
         {
             allowedColors = GetLevelColors();
@@ -322,7 +317,6 @@ public class HexGrid : MonoBehaviour
 
     #region Color Tracking
     
-    // Returns colors currently in the grid (for player bubble spawning)
     public HashSet<BubbleType> GetAvailableColors()
     {
         var colors = new HashSet<BubbleType>();

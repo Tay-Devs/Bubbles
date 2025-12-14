@@ -12,7 +12,10 @@ public class GridRowSystem : MonoBehaviour
     [SerializeField] private int survivalRowsSpawned = 0;
     [SerializeField] private float survivalTimer = 0f;
     [SerializeField] private float currentInterval;
-    [SerializeField] private bool rowPending = false; // Waiting for bubble to connect
+    [SerializeField] private bool rowPending = false;
+    
+    [Header("Multi-Row Spawn")]
+    public float multiRowDelay = 0.2f; // Delay between rows when spawning multiple
     
     // Events
     public Action<int, int> onShotsChanged;
@@ -39,8 +42,6 @@ public class GridRowSystem : MonoBehaviour
     void Start()
     {
         playerController = FindFirstObjectByType<PlayerController>();
-        
-        // Subscribe to bubble connected event
         PlayerController.onBubbleConnected += OnBubbleConnected;
     }
     
@@ -56,43 +57,43 @@ public class GridRowSystem : MonoBehaviour
         
         UpdateSurvivalTimer();
     }
+    
+    // Returns how many rows to spawn per trigger.
+    private int GetRowsToSpawn()
+    {
+        if (grid.ColorRemoval != null)
+        {
+            return grid.ColorRemoval.RowsPerSpawn;
+        }
+        return 1;
+    }
 
     #region Survival Mode
     
-    // Updates the survival timer. If bubble is flying when interval is reached,
-    // marks row as pending instead of spawning immediately.
     private void UpdateSurvivalTimer()
     {
-        // Pause during destruction animations
         if (grid.IsDestroying) return;
-        
-        // If row is pending, don't increment timer - wait for bubble to connect
         if (rowPending) return;
         
         survivalTimer += Time.deltaTime;
         
         if (survivalTimer >= currentInterval)
         {
-            // Check if bubble is flying
             bool bubbleFlying = playerController != null && playerController.IsBubbleFlying;
             
             if (bubbleFlying)
             {
-                // Mark as pending, timer stops here
                 rowPending = true;
                 grid.Log("[GridRowSystem] Row spawn pending - waiting for bubble to connect");
             }
             else
             {
-                // No bubble flying, spawn immediately
-                SpawnSurvivalRow();
+                TriggerSurvivalSpawn();
                 survivalTimer = 0f;
             }
         }
     }
     
-    // Called when a flying bubble connects to the grid.
-    // If a row spawn was pending, spawns it now and resets timer.
     private void OnBubbleConnected()
     {
         if (!IsSurvivalMode) return;
@@ -100,15 +101,41 @@ public class GridRowSystem : MonoBehaviour
         
         grid.Log("[GridRowSystem] Bubble connected - spawning pending row");
         
-        // Spawn the pending row
-        SpawnSurvivalRow();
+        TriggerSurvivalSpawn();
         
-        // Reset timer to start new cycle
         survivalTimer = 0f;
         rowPending = false;
     }
     
-    // Spawns a new row and reduces the interval for next spawn.
+    private void TriggerSurvivalSpawn()
+    {
+        int rowsToSpawn = GetRowsToSpawn();
+        
+        grid.Log($"[GridRowSystem] Survival trigger - spawning {rowsToSpawn} row(s)");
+        
+        if (rowsToSpawn == 1)
+        {
+            SpawnSurvivalRow();
+        }
+        else
+        {
+            StartCoroutine(SpawnMultipleSurvivalRows(rowsToSpawn));
+        }
+    }
+    
+    private System.Collections.IEnumerator SpawnMultipleSurvivalRows(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            SpawnSurvivalRow();
+            
+            if (i < count - 1)
+            {
+                yield return new WaitForSeconds(multiRowDelay);
+            }
+        }
+    }
+    
     private void SpawnSurvivalRow()
     {
         SpawnNewRowAtTop();
@@ -117,7 +144,6 @@ public class GridRowSystem : MonoBehaviour
         GameManager.Instance.OnSurvivalRowSpawned(survivalRowsSpawned);
         onSurvivalRowSpawned?.Invoke(survivalRowsSpawned);
         
-        // Reduce interval for next row
         float deduction = GameManager.Instance.SurvivalIntervalDeduction;
         float minInterval = GameManager.Instance.SurvivalMinInterval;
         
@@ -131,7 +157,6 @@ public class GridRowSystem : MonoBehaviour
         }
     }
     
-    // Resets survival mode state for a new game.
     public void ResetSurvival()
     {
         survivalRowsSpawned = 0;
@@ -156,8 +181,6 @@ public class GridRowSystem : MonoBehaviour
         grid.Log($"Shots reset to {currentShotsRemaining}");
     }
     
-    // Consumes a shot and spawns a new row if shots are depleted.
-    // Does nothing in Survival mode since rows are time-based.
     public void ConsumeShot()
     {
         if (IsSurvivalMode)
@@ -172,8 +195,37 @@ public class GridRowSystem : MonoBehaviour
         
         if (currentShotsRemaining <= 0)
         {
-            SpawnNewRowAtTop();
+            TriggerShotSpawn();
             ResetShots();
+        }
+    }
+    
+    private void TriggerShotSpawn()
+    {
+        int rowsToSpawn = GetRowsToSpawn();
+        
+        grid.Log($"[GridRowSystem] Shot trigger - spawning {rowsToSpawn} row(s)");
+        
+        if (rowsToSpawn == 1)
+        {
+            SpawnNewRowAtTop();
+        }
+        else
+        {
+            StartCoroutine(SpawnMultipleRows(rowsToSpawn));
+        }
+    }
+    
+    private System.Collections.IEnumerator SpawnMultipleRows(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            SpawnNewRowAtTop();
+            
+            if (i < count - 1)
+            {
+                yield return new WaitForSeconds(multiRowDelay);
+            }
         }
     }
     
@@ -181,20 +233,16 @@ public class GridRowSystem : MonoBehaviour
 
     #region Row Spawning
     
-    // Spawns a new row at the top, pushing existing bubbles down.
     public void SpawnNewRowAtTop()
     {
         grid.Log("Spawning new row at top");
-    
+        
         PushGridDown();
-    
-        // Get colors currently in grid (only colors that still exist)
+        
         var gridColors = grid.GetAvailableColors();
-    
-        // Filter to only include colors allowed by level config
         var levelColors = grid.GetLevelColors();
         var availableColors = new List<BubbleType>();
-    
+        
         foreach (var color in gridColors)
         {
             if (levelColors.Contains(color))
@@ -202,29 +250,25 @@ public class GridRowSystem : MonoBehaviour
                 availableColors.Add(color);
             }
         }
-    
-        // Fallback if grid is somehow empty
+        
         if (availableColors.Count == 0)
         {
             availableColors.AddRange(levelColors);
             grid.Log("[GridRowSystem] No colors in grid, using all level colors");
         }
-    
-        grid.Log($"[GridRowSystem] Spawning row with colors: {string.Join(", ", availableColors)}");
-    
+        
         List<Bubble> newRow = grid.CreateRow(0, availableColors);
         grid.InsertRowAtTop(newRow);
-    
+        
         UpdateAllBubblePositions();
         RelocateFloatingBubbles();
-    
+        
         grid.MatchSystem.CheckLoseCondition();
-    
+        
         grid.onColorsChanged?.Invoke();
         onRowSpawned?.Invoke();
     }
     
-    // Moves all existing bubbles down by one row height.
     private void PushGridDown()
     {
         foreach (var row in grid.GetGridData())
@@ -239,7 +283,6 @@ public class GridRowSystem : MonoBehaviour
         }
     }
     
-    // Updates all bubble positions to match their grid coordinates.
     private void UpdateAllBubblePositions()
     {
         var gridData = grid.GetGridData();
@@ -263,7 +306,6 @@ public class GridRowSystem : MonoBehaviour
 
     #region Floating Bubble Relocation
     
-    // Iteratively relocates floating bubbles to valid connected positions.
     private void RelocateFloatingBubbles()
     {
         int maxIterations = 100;
@@ -317,7 +359,6 @@ public class GridRowSystem : MonoBehaviour
         }
     }
     
-    // Finds the nearest empty neighbor position adjacent to connected bubbles.
     private Vector2Int? FindValidRelocationPosition(Vector2Int fromPos, HashSet<Vector2Int> connected)
     {
         var neighbors = grid.GetNeighbors(fromPos);
@@ -343,7 +384,6 @@ public class GridRowSystem : MonoBehaviour
         return bestPos;
     }
     
-    // Finds any empty position adjacent to any connected bubble as a fallback.
     private Vector2Int? ForceRelocationPosition(Vector2Int fromPos, HashSet<Vector2Int> connected)
     {
         float bestDist = float.MaxValue;
@@ -371,7 +411,6 @@ public class GridRowSystem : MonoBehaviour
         return bestPos;
     }
     
-    // Moves a bubble from one grid position to another.
     private void MoveBubbleInGrid(Vector2Int from, Vector2Int to)
     {
         var bubble = grid.GetBubbleAt(from);
