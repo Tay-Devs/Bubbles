@@ -168,7 +168,7 @@ MonoBehaviour:
   levelSelectSceneName: Main Menu
   hexGrid: {fileID: 2107963924}
   gameManager: {fileID: 1059574285}
-  fallbackLevel: {fileID: 11400000, guid: 6e7fcc7042be9a54da4b5603b5083e5c, type: 2}
+  fallbackLevel: {fileID: 11400000, guid: 6448339055f19ad4a8ba1eb9d827efe2, type: 2}
 --- !u!1 &25839258
 GameObject:
   m_ObjectHideFlags: 0
@@ -3180,12 +3180,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NextBubbleUI
   bubbleImage: {fileID: 1641019961}
-  redSprite: {fileID: 0}
-  blueSprite: {fileID: 0}
-  greenSprite: {fileID: 0}
-  yellowSprite: {fileID: 0}
-  purpleSprite: {fileID: 0}
-  useColors: 1
+  redSprite: {fileID: -4997240535606169223, guid: e5811aa57998f3847b09ae61b3509484, type: 3}
+  blueSprite: {fileID: -7797222842659002163, guid: ee8de3382442b9148b14288512b399c4, type: 3}
+  greenSprite: {fileID: -5960140724721080776, guid: 31eaddb1dc8c9284dacb829705f4eecd, type: 3}
+  yellowSprite: {fileID: -6593045261545607914, guid: 6db447e6485de904aa5ece791614e127, type: 3}
+  purpleSprite: {fileID: -2290419000990616701, guid: 5bbdbfa9bc991d34cabbbdf1f95443d9, type: 3}
+  useColors: 0
   redColor: {r: 1, g: 0, b: 0, a: 1}
   blueColor: {r: 0, g: 0, b: 1, a: 1}
   greenColor: {r: 0.20392157, g: 0.8117647, b: 0.25490198, a: 1}
@@ -3333,7 +3333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

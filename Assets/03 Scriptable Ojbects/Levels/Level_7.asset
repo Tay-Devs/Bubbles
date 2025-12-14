@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89157a3449ef91a4db4e980ae6347766, type: 3}
-  m_Name: Level_2
+  m_Name: Level_7
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
-  levelNumber: 2
-  levelName: Level 2
-  gridWidth: 9
-  gridHeight: 5
-  availableColors: 000000000100000002000000
-  winCondition: 1
+  levelNumber: 7
+  levelName: Level 7
+  gridWidth: 12
+  gridHeight: 15
+  availableColors: 0000000001000000020000000300000004000000
+  winCondition: 0
   threeStarTime: 90
   twoStarTime: 150
   oneStarTime: 300
-  targetScore: 10000
+  targetScore: 1000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5
   survivalMinInterval: 2

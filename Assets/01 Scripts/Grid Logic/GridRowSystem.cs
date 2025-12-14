@@ -185,24 +185,41 @@ public class GridRowSystem : MonoBehaviour
     public void SpawnNewRowAtTop()
     {
         grid.Log("Spawning new row at top");
-        
+    
         PushGridDown();
-        
-        var availableColors = new List<BubbleType>(grid.GetAvailableColors());
+    
+        // Get colors currently in grid (only colors that still exist)
+        var gridColors = grid.GetAvailableColors();
+    
+        // Filter to only include colors allowed by level config
+        var levelColors = grid.GetLevelColors();
+        var availableColors = new List<BubbleType>();
+    
+        foreach (var color in gridColors)
+        {
+            if (levelColors.Contains(color))
+            {
+                availableColors.Add(color);
+            }
+        }
+    
+        // Fallback if grid is somehow empty
         if (availableColors.Count == 0)
         {
-            foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
-                availableColors.Add(color);
+            availableColors.AddRange(levelColors);
+            grid.Log("[GridRowSystem] No colors in grid, using all level colors");
         }
-        
+    
+        grid.Log($"[GridRowSystem] Spawning row with colors: {string.Join(", ", availableColors)}");
+    
         List<Bubble> newRow = grid.CreateRow(0, availableColors);
         grid.InsertRowAtTop(newRow);
-        
+    
         UpdateAllBubblePositions();
         RelocateFloatingBubbles();
-        
+    
         grid.MatchSystem.CheckLoseCondition();
-        
+    
         grid.onColorsChanged?.Invoke();
         onRowSpawned?.Invoke();
     }

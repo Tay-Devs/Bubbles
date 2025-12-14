@@ -15,8 +15,8 @@ MonoBehaviour:
   levelNumber: 1
   levelName: Level 1
   gridWidth: 9
-  gridHeight: 6
-  availableColors: 00000000010000000200000003000000
+  gridHeight: 5
+  availableColors: 000000000100000002000000
   winCondition: 0
   threeStarTime: 90
   twoStarTime: 150

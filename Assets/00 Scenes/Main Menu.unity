@@ -663,7 +663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f449da87b5ac5264c96ee4011376828c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelDataManager
-  freeLevels: 3
+  freeLevels: 9
   starsPerUnlock: 3
   clearSaveOnStart: 0
 --- !u!1 &1170056311

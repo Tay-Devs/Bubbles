@@ -17,9 +17,13 @@ public class PlayerController : MonoBehaviour
     public float shootSpeed = 15f;
     
     [Header("Next Bubble Preview")]
-    public Transform nextBubblePreviewParent; // Optional: parent for world space preview
+    public Transform nextBubblePreviewParent;
     private GameObject nextBubblePreview;
     private BubbleType nextBubbleType;
+    
+    [Header("Color Mode")]
+    [Tooltip("If true, only spawns colors that exist in grid. If false, uses all level colors.")]
+    public bool onlyUseGridColors = true;
     
     [Header("Cooldown")]
     private float resumeGraceTime = 0f;
@@ -30,13 +34,14 @@ public class PlayerController : MonoBehaviour
     
     // Events
     public static event Action onBubbleConnected;
-    public static event Action<BubbleType> onNextBubbleChanged; // UI can subscribe to this
+    public static event Action<BubbleType> onNextBubbleChanged;
     
     private HexGrid grid;
     private Camera mainCam;
     private bool wasPressed = false;
     private Vector2 lastValidPointerPos;
     private List<BubbleType> availableColors = new List<BubbleType>();
+    private List<BubbleType> levelColors = new List<BubbleType>(); // All colors allowed in this level
     private UIWorldAnchor worldAnchor;
     
     private bool isBubbleFlying = false;
@@ -61,6 +66,8 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.onResume.AddListener(OnGameResume);
         }
         
+        // Cache level colors first
+        CacheLevelColors();
         UpdateAvailableColors();
         
         worldAnchor = GetComponent<UIWorldAnchor>();
@@ -94,6 +101,30 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    // Caches all colors allowed in this level from LevelLoader.
+    private void CacheLevelColors()
+    {
+        levelColors.Clear();
+        
+        if (LevelLoader.Instance != null)
+        {
+            var colors = LevelLoader.Instance.GetAvailableColors();
+            if (colors != null && colors.Length > 0)
+            {
+                levelColors.AddRange(colors);
+                Log($"[PlayerController] Level colors: {string.Join(", ", levelColors)}");
+                return;
+            }
+        }
+        
+        // Fallback to all colors
+        foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
+        {
+            levelColors.Add(color);
+        }
+        Log($"[PlayerController] Using fallback colors: {string.Join(", ", levelColors)}");
+    }
+    
     void OnGameResume()
     {
         resumeGraceTime = Time.unscaledTime + RESUME_GRACE_DURATION;
@@ -106,17 +137,13 @@ public class PlayerController : MonoBehaviour
         InitializeBubbles();
     }
     
-    // Initializes current bubble and next bubble preview.
     void InitializeBubbles()
     {
-        // Generate first "next" bubble type
         nextBubbleType = GetRandomAvailableColor();
         
-        // Spawn current bubble (uses nextBubbleType, then generates new next)
         SpawnNewBubble();
         UpdateAimArrowPosition();
         
-        // Create preview if parent is assigned
         CreateNextBubblePreview();
     }
     
@@ -136,17 +163,38 @@ public class PlayerController : MonoBehaviour
         ValidateNextBubble();
     }
     
+    // Updates available colors based on mode.
+    // If onlyUseGridColors is true, only uses colors currently in grid (intersected with level colors).
+    // If false, uses all level colors.
     void UpdateAvailableColors()
     {
         availableColors.Clear();
         
-        if (grid != null)
+        if (onlyUseGridColors && grid != null)
         {
+            // Get colors in grid, but only those allowed by level
             var gridColors = grid.GetAvailableColors();
-            availableColors.AddRange(gridColors);
+            foreach (var color in gridColors)
+            {
+                if (levelColors.Contains(color))
+                {
+                    availableColors.Add(color);
+                }
+            }
+        }
+        else
+        {
+            // Use all level colors
+            availableColors.AddRange(levelColors);
         }
         
-        Log($"Available colors: {availableColors.Count} - [{string.Join(", ", availableColors)}]");
+        // Fallback if no colors available (grid might be empty)
+        if (availableColors.Count == 0)
+        {
+            availableColors.AddRange(levelColors);
+        }
+        
+        Log($"[PlayerController] Available colors: {string.Join(", ", availableColors)}");
     }
     
     void ValidateCurrentBubble()
@@ -160,13 +208,11 @@ public class PlayerController : MonoBehaviour
         if (!availableColors.Contains(bubble.type))
         {
             BubbleType newColor = GetRandomAvailableColor();
-            Log($"Current bubble color {bubble.type} no longer available, changing to {newColor}");
+            Log($"[PlayerController] Current bubble {bubble.type} not available, changing to {newColor}");
             bubble.SetType(newColor);
         }
     }
     
-    // Validates that next bubble type is still available in grid.
-    // If not, picks a new random available color.
     void ValidateNextBubble()
     {
         if (availableColors.Count == 0) return;
@@ -174,7 +220,7 @@ public class PlayerController : MonoBehaviour
         if (!availableColors.Contains(nextBubbleType))
         {
             BubbleType newColor = GetRandomAvailableColor();
-            Log($"Next bubble color {nextBubbleType} no longer available, changing to {newColor}");
+            Log($"[PlayerController] Next bubble {nextBubbleType} not available, changing to {newColor}");
             nextBubbleType = newColor;
             
             UpdateNextBubblePreview();
@@ -182,11 +228,19 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    // Gets a random color from available colors (respects level config).
     BubbleType GetRandomAvailableColor()
     {
         if (availableColors.Count == 0)
         {
-            return (BubbleType)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
+            // Emergency fallback to level colors
+            if (levelColors.Count > 0)
+            {
+                return levelColors[UnityEngine.Random.Range(0, levelColors.Count)];
+            }
+            
+            // Last resort fallback
+            return (BubbleType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length);
         }
         
         return availableColors[UnityEngine.Random.Range(0, availableColors.Count)];
@@ -307,7 +361,6 @@ public class PlayerController : MonoBehaviour
         onBubbleConnected?.Invoke();
     }
     
-    // Spawns current bubble using nextBubbleType, then generates new next bubble.
     void SpawnNewBubble()
     {
         if (currentBubble != null)
@@ -333,11 +386,10 @@ public class PlayerController : MonoBehaviour
             Bubble bubble = currentBubble.GetComponent<Bubble>();
             if (bubble != null)
             {
-                // Use the pre-determined next bubble type
                 bubble.SetType(nextBubbleType);
             }
             
-            // Generate new next bubble type
+            // Generate new next bubble from available colors
             nextBubbleType = GetRandomAvailableColor();
             UpdateNextBubblePreview();
             onNextBubbleChanged?.Invoke(nextBubbleType);
@@ -346,7 +398,6 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    // Creates a preview bubble in world space if parent is assigned.
     void CreateNextBubblePreview()
     {
         if (nextBubblePreviewParent == null || bubblePrefab == null) return;
@@ -357,7 +408,6 @@ public class PlayerController : MonoBehaviour
         nextBubblePreview = Instantiate(bubblePrefab, nextBubblePreviewParent);
         nextBubblePreview.transform.localPosition = Vector3.zero;
         
-        // Disable physics
         Collider2D col = nextBubblePreview.GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
         
@@ -367,7 +417,6 @@ public class PlayerController : MonoBehaviour
         UpdateNextBubblePreview();
     }
     
-    // Updates the preview bubble's color to match nextBubbleType.
     void UpdateNextBubblePreview()
     {
         if (nextBubblePreview == null) return;
