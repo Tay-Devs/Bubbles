@@ -15,7 +15,7 @@ public class GridRowSystem : MonoBehaviour
     [SerializeField] private bool rowPending = false;
     
     [Header("Multi-Row Spawn")]
-    public float multiRowDelay = 0.2f; // Delay between rows when spawning multiple
+    public float multiRowDelay = 0.2f;
     
     // Events
     public Action<int, int> onShotsChanged;
@@ -43,11 +43,22 @@ public class GridRowSystem : MonoBehaviour
     {
         playerController = FindFirstObjectByType<PlayerController>();
         PlayerController.onBubbleConnected += OnBubbleConnected;
+        
+        // Subscribe to destruction complete event
+        if (grid.MatchSystem != null)
+        {
+            grid.MatchSystem.onDestructionComplete += OnDestructionComplete;
+        }
     }
     
     void OnDestroy()
     {
         PlayerController.onBubbleConnected -= OnBubbleConnected;
+        
+        if (grid != null && grid.MatchSystem != null)
+        {
+            grid.MatchSystem.onDestructionComplete -= OnDestructionComplete;
+        }
     }
     
     void Update()
@@ -58,7 +69,6 @@ public class GridRowSystem : MonoBehaviour
         UpdateSurvivalTimer();
     }
     
-    // Returns how many rows to spawn per trigger.
     private int GetRowsToSpawn()
     {
         if (grid.ColorRemoval != null)
@@ -94,12 +104,41 @@ public class GridRowSystem : MonoBehaviour
         }
     }
     
+    // Called when bubble connects to grid.
+    // If destruction is in progress, wait for it to complete.
+    // If no match was made, spawn pending rows immediately.
     private void OnBubbleConnected()
     {
         if (!IsSurvivalMode) return;
         if (!rowPending) return;
         
-        grid.Log("[GridRowSystem] Bubble connected - spawning pending row");
+        // If destruction is in progress, wait for OnDestructionComplete
+        if (grid.IsDestroying)
+        {
+            grid.Log("[GridRowSystem] Bubble connected but destruction in progress - waiting for completion");
+            return;
+        }
+        
+        // No match/destruction - spawn pending rows now
+        grid.Log("[GridRowSystem] Bubble connected with no match - spawning pending rows");
+        SpawnPendingRows();
+    }
+    
+    // Called when destruction sequence completes.
+    // Spawns pending rows if any are waiting.
+    private void OnDestructionComplete()
+    {
+        if (!IsSurvivalMode) return;
+        if (!rowPending) return;
+        
+        grid.Log("[GridRowSystem] Destruction complete - spawning pending rows");
+        SpawnPendingRows();
+    }
+    
+    // Spawns pending survival rows and resets state.
+    private void SpawnPendingRows()
+    {
+        if (!rowPending) return;
         
         TriggerSurvivalSpawn();
         
