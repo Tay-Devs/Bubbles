@@ -665,7 +665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDataManager
   freeLevels: 9
   starsPerUnlock: 3
-  clearSaveOnStart: 0
+  clearSaveOnStart: 1
 --- !u!1 &1170056311
 GameObject:
   m_ObjectHideFlags: 0

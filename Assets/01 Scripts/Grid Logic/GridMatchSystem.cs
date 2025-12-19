@@ -107,17 +107,17 @@ public class GridMatchSystem : MonoBehaviour
     {
         isDestroying = true;
         grid.Log($"Destroying {positions.Count} matched bubbles sequentially");
-        
+    
         float currentDelay = destructionDelay;
         int lastPoints = 0;
-        
+    
         for (int i = 0; i < positions.Count; i++)
         {
             yield return new WaitForSeconds(currentDelay);
-            
+        
             Vector3 bubbleWorldPos = grid.GridToWorld(positions[i]);
             RemoveBubbleAt(positions[i]);
-            
+        
             if (ScoreManager.Instance != null)
             {
                 int points = ScoreManager.Instance.GetMatchBubblePoints(i);
@@ -125,41 +125,41 @@ public class GridMatchSystem : MonoBehaviour
                 SpawnScorePopup(bubbleWorldPos, points, i);
                 lastPoints = points;
             }
-            
+        
             currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
         }
-        
+    
         int matchCount = positions.Count;
         yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay, matchCount, lastPoints));
-        
+    
         isDestroying = false;
         hadMatchThisShot = false;
-        
+    
         grid.onColorsChanged?.Invoke();
-        
+    
         // Check win conditions
         if (CheckWinCondition())
         {
             onDestructionComplete?.Invoke();
             yield break;
         }
-        
+    
         if (GameManager.Instance != null && GameManager.Instance.CheckScoreVictory())
         {
             onDestructionComplete?.Invoke();
             yield break;
         }
-        
+    
         if (CheckLoseCondition())
         {
             onDestructionComplete?.Invoke();
             yield break;
         }
-        
-        // Consume shot after destruction (for non-survival modes)
-        grid.RowSystem.ConsumeShot();
-        
-        // Notify that destruction is complete (for pending row spawns)
+    
+        // Match was successful - do NOT consume shot
+        // Shots are only consumed in CheckAndDestroyMatches when there's NO match
+    
+        // Notify that destruction is complete (for pending row spawns in survival mode)
         onDestructionComplete?.Invoke();
     }
     

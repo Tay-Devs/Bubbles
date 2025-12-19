@@ -4672,7 +4672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ColorRemovalSystem
   scoreBonus: 1000
   colorRemovedEffect: {fileID: 914527134}
-  isEffectDurationOn: 0
+  isEffectDurationOn: 1
   effectDuration: 2
   enableDebugLogs: 0
 --- !u!1 &2134261499
