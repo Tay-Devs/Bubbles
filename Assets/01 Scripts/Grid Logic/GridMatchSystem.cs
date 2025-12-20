@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,8 +21,13 @@ public class GridMatchSystem : MonoBehaviour
     
     private HexGrid grid;
     private bool isDestroying = false;
+    private bool hadMatchThisShot = false; // Track if current shot made a match
     
     public bool IsDestroying => isDestroying;
+    public bool HadMatchThisShot => hadMatchThisShot;
+    
+    // Event fired when destruction sequence completes
+    public Action onDestructionComplete;
 
     void Awake()
     {
@@ -30,7 +36,8 @@ public class GridMatchSystem : MonoBehaviour
 
     #region Match Detection
     
-    // Check for matches and destroy them
+    // Checks for color matches at position and starts destruction if found.
+    // Returns true if matches were found and destruction started.
     public bool CheckAndDestroyMatches(Vector2Int startPos)
     {
         if (startPos.x == -1) return false;
@@ -43,23 +50,24 @@ public class GridMatchSystem : MonoBehaviour
         
         if (matches.Count >= minMatchCount)
         {
-            // Match found - destroy bubbles with per-bubble scoring
+            hadMatchThisShot = true;
             StartCoroutine(DestroyMatchedBubblesSequentially(matches));
             return true;
         }
         
-        // No match - NOW check lose condition since no bubbles will be cleared
+        // No match - mark that this shot didn't have a match
+        hadMatchThisShot = false;
+        
         if (CheckLoseCondition())
         {
             return false;
         }
         
-        // No match and not lost - consume a shot
         grid.RowSystem.ConsumeShot();
         return false;
     }
     
-    // Flood fill to find connected bubbles of the same color
+    // Flood fills from start position to find all connected bubbles of same type.
     public List<Vector2Int> FloodFill(Vector2Int start, BubbleType? matchType = null)
     {
         var result = new List<Vector2Int>();
@@ -93,26 +101,23 @@ public class GridMatchSystem : MonoBehaviour
 
     #region Destruction
     
-    // Destroys matched bubbles one at a time, awarding scaled points per bubble.
-    // Uses per-bubble scaling: first 3 get base points, then increasing multipliers.
+    // Destroys matched bubbles sequentially with scoring and popups.
+    // After destruction completes, fires onDestructionComplete event.
     private IEnumerator DestroyMatchedBubblesSequentially(List<Vector2Int> positions)
     {
         isDestroying = true;
         grid.Log($"Destroying {positions.Count} matched bubbles sequentially");
-        
+    
         float currentDelay = destructionDelay;
         int lastPoints = 0;
-        
+    
         for (int i = 0; i < positions.Count; i++)
         {
             yield return new WaitForSeconds(currentDelay);
-            
-            // Get bubble position before destroying it
+        
             Vector3 bubbleWorldPos = grid.GridToWorld(positions[i]);
-            
             RemoveBubbleAt(positions[i]);
-            
-            // Award score and spawn popup
+        
             if (ScoreManager.Instance != null)
             {
                 int points = ScoreManager.Instance.GetMatchBubblePoints(i);
@@ -120,26 +125,45 @@ public class GridMatchSystem : MonoBehaviour
                 SpawnScorePopup(bubbleWorldPos, points, i);
                 lastPoints = points;
             }
-            
+        
             currentDelay = Mathf.Max(currentDelay * destructionDelayMultiplier, destructionDelayLimit);
         }
-        
-        // Pass match count and last points to continue combo for floating bubbles
+    
         int matchCount = positions.Count;
         yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay, matchCount, lastPoints));
-        
+    
         isDestroying = false;
-        
+        hadMatchThisShot = false;
+    
         grid.onColorsChanged?.Invoke();
-        
-        if (CheckWinCondition()) yield break;
-        
-        // Check lose condition after destruction - bubbles in lose zone may have been cleared
-        CheckLoseCondition();
+    
+        // Check win conditions
+        if (CheckWinCondition())
+        {
+            onDestructionComplete?.Invoke();
+            yield break;
+        }
+    
+        if (GameManager.Instance != null && GameManager.Instance.CheckScoreVictory())
+        {
+            onDestructionComplete?.Invoke();
+            yield break;
+        }
+    
+        if (CheckLoseCondition())
+        {
+            onDestructionComplete?.Invoke();
+            yield break;
+        }
+    
+        // Match was successful - do NOT consume shot
+        // Shots are only consumed in CheckAndDestroyMatches when there's NO match
+    
+        // Notify that destruction is complete (for pending row spawns in survival mode)
+        onDestructionComplete?.Invoke();
     }
     
-    // Destroys floating bubbles one at a time with multiplicative scoring.
-    // Continues combo index and scoring from the matched bubbles that triggered this.
+    // Destroys floating bubbles with combo scoring continuation.
     private IEnumerator DestroyFloatingBubblesCoroutine(float startingDelay, int startingComboIndex = 0, int lastMatchPoints = 0)
     {
         var floating = GetFloatingBubbles();
@@ -154,29 +178,23 @@ public class GridMatchSystem : MonoBehaviour
             {
                 yield return new WaitForSeconds(currentDelay);
                 
-                // Get bubble position before destroying it
                 Vector3 bubbleWorldPos = grid.GridToWorld(floating[i]);
-                
                 RemoveBubbleAt(floating[i]);
                 
-                // Award score and spawn popup, continuing combo from match
                 if (ScoreManager.Instance != null)
                 {
                     int points;
                     if (lastMatchPoints > 0)
                     {
-                        // Continue from last match points with multiplicative scaling
                         points = ScoreManager.Instance.GetFloatingBubblePointsFromBase(i, lastMatchPoints);
                     }
                     else
                     {
-                        // Fallback to default floating scoring
                         points = ScoreManager.Instance.GetFloatingBubblePoints(i);
                     }
                     
                     ScoreManager.Instance.AddScore(points);
                     
-                    // Continue combo index from where match left off
                     int comboIndex = startingComboIndex + i;
                     SpawnScorePopup(bubbleWorldPos, points, comboIndex);
                 }
@@ -186,8 +204,6 @@ public class GridMatchSystem : MonoBehaviour
         }
     }
     
-    // Spawns a score popup at the given position showing the points earned.
-    // ComboIndex controls text size scaling - higher = bigger text.
     private void SpawnScorePopup(Vector3 position, int points, int comboIndex = 0)
     {
         if (scorePopupPrefab == null) return;
@@ -212,7 +228,6 @@ public class GridMatchSystem : MonoBehaviour
         if (floating.Count > 0)
         {
             grid.Log($"Found {floating.Count} floating bubbles");
-            // Called standalone, so no combo continuation
             StartCoroutine(DestroyFloatingBubblesCoroutine(destructionDelay, 0, 0));
         }
         
@@ -223,7 +238,6 @@ public class GridMatchSystem : MonoBehaviour
 
     #region Floating Bubbles
     
-    // Find all bubbles connected to the top row
     public HashSet<Vector2Int> FindConnectedToTop()
     {
         var connected = new HashSet<Vector2Int>();
@@ -233,7 +247,6 @@ public class GridMatchSystem : MonoBehaviour
         grid.ResetVisited();
         var queue = new Queue<Vector2Int>();
         
-        // Start from all bubbles in row 0
         for (int x = 0; x < gridData[0].Count; x++)
         {
             var bubble = gridData[0][x];
@@ -263,7 +276,6 @@ public class GridMatchSystem : MonoBehaviour
         return connected;
     }
     
-    // Get list of floating bubbles (not connected to top)
     public List<Vector2Int> GetFloatingBubbles()
     {
         var floating = new List<Vector2Int>();
@@ -288,7 +300,6 @@ public class GridMatchSystem : MonoBehaviour
         return floating;
     }
     
-    // Check if position is adjacent to any connected bubble
     public bool IsAdjacentToConnected(Vector2Int pos, HashSet<Vector2Int> connected)
     {
         foreach (var neighbor in grid.GetNeighbors(pos))
@@ -310,8 +321,8 @@ public class GridMatchSystem : MonoBehaviour
         
         if (grid.IsGridEmpty())
         {
-            grid.Log("All bubbles cleared - Victory!");
-            GameManager.Instance.Victory();
+            grid.Log("All bubbles cleared - notifying GameManager");
+            GameManager.Instance.OnAllBubblesCleared();
             return true;
         }
         

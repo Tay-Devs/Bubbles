@@ -4,23 +4,212 @@ using UnityEngine;
 
 public class GridRowSystem : MonoBehaviour
 {
-    [Header("Shot System")]
+    [Header("Shot System (Normal Mode)")]
     public int shotsBeforeNewRow = 5;
     [SerializeField] private int currentShotsRemaining;
     
+    [Header("Survival Mode Runtime")]
+    [SerializeField] private int survivalRowsSpawned = 0;
+    [SerializeField] private float survivalTimer = 0f;
+    [SerializeField] private float currentInterval;
+    [SerializeField] private bool rowPending = false;
+    
+    [Header("Multi-Row Spawn")]
+    public float multiRowDelay = 0.2f;
+    
     // Events
-    public Action<int, int> onShotsChanged; // (current, max)
+    public Action<int, int> onShotsChanged;
     public Action onRowSpawned;
+    public Action<int> onSurvivalRowSpawned;
+    public Action<float> onSurvivalIntervalChanged;
     
     private HexGrid grid;
+    private PlayerController playerController;
     
     public int CurrentShots => currentShotsRemaining;
     public int MaxShots => shotsBeforeNewRow;
+    public int SurvivalRowsSpawned => survivalRowsSpawned;
+    public float CurrentSurvivalInterval => currentInterval;
+    public float SurvivalTimer => survivalTimer;
+    public bool IsSurvivalMode => GameManager.Instance != null && 
+                                   GameManager.Instance.ActiveWinCondition == WinConditionType.Survival;
 
     void Awake()
     {
         grid = GetComponent<HexGrid>();
     }
+    
+    void Start()
+    {
+        playerController = FindFirstObjectByType<PlayerController>();
+        PlayerController.onBubbleConnected += OnBubbleConnected;
+        
+        // Subscribe to destruction complete event
+        if (grid.MatchSystem != null)
+        {
+            grid.MatchSystem.onDestructionComplete += OnDestructionComplete;
+        }
+    }
+    
+    void OnDestroy()
+    {
+        PlayerController.onBubbleConnected -= OnBubbleConnected;
+        
+        if (grid != null && grid.MatchSystem != null)
+        {
+            grid.MatchSystem.onDestructionComplete -= OnDestructionComplete;
+        }
+    }
+    
+    void Update()
+    {
+        if (!IsSurvivalMode) return;
+        if (GameManager.Instance == null || !GameManager.Instance.IsPlaying) return;
+        
+        UpdateSurvivalTimer();
+    }
+    
+    private int GetRowsToSpawn()
+    {
+        if (grid.ColorRemoval != null)
+        {
+            return grid.ColorRemoval.RowsPerSpawn;
+        }
+        return 1;
+    }
+
+    #region Survival Mode
+    
+    private void UpdateSurvivalTimer()
+    {
+        if (grid.IsDestroying) return;
+        if (rowPending) return;
+        
+        survivalTimer += Time.deltaTime;
+        
+        if (survivalTimer >= currentInterval)
+        {
+            bool bubbleFlying = playerController != null && playerController.IsBubbleFlying;
+            
+            if (bubbleFlying)
+            {
+                rowPending = true;
+                grid.Log("[GridRowSystem] Row spawn pending - waiting for bubble to connect");
+            }
+            else
+            {
+                TriggerSurvivalSpawn();
+                survivalTimer = 0f;
+            }
+        }
+    }
+    
+    // Called when bubble connects to grid.
+    // If destruction is in progress, wait for it to complete.
+    // If no match was made, spawn pending rows immediately.
+    private void OnBubbleConnected()
+    {
+        if (!IsSurvivalMode) return;
+        if (!rowPending) return;
+        
+        // If destruction is in progress, wait for OnDestructionComplete
+        if (grid.IsDestroying)
+        {
+            grid.Log("[GridRowSystem] Bubble connected but destruction in progress - waiting for completion");
+            return;
+        }
+        
+        // No match/destruction - spawn pending rows now
+        grid.Log("[GridRowSystem] Bubble connected with no match - spawning pending rows");
+        SpawnPendingRows();
+    }
+    
+    // Called when destruction sequence completes.
+    // Spawns pending rows if any are waiting.
+    private void OnDestructionComplete()
+    {
+        if (!IsSurvivalMode) return;
+        if (!rowPending) return;
+        
+        grid.Log("[GridRowSystem] Destruction complete - spawning pending rows");
+        SpawnPendingRows();
+    }
+    
+    // Spawns pending survival rows and resets state.
+    private void SpawnPendingRows()
+    {
+        if (!rowPending) return;
+        
+        TriggerSurvivalSpawn();
+        
+        survivalTimer = 0f;
+        rowPending = false;
+    }
+    
+    private void TriggerSurvivalSpawn()
+    {
+        int rowsToSpawn = GetRowsToSpawn();
+        
+        grid.Log($"[GridRowSystem] Survival trigger - spawning {rowsToSpawn} row(s)");
+        
+        if (rowsToSpawn == 1)
+        {
+            SpawnSurvivalRow();
+        }
+        else
+        {
+            StartCoroutine(SpawnMultipleSurvivalRows(rowsToSpawn));
+        }
+    }
+    
+    private System.Collections.IEnumerator SpawnMultipleSurvivalRows(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            SpawnSurvivalRow();
+            
+            if (i < count - 1)
+            {
+                yield return new WaitForSeconds(multiRowDelay);
+            }
+        }
+    }
+    
+    private void SpawnSurvivalRow()
+    {
+        SpawnNewRowAtTop();
+        survivalRowsSpawned++;
+        
+        GameManager.Instance.OnSurvivalRowSpawned(survivalRowsSpawned);
+        onSurvivalRowSpawned?.Invoke(survivalRowsSpawned);
+        
+        float deduction = GameManager.Instance.SurvivalIntervalDeduction;
+        float minInterval = GameManager.Instance.SurvivalMinInterval;
+        
+        float previousInterval = currentInterval;
+        currentInterval = Mathf.Max(currentInterval - deduction, minInterval);
+        
+        if (currentInterval != previousInterval)
+        {
+            onSurvivalIntervalChanged?.Invoke(currentInterval);
+            grid.Log($"Survival interval reduced: {previousInterval:F1}s -> {currentInterval:F1}s");
+        }
+    }
+    
+    public void ResetSurvival()
+    {
+        survivalRowsSpawned = 0;
+        survivalTimer = 0f;
+        rowPending = false;
+        currentInterval = GameManager.Instance != null 
+            ? GameManager.Instance.SurvivalStartingInterval 
+            : 10f;
+        
+        onSurvivalIntervalChanged?.Invoke(currentInterval);
+        grid.Log($"Survival reset. Starting interval: {currentInterval}s");
+    }
+    
+    #endregion
 
     #region Shot Management
     
@@ -33,14 +222,49 @@ public class GridRowSystem : MonoBehaviour
     
     public void ConsumeShot()
     {
+        if (IsSurvivalMode)
+        {
+            grid.Log("Survival mode: Shot not consumed (time-based rows)");
+            return;
+        }
+        
         currentShotsRemaining--;
         onShotsChanged?.Invoke(currentShotsRemaining, shotsBeforeNewRow);
         grid.Log($"Shot consumed, {currentShotsRemaining} remaining");
         
         if (currentShotsRemaining <= 0)
         {
-            SpawnNewRowAtTop();
+            TriggerShotSpawn();
             ResetShots();
+        }
+    }
+    
+    private void TriggerShotSpawn()
+    {
+        int rowsToSpawn = GetRowsToSpawn();
+        
+        grid.Log($"[GridRowSystem] Shot trigger - spawning {rowsToSpawn} row(s)");
+        
+        if (rowsToSpawn == 1)
+        {
+            SpawnNewRowAtTop();
+        }
+        else
+        {
+            StartCoroutine(SpawnMultipleRows(rowsToSpawn));
+        }
+    }
+    
+    private System.Collections.IEnumerator SpawnMultipleRows(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            SpawnNewRowAtTop();
+            
+            if (i < count - 1)
+            {
+                yield return new WaitForSeconds(multiRowDelay);
+            }
         }
     }
     
@@ -52,31 +276,34 @@ public class GridRowSystem : MonoBehaviour
     {
         grid.Log("Spawning new row at top");
         
-        // Push all existing bubbles down
         PushGridDown();
         
-        // Get available colors
-        var availableColors = new List<BubbleType>(grid.GetAvailableColors());
-        if (availableColors.Count == 0)
+        var gridColors = grid.GetAvailableColors();
+        var levelColors = grid.GetLevelColors();
+        var availableColors = new List<BubbleType>();
+        
+        foreach (var color in gridColors)
         {
-            foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
+            if (levelColors.Contains(color))
+            {
                 availableColors.Add(color);
+            }
         }
         
-        // Create new row at position 0
+        if (availableColors.Count == 0)
+        {
+            availableColors.AddRange(levelColors);
+            grid.Log("[GridRowSystem] No colors in grid, using all level colors");
+        }
+        
         List<Bubble> newRow = grid.CreateRow(0, availableColors);
         grid.InsertRowAtTop(newRow);
         
-        // Update all bubble positions
         UpdateAllBubblePositions();
-        
-        // Relocate any floating bubbles
         RelocateFloatingBubbles();
         
-        // Check lose condition
         grid.MatchSystem.CheckLoseCondition();
         
-        // Notify
         grid.onColorsChanged?.Invoke();
         onRowSpawned?.Invoke();
     }
@@ -149,7 +376,6 @@ public class GridRowSystem : MonoBehaviour
                 }
             }
             
-            // If no moves possible, try force relocation
             if (!movedAny && floating.Count > 0)
             {
                 foreach (var floatPos in floating)
@@ -231,14 +457,11 @@ public class GridRowSystem : MonoBehaviour
         
         if (to.x < 0 || to.x >= grid.width) return;
         
-        // Remove from old position
         grid.SetBubbleAt(from, null);
         
-        // Ensure new position exists
         grid.EnsureRowExists(to.y);
         grid.EnsureColumnExists(to.x, to.y);
         
-        // Add to new position
         grid.SetBubbleAt(to, bubble);
         bubble.transform.position = grid.GridToWorld(to);
     }

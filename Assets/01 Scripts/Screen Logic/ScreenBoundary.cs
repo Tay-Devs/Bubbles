@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Runs AFTER GridCameraFitter so camera size is correct
+[DefaultExecutionOrder(-50)]
 public class ScreenBoundary : MonoBehaviour
 {
     [Header("Physics Material")]
@@ -10,15 +12,23 @@ public class ScreenBoundary : MonoBehaviour
     public bool createCeiling = true;
     
     [Header("Ceiling Position")]
-    public float ceilingYOffset = 0f; // Adjust if grid doesn't start at screen top
+    public float ceilingYOffset = 0f;
+    
+    private bool boundariesCreated = false;
     
     void Start()
     {
-        CreateBoundaries();
+        // Delay boundary creation to ensure camera is sized
+        Invoke(nameof(CreateBoundaries), 0.1f);
     }
     
-    void CreateBoundaries()
+    public void CreateBoundaries()
     {
+        if (boundariesCreated)
+        {
+            ClearBoundaries();
+        }
+        
         Camera cam = Camera.main;
         if (cam == null) return;
         
@@ -26,7 +36,8 @@ public class ScreenBoundary : MonoBehaviour
         float screenWidth = screenHeight * cam.aspect;
         Vector3 camPos = cam.transform.position;
         
-        // Create bouncy material if not assigned
+        Debug.Log($"[ScreenBoundary] Creating boundaries for camera size: {screenWidth}x{screenHeight}");
+        
         if (bouncyMaterial == null)
         {
             bouncyMaterial = new PhysicsMaterial2D("BouncyWalls");
@@ -34,29 +45,40 @@ public class ScreenBoundary : MonoBehaviour
             bouncyMaterial.friction = 0f;
         }
         
-        // Left wall - bouncy
+        // Left wall
         CreateWall("LeftWall", 
             new Vector3(camPos.x - screenWidth/2 - boundaryThickness/2, camPos.y, 0),
-            new Vector2(boundaryThickness, screenHeight),
+            new Vector2(boundaryThickness, screenHeight * 2),
             bouncyMaterial,
             "Untagged");
         
-        // Right wall - bouncy
+        // Right wall
         CreateWall("RightWall", 
             new Vector3(camPos.x + screenWidth/2 + boundaryThickness/2, camPos.y, 0),
-            new Vector2(boundaryThickness, screenHeight),
+            new Vector2(boundaryThickness, screenHeight * 2),
             bouncyMaterial,
             "Untagged");
         
-        // Ceiling - not bouncy, tagged for detection
+        // Ceiling
         if (createCeiling)
         {
             CreateWall("Ceiling", 
                 new Vector3(camPos.x, camPos.y + screenHeight/2 + boundaryThickness/2 + ceilingYOffset, 0),
                 new Vector2(screenWidth + boundaryThickness * 2, boundaryThickness),
-                null, // No bounce material
+                null,
                 "Ceiling");
         }
+        
+        boundariesCreated = true;
+    }
+    
+    public void ClearBoundaries()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        boundariesCreated = false;
     }
     
     void CreateWall(string name, Vector3 position, Vector2 size, PhysicsMaterial2D material, string tag)

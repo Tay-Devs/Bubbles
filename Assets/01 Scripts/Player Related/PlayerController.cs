@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,21 +16,38 @@ public class PlayerController : MonoBehaviour
     private GameObject currentBubble;
     public float shootSpeed = 15f;
     
+    [Header("Next Bubble Preview")]
+    public Transform nextBubblePreviewParent;
+    private GameObject nextBubblePreview;
+    private BubbleType nextBubbleType;
+    
+    [Header("Color Mode")]
+    [Tooltip("If true, only spawns colors that exist in grid. If false, uses all level colors.")]
+    public bool onlyUseGridColors = true;
+    
     [Header("Cooldown")]
-    public float shootCooldown = 0.5f;
-    private float lastShootTime = -Mathf.Infinity;
-    private float resumeGraceTime = 0f; // Prevents firing right after resume
+    private float resumeGraceTime = 0f;
     private const float RESUME_GRACE_DURATION = 0.1f;
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
+    
+    // Events
+    public static event Action onBubbleConnected;
+    public static event Action<BubbleType> onNextBubbleChanged;
     
     private HexGrid grid;
     private Camera mainCam;
     private bool wasPressed = false;
     private Vector2 lastValidPointerPos;
     private List<BubbleType> availableColors = new List<BubbleType>();
+    private List<BubbleType> levelColors = new List<BubbleType>(); // All colors allowed in this level
     private UIWorldAnchor worldAnchor;
+    
+    private bool isBubbleFlying = false;
+    
+    public bool IsBubbleFlying => isBubbleFlying;
+    public BubbleType NextBubbleType => nextBubbleType;
     
     void Start()
     {
@@ -43,28 +61,25 @@ public class PlayerController : MonoBehaviour
             enableDebugLogs = grid.enableDebugLogs;
         }
         
-        // Subscribe to resume event to prevent accidental firing
         if (GameManager.Instance != null)
         {
             GameManager.Instance.onResume.AddListener(OnGameResume);
         }
         
+        // Cache level colors first
+        CacheLevelColors();
         UpdateAvailableColors();
         
-        // Check if we have a UIWorldAnchor - if so, wait for it to position us first
         worldAnchor = GetComponent<UIWorldAnchor>();
         if (worldAnchor != null)
         {
             worldAnchor.onPositionApplied += OnPositionApplied;
             Debug.Log("[PlayerController] Subscribed to UIWorldAnchor.onPositionApplied, waiting for position...");
-            // Don't spawn yet - wait for anchor to position us
         }
         else
         {
             Debug.Log("[PlayerController] No UIWorldAnchor found, spawning immediately");
-            // No anchor, spawn immediately
-            SpawnNewBubble();
-            UpdateAimArrowPosition();
+            InitializeBubbles();
         }
     }
     
@@ -86,24 +101,55 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    // Caches all colors allowed in this level from LevelLoader.
+    private void CacheLevelColors()
+    {
+        levelColors.Clear();
+        
+        if (LevelLoader.Instance != null)
+        {
+            var colors = LevelLoader.Instance.GetAvailableColors();
+            if (colors != null && colors.Length > 0)
+            {
+                levelColors.AddRange(colors);
+                Log($"[PlayerController] Level colors: {string.Join(", ", levelColors)}");
+                return;
+            }
+        }
+        
+        // Fallback to all colors
+        foreach (BubbleType color in Enum.GetValues(typeof(BubbleType)))
+        {
+            levelColors.Add(color);
+        }
+        Log($"[PlayerController] Using fallback colors: {string.Join(", ", levelColors)}");
+    }
+    
     void OnGameResume()
     {
-        // Set grace period to prevent firing when clicking resume button
         resumeGraceTime = Time.unscaledTime + RESUME_GRACE_DURATION;
-        wasPressed = false; // Reset press state
+        wasPressed = false;
     }
     
     void OnPositionApplied()
     {
         Debug.Log($"[PlayerController] OnPositionApplied received! Position is now: {transform.position}");
+        InitializeBubbles();
+    }
+    
+    void InitializeBubbles()
+    {
+        nextBubbleType = GetRandomAvailableColor();
+        
         SpawnNewBubble();
         UpdateAimArrowPosition();
+        
+        CreateNextBubblePreview();
     }
     
     void UpdateAimArrowPosition()
     {
         if (aimArrow == null) return;
-        // Position arrow at default angle (straight up)
         aimArrow.transform.position = transform.position + new Vector3(0, arrowDistance, 0);
         aimArrow.transform.rotation = Quaternion.identity;
     }
@@ -114,19 +160,41 @@ public class PlayerController : MonoBehaviour
     {
         UpdateAvailableColors();
         ValidateCurrentBubble();
+        ValidateNextBubble();
     }
     
+    // Updates available colors based on mode.
+    // If onlyUseGridColors is true, only uses colors currently in grid (intersected with level colors).
+    // If false, uses all level colors.
     void UpdateAvailableColors()
     {
         availableColors.Clear();
         
-        if (grid != null)
+        if (onlyUseGridColors && grid != null)
         {
+            // Get colors in grid, but only those allowed by level
             var gridColors = grid.GetAvailableColors();
-            availableColors.AddRange(gridColors);
+            foreach (var color in gridColors)
+            {
+                if (levelColors.Contains(color))
+                {
+                    availableColors.Add(color);
+                }
+            }
+        }
+        else
+        {
+            // Use all level colors
+            availableColors.AddRange(levelColors);
         }
         
-        Log($"Available colors: {availableColors.Count} - [{string.Join(", ", availableColors)}]");
+        // Fallback if no colors available (grid might be empty)
+        if (availableColors.Count == 0)
+        {
+            availableColors.AddRange(levelColors);
+        }
+        
+        Log($"[PlayerController] Available colors: {string.Join(", ", availableColors)}");
     }
     
     void ValidateCurrentBubble()
@@ -140,19 +208,42 @@ public class PlayerController : MonoBehaviour
         if (!availableColors.Contains(bubble.type))
         {
             BubbleType newColor = GetRandomAvailableColor();
-            Log($"Current bubble color {bubble.type} no longer available, changing to {newColor}");
+            Log($"[PlayerController] Current bubble {bubble.type} not available, changing to {newColor}");
             bubble.SetType(newColor);
         }
     }
     
+    void ValidateNextBubble()
+    {
+        if (availableColors.Count == 0) return;
+        
+        if (!availableColors.Contains(nextBubbleType))
+        {
+            BubbleType newColor = GetRandomAvailableColor();
+            Log($"[PlayerController] Next bubble {nextBubbleType} not available, changing to {newColor}");
+            nextBubbleType = newColor;
+            
+            UpdateNextBubblePreview();
+            onNextBubbleChanged?.Invoke(nextBubbleType);
+        }
+    }
+    
+    // Gets a random color from available colors (respects level config).
     BubbleType GetRandomAvailableColor()
     {
         if (availableColors.Count == 0)
         {
-            return (BubbleType)Random.Range(0, System.Enum.GetValues(typeof(BubbleType)).Length);
+            // Emergency fallback to level colors
+            if (levelColors.Count > 0)
+            {
+                return levelColors[UnityEngine.Random.Range(0, levelColors.Count)];
+            }
+            
+            // Last resort fallback
+            return (BubbleType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(BubbleType)).Length);
         }
         
-        return availableColors[Random.Range(0, availableColors.Count)];
+        return availableColors[UnityEngine.Random.Range(0, availableColors.Count)];
     }
     
     void Update()
@@ -203,12 +294,10 @@ public class PlayerController : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return false;
         
-        // Use the new IsDestroying property
         if (grid != null && grid.IsDestroying) return false;
         
-        if (Time.time < lastShootTime + shootCooldown) return false;
+        if (isBubbleFlying) return false;
         
-        // Grace period after resume to prevent accidental firing
         if (Time.unscaledTime < resumeGraceTime) return false;
         
         bool isPressed = IsPointerPressed();
@@ -244,7 +333,8 @@ public class PlayerController : MonoBehaviour
     {
         if (currentBubble == null) return;
         
-        lastShootTime = Time.time;
+        isBubbleFlying = true;
+        Log("[PlayerController] Bubble fired, waiting for connection...");
         
         Vector3 shootDirection = (aimArrow.transform.position - transform.position).normalized;
         
@@ -261,6 +351,14 @@ public class PlayerController : MonoBehaviour
         currentBubble = null;
         
         SpawnNewBubble();
+    }
+    
+    public void OnBubbleConnectedToGrid()
+    {
+        isBubbleFlying = false;
+        Log("[PlayerController] Bubble connected to grid");
+        
+        onBubbleConnected?.Invoke();
     }
     
     void SpawnNewBubble()
@@ -288,8 +386,45 @@ public class PlayerController : MonoBehaviour
             Bubble bubble = currentBubble.GetComponent<Bubble>();
             if (bubble != null)
             {
-                bubble.SetType(GetRandomAvailableColor());
+                bubble.SetType(nextBubbleType);
             }
+            
+            // Generate new next bubble from available colors
+            nextBubbleType = GetRandomAvailableColor();
+            UpdateNextBubblePreview();
+            onNextBubbleChanged?.Invoke(nextBubbleType);
+            
+            Log($"[PlayerController] Spawned bubble, next will be: {nextBubbleType}");
+        }
+    }
+    
+    void CreateNextBubblePreview()
+    {
+        if (nextBubblePreviewParent == null || bubblePrefab == null) return;
+        
+        if (nextBubblePreview != null)
+            Destroy(nextBubblePreview);
+        
+        nextBubblePreview = Instantiate(bubblePrefab, nextBubblePreviewParent);
+        nextBubblePreview.transform.localPosition = Vector3.zero;
+        
+        Collider2D col = nextBubblePreview.GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+        
+        Rigidbody2D rb = nextBubblePreview.GetComponent<Rigidbody2D>();
+        if (rb != null) rb.simulated = false;
+        
+        UpdateNextBubblePreview();
+    }
+    
+    void UpdateNextBubblePreview()
+    {
+        if (nextBubblePreview == null) return;
+        
+        Bubble bubble = nextBubblePreview.GetComponent<Bubble>();
+        if (bubble != null)
+        {
+            bubble.SetType(nextBubbleType);
         }
     }
 }
