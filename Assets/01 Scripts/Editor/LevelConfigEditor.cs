@@ -7,6 +7,7 @@ public class LevelConfigEditor : Editor
     // Level Info
     private SerializedProperty levelNumber;
     private SerializedProperty levelName;
+    private SerializedProperty levelIcon; // Add this
     
     // Grid
     private SerializedProperty gridWidth;
@@ -39,6 +40,7 @@ public class LevelConfigEditor : Editor
         // Level Info
         levelNumber = serializedObject.FindProperty("levelNumber");
         levelName = serializedObject.FindProperty("levelName");
+        levelIcon = serializedObject.FindProperty("levelIcon");
         
         // Grid
         gridWidth = serializedObject.FindProperty("gridWidth");
@@ -75,6 +77,7 @@ public class LevelConfigEditor : Editor
         EditorGUILayout.LabelField("Level Info", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(levelNumber);
         EditorGUILayout.PropertyField(levelName);
+        EditorGUILayout.PropertyField(levelIcon, new GUIContent("Level Icon (Theme)"));
         
         EditorGUILayout.Space(10);
         

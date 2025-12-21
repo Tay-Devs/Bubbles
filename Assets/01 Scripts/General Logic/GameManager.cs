@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameState
 {
+    WaitingToStart, // New state - waiting for intro popup
     Playing,
     Paused,
     GameOver,
@@ -22,7 +23,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     
     [Header("State")]
-    [SerializeField] private GameState currentState = GameState.Playing;
+    [SerializeField] private GameState currentState = GameState.WaitingToStart;
+    
+    [Header("Intro Settings")]
+    public bool showLevelIntro = true; // Set false to skip intro
     
     [Header("Win Condition")]
     public WinConditionType winCondition = WinConditionType.ClearAllBubbles;
@@ -46,11 +50,13 @@ public class GameManager : MonoBehaviour
     public UnityEvent onPause;
     public UnityEvent onResume;
     public UnityEvent onVictory;
+    public UnityEvent onGameStart; // New event - fired when intro dismissed
     public UnityEvent<WinConditionType> onWinConditionSet;
     public UnityEvent<int> onSurvivalRowSpawned;
     
     public GameState CurrentState => currentState;
     public bool IsPlaying => currentState == GameState.Playing;
+    public bool IsWaitingToStart => currentState == GameState.WaitingToStart;
     public WinConditionType ActiveWinCondition => winCondition;
     public int TargetScore => targetScore;
     public float SurvivalStartingInterval => survivalStartingInterval;
@@ -78,7 +84,17 @@ public class GameManager : MonoBehaviour
             winCondition = (WinConditionType)Random.Range(0, 3);
         }
         
-        currentState = GameState.Playing;
+        // Start in waiting state if showing intro, otherwise start playing
+        if (showLevelIntro)
+        {
+            currentState = GameState.WaitingToStart;
+            Debug.Log("[GameManager] Waiting for level intro to complete...");
+        }
+        else
+        {
+            currentState = GameState.Playing;
+            Debug.Log("[GameManager] No intro - starting immediately");
+        }
         
         onWinConditionSet?.Invoke(winCondition);
         
@@ -88,7 +104,18 @@ public class GameManager : MonoBehaviour
             WinConditionType.Survival => $" (Start: {survivalStartingInterval}s, Deduct: {survivalIntervalDeduction}s, Min: {survivalMinInterval}s)",
             _ => ""
         };
-        Debug.Log($"[GameManager] Win condition: {winCondition}{conditionInfo}");
+        //Debug.Log($"[GameManager] Win condition: {winCondition}{conditionInfo}");
+    }
+    
+    // Called by LevelIntroUI when intro popup is dismissed.
+    public void StartGame()
+    {
+        if (currentState != GameState.WaitingToStart) return;
+        
+        currentState = GameState.Playing;
+        Debug.Log("[GameManager] Level intro complete - game started!");
+        
+        onGameStart?.Invoke();
     }
     
     public void OnSurvivalRowSpawned(int totalRowsSpawned)
@@ -162,7 +189,6 @@ public class GameManager : MonoBehaviour
         currentState = GameState.GameOver;
         Debug.Log("Game Over!");
         
-        // Notify LevelLoader
         if (LevelLoader.Instance != null)
         {
             LevelLoader.Instance.OnLevelLost();
@@ -173,7 +199,6 @@ public class GameManager : MonoBehaviour
         onGameOver?.Invoke();
     }
     
-    // Victory with flag for whether all bubbles were cleared.
     public void Victory(bool clearedAllBubbles = false)
     {
         if (currentState == GameState.GameOver || currentState == GameState.Victory) return;
@@ -181,7 +206,6 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Victory;
         Debug.Log("Victory!");
         
-        // Notify LevelLoader
         if (LevelLoader.Instance != null)
         {
             LevelLoader.Instance.OnLevelWon(clearedAllBubbles);
@@ -216,7 +240,6 @@ public class GameManager : MonoBehaviour
         onResume?.Invoke();
     }
     
-    // Now uses LevelLoader for restart.
     public void RestartGame()
     {
         Time.timeScale = 1f;
@@ -231,7 +254,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    // Now uses LevelLoader to return to level select.
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;

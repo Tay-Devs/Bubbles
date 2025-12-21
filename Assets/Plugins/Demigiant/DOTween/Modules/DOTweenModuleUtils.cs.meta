@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 188918ab119d93148aa0de59ccf5286b
+guid: 7bcaf917d9cf5b84090421a5a2abe42e
 MonoImporter:
   serializedVersion: 2
   defaultReferences: []
@@ -11,5 +11,5 @@ AssetOrigin:
   productId: 32416
   packageName: DOTween Pro
   packageVersion: 1.0.386
-  assetPath: Assets/Trash Or Random Resources/Plugins/Demigiant/DOTween/Modules/DOTweenModuleSprite.cs
+  assetPath: Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs
   uploadId: 831236

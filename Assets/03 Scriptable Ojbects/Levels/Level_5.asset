@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Level_5
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 5
-  levelName: Level 5
+  levelName: Score Challenge
+  levelIcon: {fileID: 0}
   gridWidth: 12
   gridHeight: 6
   availableColors: 00000000010000000200000003000000

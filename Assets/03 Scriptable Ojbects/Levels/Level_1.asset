@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Level_1
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 1
-  levelName: Level 1
+  levelName: 'Pop Challenge '
+  levelIcon: {fileID: 11400000, guid: f7f343abb4bde4d4eb82c1d36e13c03f, type: 2}
   gridWidth: 9
   gridHeight: 5
   availableColors: 000000000100000002000000
   winCondition: 0
-  threeStarTime: 90
+  threeStarTime: 0
   twoStarTime: 150
   oneStarTime: 300
   targetScore: 1000

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8da095e39e9b4df488dfd436f81116d6
+guid: 78a59ca99f8987941adb61f9e14a06a7
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 2
@@ -22,7 +22,7 @@ TextureImporter:
   generateCubemap: 0
   seamlessCubemap: 0
   textureFormat: -3
-  maxTextureSize: 128
+  maxTextureSize: 512
   textureSettings:
     filterMode: 1
     aniso: 1
@@ -50,5 +50,5 @@ AssetOrigin:
   productId: 32416
   packageName: DOTween Pro
   packageVersion: 1.0.386
-  assetPath: Assets/Trash Or Random Resources/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenIcon.png
+  assetPath: Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Header.jpg
   uploadId: 831236

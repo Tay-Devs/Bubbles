@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 34192c5e0d14aee43a0e86cc4823268a
+guid: fccfc62abf2eb0a4db614853430894fd
 TextScriptImporter:
   userData: 
 AssetOrigin:
@@ -7,5 +7,5 @@ AssetOrigin:
   productId: 32416
   packageName: DOTween Pro
   packageVersion: 1.0.386
-  assetPath: Assets/Trash Or Random Resources/Plugins/Demigiant/DOTween/DOTween.XML
+  assetPath: Assets/Plugins/Demigiant/DOTween/readme.txt
   uploadId: 831236

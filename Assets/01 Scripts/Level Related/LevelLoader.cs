@@ -23,9 +23,10 @@ public class LevelLoader : MonoBehaviour
     private LevelConfig currentLevel;
     private float levelStartTime;
     private bool levelComplete = false;
+    private bool timerStarted = false;
     
     public LevelConfig CurrentLevel => currentLevel;
-    public float ElapsedTime => Time.time - levelStartTime;
+    public float ElapsedTime => timerStarted ? Time.time - levelStartTime : 0f;
     
     void Awake()
     {
@@ -41,7 +42,46 @@ public class LevelLoader : MonoBehaviour
     
     void Start()
     {
+        // Subscribe to game start event
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.onGameStart.AddListener(OnGameStart);
+            
+            // If not showing intro, start timer immediately
+            if (!GameManager.Instance.showLevelIntro)
+            {
+                StartTimer();
+            }
+        }
+        else
+        {
+            // No GameManager, start timer immediately
+            StartTimer();
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.onGameStart.RemoveListener(OnGameStart);
+        }
+    }
+    
+    // Called when GameManager fires onGameStart (intro dismissed).
+    private void OnGameStart()
+    {
+        StartTimer();
+    }
+    
+    // Starts the level timer.
+    private void StartTimer()
+    {
+        if (timerStarted) return;
+        
+        timerStarted = true;
         levelStartTime = Time.time;
+        Debug.Log("[LevelLoader] Timer started!");
     }
     
     private void LoadLevelFromSession()
@@ -62,7 +102,7 @@ public class LevelLoader : MonoBehaviour
         }
         
         ApplyLevelConfig();
-        Debug.Log($"[LevelLoader] Loaded level {currentLevel.levelNumber}: {currentLevel.levelName}");
+        //Debug.Log($"[LevelLoader] Loaded level {currentLevel.levelNumber}: {currentLevel.levelName}");
     }
     
     private void ApplyLevelConfig()
@@ -73,7 +113,7 @@ public class LevelLoader : MonoBehaviour
         {
             hexGrid.width = currentLevel.gridWidth;
             hexGrid.startingHeight = currentLevel.gridHeight;
-            Debug.Log($"[LevelLoader] Set grid size: {currentLevel.gridWidth}x{currentLevel.gridHeight}");
+            //Debug.Log($"[LevelLoader] Set grid size: {currentLevel.gridWidth}x{currentLevel.gridHeight}");
         }
         else
         {
@@ -110,7 +150,6 @@ public class LevelLoader : MonoBehaviour
         return (BubbleType[])System.Enum.GetValues(typeof(BubbleType));
     }
     
-    // Called when player wins.
     public void OnLevelWon(bool clearedAllBubbles = false)
     {
         if (levelComplete) return;
@@ -120,7 +159,6 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"[LevelLoader] Level won with {stars} stars!");
     }
     
-    // Called when player loses.
     public void OnLevelLost()
     {
         if (levelComplete) return;
@@ -130,8 +168,6 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"[LevelLoader] Level lost with {stars} stars");
     }
     
-    // Calculates stars and stores results in GameSession.
-    // Passes won flag so ClearAllBubbles mode returns 0 stars on loss.
     private int CalculateAndStoreResults(bool won, bool clearedAllBubbles)
     {
         if (currentLevel == null || gameSession == null) return 0;
@@ -140,7 +176,6 @@ public class LevelLoader : MonoBehaviour
         int score = ScoreManager.Instance != null ? ScoreManager.Instance.CurrentScore : 0;
         int rowsSurvived = gameManager != null ? gameManager.GetSurvivalRowsCount() : 0;
         
-        // Pass won flag to CalculateStars
         int stars = currentLevel.CalculateStars(won, completionTime, score, rowsSurvived, clearedAllBubbles);
         
         gameSession.SetResults(won, stars, score, completionTime, rowsSurvived);
