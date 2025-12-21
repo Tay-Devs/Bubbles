@@ -818,19 +818,19 @@ MonoBehaviour:
   gameSession: {fileID: 11400000, guid: d4ac345ae0e254341a5e9f8bacb55d9a, type: 2}
   gameSceneName: GameScene
   nodePrefab: {fileID: 3843670037560537773, guid: db752daf02593584ea6958f93341a5fe, type: 3}
+  contentArea: {fileID: 1788794493}
   poolSize: 50
   nodeSpacingY: 300
   horizontalPadding: 0.1
-  bottomPaddingPercent: 0.1
-  topPaddingPercent: 0.1
-  pathNoise: 0.15
-  zigzagStrength: 0.6
-  contentArea: {fileID: 1788794493}
+  bottomPadding: 0.5
+  topPadding: 0.5
+  pathNoise: 0.4
+  zigzagStrength: 0.8
+  patternSeed: 12345
   scrollSpeed: 500
   dragSensitivity: 1
+  bufferNodes: 3
   pathRenderer: {fileID: 579318683}
-  topBufferNodes: 3
-  bottomBufferScreens: 1
 --- !u!1 &1788794492
 GameObject:
   m_ObjectHideFlags: 0

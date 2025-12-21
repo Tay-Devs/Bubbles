@@ -10,307 +10,198 @@ public class LevelMapController : MonoBehaviour
     [Header("Data References")]
     public LevelDatabase levelDatabase;
     public GameSession gameSession;
-    
-    [Header("Scene")]
     public string gameSceneName = "Game";
     
     [Header("Node Settings")]
     public LevelNode nodePrefab;
+    public RectTransform contentArea;
     public int poolSize = 20;
     public float nodeSpacingY = 200f;
     
-    [Header("Padding (from screen edges)")]
-    [Range(0f, 0.5f)]
-    public float horizontalPadding = 0.1f;
-    [Range(0f, 0.5f)]
-    public float bottomPaddingPercent = 0.1f;
-    [Range(0f, 0.5f)]
-    public float topPaddingPercent = 0.1f;
+    [Header("Padding (% of screen)")]
+    [Range(0f, 0.5f)] public float horizontalPadding = 0.1f;
+    [Range(0f, 0.5f)] public float bottomPadding = 0.1f;
+    [Range(0f, 0.5f)] public float topPadding = 0.1f;
     
     [Header("Path Variation")]
-    [Range(0f, 1f)]
-    public float pathNoise = 0.3f;
-    [Range(0f, 1f)]
-    public float zigzagStrength = 0.5f;
+    [Range(0f, 1f)] public float pathNoise = 0.3f;
+    [Range(0f, 1f)] public float zigzagStrength = 0.5f;
+    public bool randomizePattern = true;
+    public int patternSeed = 12345;
     
     [Header("Scroll Settings")]
-    public RectTransform contentArea;
     public float scrollSpeed = 500f;
     public float dragSensitivity = 1f;
     
-    [Header("Path Rendering")]
+    [Header("Buffer (extra nodes to render)")]
+    public int bufferNodes = 3;
+    
+    [Header("References")]
     public LevelPathRenderer pathRenderer;
     
-    [Header("Buffer Settings")]
-    public int topBufferNodes = 3;
-    public float bottomBufferScreens = 1f;
-    
+    // Runtime
     private List<LevelNode> nodePool = new List<LevelNode>();
     private Dictionary<int, LevelNode> activeNodes = new Dictionary<int, LevelNode>();
-    
-    private float currentScrollY = 0f;
-    private float viewportHeight;
-    private float viewportWidth;
-    private int lowestVisibleLevel = 1;
-    private int highestVisibleLevel = 1;
-    
-    private Vector2 lastPointerPosition;
-    private bool isDragging = false;
-    
-    // Calculated bounds based on screen size
-    private float minX;
-    private float maxX;
-    private float centerX;
-    private float bottomPadding;
-    private float topPadding;
-    private float availableWidth;
-    
-    // Cached positions for consistent path
     private Dictionary<int, float> cachedXPositions = new Dictionary<int, float>();
     
-    private int totalLevels = 0;
+    private float currentScrollY;
+    private float viewportWidth, viewportHeight;
+    private float minX, maxX, availableWidth;
+    private int totalLevels;
+    
+    private Vector2 lastPointerPos;
+    private bool isDragging;
+    
+    // Calculated padding in pixels
+    private float BottomPaddingPx => viewportHeight * bottomPadding;
+    private float TopPaddingPx => viewportHeight * topPadding;
+    private float MaxScrollY => Mathf.Max(0, BottomPaddingPx + (totalLevels - 1) * nodeSpacingY - (viewportHeight - TopPaddingPx));
     
     void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
     }
     
     void Start()
     {
-        if (levelDatabase != null)
-        {
-            totalLevels = levelDatabase.LevelCount;
-            Debug.Log($"[LevelMapController] Database has {totalLevels} levels");
-        }
-        else
-        {
-            Debug.LogError("[LevelMapController] LevelDatabase is not assigned!");
-            totalLevels = 10;
-        }
+        totalLevels = levelDatabase != null ? levelDatabase.LevelCount : 10;
         
-        CalculateViewport();
-        CalculateBounds();
-        GenerateAllPositions();
-        
+        InitializeViewport();
+        GeneratePositions();
         CheckForResults();
-        InitializePool();
+        CreatePool();
         
-        int targetLevel = Mathf.Min(
-            LevelDataManager.Instance.GetFirstIncompleteLevel(),
-            totalLevels
-        );
+        int targetLevel = Mathf.Min(LevelDataManager.Instance.GetFirstIncompleteLevel(), totalLevels);
         ScrollToLevel(targetLevel);
-        
-        Debug.Log($"[LevelMapController] Scrolling to first incomplete level: {targetLevel}");
-        
-        RefreshVisibleNodes();
     }
     
-    void Update()
-    {
-        HandleScrollInput();
-    }
+    void Update() => HandleInput();
     
-    private void CalculateViewport()
+    // Initializes viewport dimensions and calculates bounds.
+    private void InitializeViewport()
     {
-        if (contentArea != null)
-        {
-            viewportHeight = contentArea.rect.height;
-            viewportWidth = contentArea.rect.width;
-        }
-        else
-        {
-            viewportHeight = Screen.height;
-            viewportWidth = Screen.width;
-        }
+        viewportWidth = contentArea != null ? contentArea.rect.width : Screen.width;
+        viewportHeight = contentArea != null ? contentArea.rect.height : Screen.height;
         
-        Debug.Log($"[LevelMapController] Viewport size: {viewportWidth}x{viewportHeight}");
-    }
-    
-    private void CalculateBounds()
-    {
-        float horizontalPaddingPixels = viewportWidth * horizontalPadding;
-        float halfWidth = viewportWidth / 2f;
-        
-        minX = -halfWidth + horizontalPaddingPixels;
-        maxX = halfWidth - horizontalPaddingPixels;
-        centerX = 0f;
+        float padPx = viewportWidth * horizontalPadding;
+        minX = -viewportWidth / 2f + padPx;
+        maxX = viewportWidth / 2f - padPx;
         availableWidth = maxX - minX;
-        
-        bottomPadding = viewportHeight * bottomPaddingPercent;
-        topPadding = viewportHeight * topPaddingPercent;
-        
-        Debug.Log($"[LevelMapController] Bounds - X: [{minX}, {maxX}], Bottom: {bottomPadding}, Top: {topPadding}");
     }
     
-    // Calculates max scroll value based on viewport and padding.
-    private float GetMaxScrollY()
-    {
-        float lastLevelY = bottomPadding + (totalLevels - 1) * nodeSpacingY;
-        float maxVisibleY = viewportHeight - topPadding;
-        return Mathf.Max(0, lastLevelY - maxVisibleY);
-    }
-    
-    private void GenerateAllPositions()
+    // Pre-generates X positions for all levels using varied patterns.
+    private void GeneratePositions()
     {
         cachedXPositions.Clear();
-        
-        Random.InitState(12345);
-        
-        float previousX = centerX;
+    
+        // Use random seed or fixed seed
+        int seed = randomizePattern ? (int)System.DateTime.Now.Ticks : patternSeed;
+        Random.InitState(seed);
+    
+        float prevX = 0f;
+        int patternLen = 0, patternIdx = 0;
+        float startX = 0f, endX = 0f;
         int patternType = 0;
-        int patternLength = 0;
-        int patternProgress = 0;
-        float patternStartX = 0f;
-        float patternEndX = 0f;
-        
+    
         for (int level = 1; level <= totalLevels; level++)
         {
-            float x;
-            
-            if (patternProgress >= patternLength)
+            if (patternIdx >= patternLen)
             {
                 patternType = Random.Range(0, 5);
-                patternLength = Random.Range(3, 8);
-                patternProgress = 0;
-                patternStartX = previousX;
-                
-                switch (patternType)
-                {
-                    case 0:
-                        patternEndX = previousX > centerX ? minX * 0.7f : maxX * 0.7f;
-                        break;
-                    case 1:
-                        patternEndX = previousX > centerX 
-                            ? Random.Range(centerX * 0.2f, maxX * 0.8f) 
-                            : Random.Range(minX * 0.8f, centerX * 0.2f);
-                        break;
-                    case 2:
-                        patternEndX = Random.Range(-availableWidth * 0.1f, availableWidth * 0.1f);
-                        break;
-                    case 3:
-                        patternEndX = previousX > centerX ? minX * 0.9f : maxX * 0.9f;
-                        break;
-                    case 4:
-                        patternEndX = Random.Range(minX * 0.5f, maxX * 0.5f);
-                        break;
-                }
+                patternLen = Random.Range(3, 8);
+                patternIdx = 0;
+                startX = prevX;
+                endX = GetPatternEndX(patternType, prevX);
             }
-            
-            float t = (float)patternProgress / Mathf.Max(1, patternLength - 1);
-            
-            switch (patternType)
-            {
-                case 0:
-                    x = Mathf.Lerp(patternStartX, patternEndX, Mathf.SmoothStep(0, 1, t));
-                    break;
-                case 1:
-                    x = Mathf.Lerp(patternStartX, patternEndX, t);
-                    break;
-                case 2:
-                    x = Mathf.Lerp(patternStartX, patternEndX, Mathf.SmoothStep(0, 1, t));
-                    break;
-                case 3:
-                    float swing = Mathf.Sin(t * Mathf.PI);
-                    x = Mathf.Lerp(patternStartX, patternEndX, t);
-                    x += swing * availableWidth * 0.2f * Mathf.Sign(patternEndX - patternStartX);
-                    break;
-                case 4:
-                    x = Mathf.Lerp(patternStartX, patternEndX, t);
-                    x += Mathf.Sin(t * Mathf.PI * 2) * availableWidth * 0.1f;
-                    break;
-                default:
-                    x = Mathf.Lerp(patternStartX, patternEndX, t);
-                    break;
-            }
-            
-            float zigzagAmount = availableWidth * 0.15f * zigzagStrength;
-            float zigzag = (level % 2 == 0) ? zigzagAmount : -zigzagAmount;
-            x += zigzag;
-            
-            float noiseAmount = availableWidth * 0.2f * pathNoise;
-            float noise = Random.Range(-noiseAmount, noiseAmount);
-            x += noise;
-            
-            x = Mathf.Clamp(x, minX, maxX);
-            
+        
+            float t = patternLen > 1 ? (float)patternIdx / (patternLen - 1) : 0f;
+            float x = CalculatePatternX(patternType, startX, endX, t);
+        
+            float zigzag = availableWidth * 0.15f * zigzagStrength * (level % 2 == 0 ? 1 : -1);
+            float noise = Random.Range(-1f, 1f) * availableWidth * 0.2f * pathNoise;
+        
+            x = Mathf.Clamp(x + zigzag + noise, minX, maxX);
             cachedXPositions[level] = x;
-            previousX = x;
-            patternProgress++;
+        
+            prevX = x;
+            patternIdx++;
         }
-        
+    
         Random.InitState((int)System.DateTime.Now.Ticks);
-        
-        Debug.Log($"[LevelMapController] Generated positions for {totalLevels} levels");
     }
     
+    // Returns target X position for pattern end based on type.
+    private float GetPatternEndX(int type, float currentX)
+    {
+        bool onRight = currentX > 0;
+        return type switch
+        {
+            0 => (onRight ? minX : maxX) * 0.7f,                    // Zigzag opposite
+            1 => Random.Range(minX, maxX) * 0.8f,                   // Cluster
+            2 => Random.Range(-0.1f, 0.1f) * availableWidth,        // Center
+            3 => (onRight ? minX : maxX) * 0.9f,                    // Wide swing
+            _ => Random.Range(minX, maxX) * 0.5f                    // Wave
+        };
+    }
+    
+    // Calculates X position along pattern curve.
+    private float CalculatePatternX(int type, float start, float end, float t)
+    {
+        float smoothT = Mathf.SmoothStep(0, 1, t);
+        float baseX = Mathf.Lerp(start, end, type == 1 ? t : smoothT);
+        
+        // Add curve modifiers for swing and wave patterns
+        if (type == 3) baseX += Mathf.Sin(t * Mathf.PI) * availableWidth * 0.2f * Mathf.Sign(end - start);
+        if (type == 4) baseX += Mathf.Sin(t * Mathf.PI * 2) * availableWidth * 0.1f;
+        
+        return baseX;
+    }
+    
+    // Checks for and saves results from completed level.
     private void CheckForResults()
     {
         if (gameSession == null || !gameSession.hasResults) return;
         
-        if (gameSession.selectedLevel != null && LevelDataManager.Instance != null)
+        if (gameSession.selectedLevel != null && gameSession.starsEarned > 0)
         {
-            int levelNum = gameSession.selectedLevel.levelNumber;
-            
-            if (gameSession.starsEarned > 0)
-            {
-                LevelDataManager.Instance.CompleteLevel(levelNum, gameSession.starsEarned);
-                Debug.Log($"[LevelMapController] Saved results for level {levelNum}: {gameSession.starsEarned} stars");
-            }
-            else
-            {
-                Debug.Log($"[LevelMapController] No stars earned for level {levelNum}, not saving");
-            }
+            LevelDataManager.Instance.CompleteLevel(gameSession.selectedLevel.levelNumber, gameSession.starsEarned);
         }
-        
         gameSession.ClearResults();
     }
     
-    private void InitializePool()
+    // Creates object pool for level nodes.
+    private void CreatePool()
     {
-        int actualPoolSize = Mathf.Min(poolSize, totalLevels);
-        
-        for (int i = 0; i < actualPoolSize; i++)
+        int count = Mathf.Min(poolSize, totalLevels);
+        for (int i = 0; i < count; i++)
         {
-            LevelNode node = Instantiate(nodePrefab);
-            node.transform.SetParent(contentArea, false);
+            LevelNode node = Instantiate(nodePrefab, contentArea);
             node.gameObject.SetActive(false);
             nodePool.Add(node);
         }
-        
-        Debug.Log($"[LevelMapController] Created pool of {actualPoolSize} nodes");
     }
     
-    private void HandleScrollInput()
+    // Handles mouse wheel and drag input.
+    private void HandleInput()
     {
-        float scrollDelta = 0f;
+        float delta = 0f;
         
+        // Mouse wheel
         if (Mouse.current != null)
-        {
-            scrollDelta += Mouse.current.scroll.ReadValue().y * scrollSpeed * Time.deltaTime * 0.01f;
-        }
+            delta += Mouse.current.scroll.y.ReadValue() * scrollSpeed * Time.deltaTime * 0.01f;
         
-        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
+        // Touch drag
+        if (Touchscreen.current?.primaryTouch.press.isPressed == true)
         {
-            Vector2 touchDelta = Touchscreen.current.primaryTouch.delta.ReadValue();
-            scrollDelta += touchDelta.y * dragSensitivity;
+            delta += Touchscreen.current.primaryTouch.delta.y.ReadValue() * dragSensitivity;
         }
-        else if (Mouse.current != null && Mouse.current.leftButton.isPressed)
+        // Mouse drag
+        else if (Mouse.current?.leftButton.isPressed == true)
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            
-            if (isDragging)
-            {
-                Vector2 delta = mousePosition - lastPointerPosition;
-                scrollDelta += delta.y * dragSensitivity;
-            }
-            
-            lastPointerPosition = mousePosition;
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            if (isDragging) delta += (mousePos - lastPointerPos).y * dragSensitivity;
+            lastPointerPos = mousePos;
             isDragging = true;
         }
         else
@@ -318,183 +209,88 @@ public class LevelMapController : MonoBehaviour
             isDragging = false;
         }
         
-        if (Mathf.Abs(scrollDelta) > 0.01f)
-        {
-            Scroll(scrollDelta);
-        }
+        if (Mathf.Abs(delta) > 0.01f) Scroll(delta);
     }
     
+    // Scrolls the level map by delta and clamps to bounds.
     public void Scroll(float delta)
     {
-        currentScrollY += delta;
-        
-        float maxScrollY = GetMaxScrollY();
-        currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
-        
-        RefreshVisibleNodes();
+        currentScrollY = Mathf.Clamp(currentScrollY + delta, 0, MaxScrollY);
+        RefreshNodes();
     }
     
-    public void ScrollToLevel(int levelNumber)
+    // Scrolls to center a specific level on screen.
+    public void ScrollToLevel(int level)
     {
-        levelNumber = Mathf.Clamp(levelNumber, 1, totalLevels);
-        
-        if (levelNumber == 1)
-        {
-            currentScrollY = 0;
-        }
-        else
-        {
-            currentScrollY = (levelNumber - 1) * nodeSpacingY - (viewportHeight / 2f) + bottomPadding;
-        }
-        
-        float maxScrollY = GetMaxScrollY();
-        currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
-        
-        RefreshVisibleNodes();
+        level = Mathf.Clamp(level, 1, totalLevels);
+        currentScrollY = level == 1 ? 0 : (level - 1) * nodeSpacingY - viewportHeight / 2f + BottomPaddingPx;
+        currentScrollY = Mathf.Clamp(currentScrollY, 0, MaxScrollY);
+        RefreshNodes();
     }
     
-    private void RefreshVisibleNodes()
+    // Updates which nodes are visible and positions them.
+    private void RefreshNodes()
     {
-        float bottomBufferPixels = viewportHeight * bottomBufferScreens;
-        int bottomBufferNodeCount = Mathf.CeilToInt(bottomBufferPixels / nodeSpacingY);
+        int bottomLevel = Mathf.Clamp(Mathf.FloorToInt(currentScrollY / nodeSpacingY) - bufferNodes, 1, totalLevels);
+        int topLevel = Mathf.Clamp(Mathf.CeilToInt((currentScrollY + viewportHeight) / nodeSpacingY) + bufferNodes, 1, totalLevels);
         
-        int bottomLevel = Mathf.Max(1, Mathf.FloorToInt(currentScrollY / nodeSpacingY) - bottomBufferNodeCount);
-        int topLevel = Mathf.CeilToInt((currentScrollY + viewportHeight) / nodeSpacingY) + topBufferNodes;
-        
-        bottomLevel = Mathf.Clamp(bottomLevel, 1, totalLevels);
-        topLevel = Mathf.Clamp(topLevel, 1, totalLevels);
-        
-        lowestVisibleLevel = bottomLevel;
-        highestVisibleLevel = topLevel;
-        
+        // Return out-of-range nodes to pool
         List<int> toRemove = new List<int>();
         foreach (var kvp in activeNodes)
-        {
-            if (kvp.Key < bottomLevel || kvp.Key > topLevel)
-            {
-                toRemove.Add(kvp.Key);
-            }
-        }
+            if (kvp.Key < bottomLevel || kvp.Key > topLevel) toRemove.Add(kvp.Key);
+        foreach (int level in toRemove) ReturnNode(level);
         
-        foreach (int level in toRemove)
-        {
-            ReturnNodeToPool(level);
-        }
-        
+        // Spawn or update visible nodes
         for (int level = bottomLevel; level <= topLevel; level++)
         {
-            if (level > totalLevels) break;
-            
-            if (!activeNodes.ContainsKey(level))
-            {
-                SpawnNodeForLevel(level);
-            }
-            else
-            {
-                UpdateNodePosition(activeNodes[level], level);
-            }
+            if (!activeNodes.ContainsKey(level)) SpawnNode(level);
+            else PositionNode(activeNodes[level], level);
         }
         
-        if (pathRenderer != null)
-        {
-            pathRenderer.UpdatePath(activeNodes, lowestVisibleLevel, highestVisibleLevel);
-        }
+        pathRenderer?.UpdatePath(activeNodes, bottomLevel, topLevel);
     }
     
-    private void SpawnNodeForLevel(int level)
+    // Spawns a node for a specific level.
+    private void SpawnNode(int level)
     {
-        if (level < 1 || level > totalLevels) return;
+        LevelNode node = nodePool.Find(n => !n.gameObject.activeSelf);
+        if (node == null) return;
         
-        LevelNode node = GetNodeFromPool();
-        if (node == null)
-        {
-            Debug.LogWarning($"[LevelMapController] No available node in pool for level {level}");
-            return;
-        }
-        
-        bool unlocked = LevelDataManager.Instance.IsLevelUnlocked(level);
-        int stars = LevelDataManager.Instance.GetStarsForLevel(level);
-        
-        node.Setup(level, unlocked, stars);
-        UpdateNodePosition(node, level);
+        node.Setup(level, LevelDataManager.Instance.IsLevelUnlocked(level), LevelDataManager.Instance.GetStarsForLevel(level));
+        PositionNode(node, level);
         node.gameObject.SetActive(true);
-        
         activeNodes[level] = node;
     }
     
-    private void UpdateNodePosition(LevelNode node, int level)
+    // Positions a node based on level number and scroll.
+    private void PositionNode(LevelNode node, int level)
     {
-        float x = GetXPositionForLevel(level);
-        float y = GetYPositionForLevel(level) - currentScrollY;
-        
+        float x = cachedXPositions.GetValueOrDefault(level, 0f);
+        float y = -viewportHeight / 2f + BottomPaddingPx + (level - 1) * nodeSpacingY - currentScrollY;
         node.transform.localPosition = new Vector3(x, y, 0);
     }
     
-    public float GetXPositionForLevel(int level)
+    // Returns a node to the pool.
+    private void ReturnNode(int level)
     {
-        if (cachedXPositions.ContainsKey(level))
-        {
-            return cachedXPositions[level];
-        }
-        
-        return centerX;
+        if (!activeNodes.ContainsKey(level)) return;
+        activeNodes[level].gameObject.SetActive(false);
+        activeNodes.Remove(level);
     }
     
-    public float GetYPositionForLevel(int level)
-    {
-        float bottomEdge = -viewportHeight / 2f;
-        return bottomEdge + bottomPadding + (level - 1) * nodeSpacingY;
-    }
-    
-    private LevelNode GetNodeFromPool()
-    {
-        foreach (var node in nodePool)
-        {
-            if (!node.gameObject.activeSelf)
-            {
-                return node;
-            }
-        }
-        
-        Debug.LogWarning("[LevelMapController] Node pool exhausted!");
-        return null;
-    }
-    
-    private void ReturnNodeToPool(int level)
-    {
-        if (activeNodes.ContainsKey(level))
-        {
-            activeNodes[level].gameObject.SetActive(false);
-            activeNodes.Remove(level);
-        }
-    }
-    
+    // Loads a level by number.
     public void LoadLevel(int levelNumber)
     {
-        Debug.Log($"[LevelMapController] LoadLevel called for level {levelNumber}");
-        
-        if (levelDatabase == null)
-        {
-            Debug.LogError("[LevelMapController] LevelDatabase is not assigned!");
-            return;
-        }
-        
-        if (gameSession == null)
-        {
-            Debug.LogError("[LevelMapController] GameSession is not assigned!");
-            return;
-        }
+        if (levelDatabase == null || gameSession == null) return;
         
         LevelConfig config = levelDatabase.GetLevel(levelNumber);
-        if (config == null)
-        {
-            Debug.LogError($"[LevelMapController] Level {levelNumber} not found in database!");
-            return;
-        }
+        if (config == null) return;
         
         gameSession.SelectLevel(config);
-        
-        Debug.Log($"[LevelMapController] Loading scene: {gameSceneName}");
         SceneManager.LoadScene(gameSceneName);
     }
+    
+    // Public accessors for path renderer
+    public float GetXPositionForLevel(int level) => cachedXPositions.GetValueOrDefault(level, 0f);
+    public float GetYPositionForLevel(int level) => -viewportHeight / 2f + BottomPaddingPx + (level - 1) * nodeSpacingY;
 }
