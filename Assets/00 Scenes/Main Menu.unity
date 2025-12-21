@@ -822,6 +822,7 @@ MonoBehaviour:
   nodeSpacingY: 300
   horizontalPadding: 0.1
   bottomPaddingPercent: 0.1
+  topPaddingPercent: 0.1
   pathNoise: 0.15
   zigzagStrength: 0.6
   contentArea: {fileID: 1788794493}

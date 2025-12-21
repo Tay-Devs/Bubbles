@@ -2967,7 +2967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b7dee0838ae2954280064be58c3822f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SFXManager
-  audioSourcePoolSize: 10
+  audioSourcePoolSize: 15
   masterVolume: 1
 --- !u!4 &1397563006
 Transform:

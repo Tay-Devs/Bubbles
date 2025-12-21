@@ -24,12 +24,14 @@ public class LevelMapController : MonoBehaviour
     public float horizontalPadding = 0.1f;
     [Range(0f, 0.5f)]
     public float bottomPaddingPercent = 0.1f;
+    [Range(0f, 0.5f)]
+    public float topPaddingPercent = 0.1f;
     
     [Header("Path Variation")]
     [Range(0f, 1f)]
-    public float pathNoise = 0.3f; // How much random zigzag to add (0 = none, 1 = max)
+    public float pathNoise = 0.3f;
     [Range(0f, 1f)]
-    public float zigzagStrength = 0.5f; // How much each level alternates left/right
+    public float zigzagStrength = 0.5f;
     
     [Header("Scroll Settings")]
     public RectTransform contentArea;
@@ -60,6 +62,7 @@ public class LevelMapController : MonoBehaviour
     private float maxX;
     private float centerX;
     private float bottomPadding;
+    private float topPadding;
     private float availableWidth;
     
     // Cached positions for consistent path
@@ -98,10 +101,12 @@ public class LevelMapController : MonoBehaviour
         InitializePool();
         
         int targetLevel = Mathf.Min(
-            LevelDataManager.Instance.GetHighestUnlockedLevel(),
+            LevelDataManager.Instance.GetFirstIncompleteLevel(),
             totalLevels
         );
         ScrollToLevel(targetLevel);
+        
+        Debug.Log($"[LevelMapController] Scrolling to first incomplete level: {targetLevel}");
         
         RefreshVisibleNodes();
     }
@@ -138,11 +143,19 @@ public class LevelMapController : MonoBehaviour
         availableWidth = maxX - minX;
         
         bottomPadding = viewportHeight * bottomPaddingPercent;
+        topPadding = viewportHeight * topPaddingPercent;
         
-        Debug.Log($"[LevelMapController] Bounds - X: [{minX}, {maxX}], Width: {availableWidth}, Bottom padding: {bottomPadding}");
+        Debug.Log($"[LevelMapController] Bounds - X: [{minX}, {maxX}], Bottom: {bottomPadding}, Top: {topPadding}");
     }
     
-    // Pre-generates X positions with patterns, zigzag, and noise.
+    // Calculates max scroll value based on viewport and padding.
+    private float GetMaxScrollY()
+    {
+        float lastLevelY = bottomPadding + (totalLevels - 1) * nodeSpacingY;
+        float maxVisibleY = viewportHeight - topPadding;
+        return Mathf.Max(0, lastLevelY - maxVisibleY);
+    }
+    
     private void GenerateAllPositions()
     {
         cachedXPositions.Clear();
@@ -160,7 +173,6 @@ public class LevelMapController : MonoBehaviour
         {
             float x;
             
-            // Start new pattern if current one is done
             if (patternProgress >= patternLength)
             {
                 patternType = Random.Range(0, 5);
@@ -170,21 +182,21 @@ public class LevelMapController : MonoBehaviour
                 
                 switch (patternType)
                 {
-                    case 0: // Move to opposite side
+                    case 0:
                         patternEndX = previousX > centerX ? minX * 0.7f : maxX * 0.7f;
                         break;
-                    case 1: // Stay on same side
+                    case 1:
                         patternEndX = previousX > centerX 
                             ? Random.Range(centerX * 0.2f, maxX * 0.8f) 
                             : Random.Range(minX * 0.8f, centerX * 0.2f);
                         break;
-                    case 2: // Move to center
+                    case 2:
                         patternEndX = Random.Range(-availableWidth * 0.1f, availableWidth * 0.1f);
                         break;
-                    case 3: // Wide swing to edge
+                    case 3:
                         patternEndX = previousX > centerX ? minX * 0.9f : maxX * 0.9f;
                         break;
-                    case 4: // Gentle drift
+                    case 4:
                         patternEndX = Random.Range(minX * 0.5f, maxX * 0.5f);
                         break;
                 }
@@ -192,24 +204,23 @@ public class LevelMapController : MonoBehaviour
             
             float t = (float)patternProgress / Mathf.Max(1, patternLength - 1);
             
-            // Base position from pattern
             switch (patternType)
             {
-                case 0: // Transition to opposite
+                case 0:
                     x = Mathf.Lerp(patternStartX, patternEndX, Mathf.SmoothStep(0, 1, t));
                     break;
-                case 1: // Cluster movement
+                case 1:
                     x = Mathf.Lerp(patternStartX, patternEndX, t);
                     break;
-                case 2: // Smooth to center
+                case 2:
                     x = Mathf.Lerp(patternStartX, patternEndX, Mathf.SmoothStep(0, 1, t));
                     break;
-                case 3: // Wide swing with curve
+                case 3:
                     float swing = Mathf.Sin(t * Mathf.PI);
                     x = Mathf.Lerp(patternStartX, patternEndX, t);
                     x += swing * availableWidth * 0.2f * Mathf.Sign(patternEndX - patternStartX);
                     break;
-                case 4: // Gentle wave
+                case 4:
                     x = Mathf.Lerp(patternStartX, patternEndX, t);
                     x += Mathf.Sin(t * Mathf.PI * 2) * availableWidth * 0.1f;
                     break;
@@ -218,17 +229,14 @@ public class LevelMapController : MonoBehaviour
                     break;
             }
             
-            // Apply zigzag - alternates left/right each level
             float zigzagAmount = availableWidth * 0.15f * zigzagStrength;
             float zigzag = (level % 2 == 0) ? zigzagAmount : -zigzagAmount;
             x += zigzag;
             
-            // Apply noise - random offset per level
             float noiseAmount = availableWidth * 0.2f * pathNoise;
             float noise = Random.Range(-noiseAmount, noiseAmount);
             x += noise;
             
-            // Clamp to bounds
             x = Mathf.Clamp(x, minX, maxX);
             
             cachedXPositions[level] = x;
@@ -238,7 +246,7 @@ public class LevelMapController : MonoBehaviour
         
         Random.InitState((int)System.DateTime.Now.Ticks);
         
-        Debug.Log($"[LevelMapController] Generated positions for {totalLevels} levels (noise: {pathNoise}, zigzag: {zigzagStrength})");
+        Debug.Log($"[LevelMapController] Generated positions for {totalLevels} levels");
     }
     
     private void CheckForResults()
@@ -320,7 +328,7 @@ public class LevelMapController : MonoBehaviour
     {
         currentScrollY += delta;
         
-        float maxScrollY = (totalLevels - 1) * nodeSpacingY;
+        float maxScrollY = GetMaxScrollY();
         currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
         
         RefreshVisibleNodes();
@@ -336,10 +344,10 @@ public class LevelMapController : MonoBehaviour
         }
         else
         {
-            currentScrollY = (levelNumber - 1) * nodeSpacingY - (viewportHeight / 2f);
+            currentScrollY = (levelNumber - 1) * nodeSpacingY - (viewportHeight / 2f) + bottomPadding;
         }
         
-        float maxScrollY = (totalLevels - 1) * nodeSpacingY;
+        float maxScrollY = GetMaxScrollY();
         currentScrollY = Mathf.Clamp(currentScrollY, 0, maxScrollY);
         
         RefreshVisibleNodes();

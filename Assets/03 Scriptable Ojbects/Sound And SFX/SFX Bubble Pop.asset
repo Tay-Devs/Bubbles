@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb0a80c4af138746b7b17d0bc32a58a, type: 3}
   m_Name: SFX Bubble Pop
   m_EditorClassIdentifier: Assembly-CSharp::SFXData
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 9f7508a545ada9c498903682b084db50, type: 3}
   volume: 1
-  minPitch: 1
-  maxPitch: 1
+  minPitch: 0.6
+  maxPitch: 1.4
   spatialBlend: 0
   priority: 128
   loop: 0
