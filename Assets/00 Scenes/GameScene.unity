@@ -746,7 +746,7 @@ MonoBehaviour:
   levelNameText: {fileID: 11985184}
   winConditionText: {fileID: 0}
   startButton: {fileID: 0}
-  tapAnywhereToDismiss: 0
+  tapAnywhereToDismiss: 1
   autoDismissTime: 3
   showDuration: 0.4
   hideDuration: 0.3
@@ -755,7 +755,7 @@ MonoBehaviour:
   useScale: 1
   useFade: 1
   startScale: 0.5
-  enableDebugLogs: 1
+  enableDebugLogs: 0
 --- !u!1 &285067286
 GameObject:
   m_ObjectHideFlags: 0
@@ -2967,7 +2967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b7dee0838ae2954280064be58c3822f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SFXManager
-  audioSourcePoolSize: 15
+  audioSourcePoolSize: 30
   masterVolume: 1
 --- !u!4 &1397563006
 Transform:
@@ -2977,12 +2977,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397563004}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2022990911}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1479368517
 GameObject:
@@ -4751,6 +4751,7 @@ Transform:
   - {fileID: 587212091}
   - {fileID: 556595850}
   - {fileID: 4414488}
+  - {fileID: 1397563006}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2025937962
@@ -4992,8 +4993,9 @@ MonoBehaviour:
   minMatchCount: 3
   destructionDelay: 0.2
   destructionDelayMultiplier: 0.75
-  destructionDelayLimit: 0.075
+  destructionDelayLimit: 0.08
   loseZone: {fileID: 1224630969}
+  bubblePopSFX: {fileID: 11400000, guid: 5ae69063b75ff6f4787620962f6a050f, type: 2}
   scorePopupPrefab: {fileID: 8546667382689669616, guid: 82ad6ec421ee0694e807bfd4f00e2e02, type: 3}
 --- !u!114 &2107963927
 MonoBehaviour:
@@ -5144,4 +5146,3 @@ SceneRoots:
   - {fileID: 1936872070}
   - {fileID: 481295505}
   - {fileID: 2022990911}
-  - {fileID: 1397563006}

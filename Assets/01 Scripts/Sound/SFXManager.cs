@@ -25,11 +25,9 @@ public class SFXManager : MonoBehaviour
         
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        
         CreatePool();
     }
     
-    // Creates a pool of AudioSources for playing sounds.
     private void CreatePool()
     {
         for (int i = 0; i < audioSourcePoolSize; i++)
@@ -40,10 +38,8 @@ public class SFXManager : MonoBehaviour
         }
     }
     
-    // Gets the next available AudioSource from the pool.
     private AudioSource GetAvailableSource()
     {
-        // Try to find one that's not playing
         for (int i = 0; i < audioSourcePool.Count; i++)
         {
             int index = (currentIndex + i) % audioSourcePool.Count;
@@ -54,58 +50,63 @@ public class SFXManager : MonoBehaviour
             }
         }
         
-        // All are playing, use the next one anyway (will cut off oldest)
         AudioSource source = audioSourcePool[currentIndex];
         currentIndex = (currentIndex + 1) % audioSourcePool.Count;
         return source;
     }
     
     // ============================================
-    // STATIC PLAY METHODS (Easy to call from anywhere)
+    // STATIC PLAY METHODS
     // ============================================
     
-    // Play an SFX using SFXData settings.
+    // Play SFX with default settings.
     public static void Play(SFXData sfxData)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning("[SFXManager] No instance found!");
-            return;
-        }
-        
-        Instance.PlaySound(sfxData);
+        if (Instance == null) return;
+        Instance.PlaySound(sfxData, 0);
     }
     
-    // Play an SFX at a specific position (3D sound).
-    public static void PlayAtPosition(SFXData sfxData, Vector3 position)
+    // Play SFX with combo index for pitch scaling.
+    public static void Play(SFXData sfxData, int comboIndex)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning("[SFXManager] No instance found!");
-            return;
-        }
-        
-        Instance.PlaySoundAtPosition(sfxData, position);
+        if (Instance == null) return;
+        Instance.PlaySound(sfxData, comboIndex);
     }
     
-    // Play a one-off AudioClip with default settings.
+    // Play SFX at position with combo index.
+    public static void PlayAtPosition(SFXData sfxData, Vector3 position, int comboIndex = 0)
+    {
+        if (Instance == null) return;
+        Instance.PlaySoundAtPosition(sfxData, position, comboIndex);
+    }
+    
+    // Play a one-off AudioClip.
     public static void PlayClip(AudioClip clip, float volume = 1f)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning("[SFXManager] No instance found!");
-            return;
-        }
-        
+        if (Instance == null) return;
         Instance.PlayOneShot(clip, volume);
+    }
+    
+    // Stop all sounds.
+    public static void StopAll()
+    {
+        if (Instance == null) return;
+        foreach (var source in Instance.audioSourcePool)
+            source.Stop();
+    }
+    
+    // Set master volume.
+    public static void SetMasterVolume(float volume)
+    {
+        if (Instance == null) return;
+        Instance.masterVolume = Mathf.Clamp01(volume);
     }
     
     // ============================================
     // INSTANCE METHODS
     // ============================================
     
-    // Plays an SFX using the SFXData configuration.
-    public void PlaySound(SFXData sfxData)
+    public void PlaySound(SFXData sfxData, int comboIndex = 0)
     {
         if (sfxData == null) return;
         
@@ -113,33 +114,30 @@ public class SFXManager : MonoBehaviour
         if (clip == null) return;
         
         AudioSource source = GetAvailableSource();
-        ConfigureSource(source, sfxData);
+        ConfigureSource(source, sfxData, comboIndex);
         source.clip = clip;
         source.Play();
     }
     
-    // Plays an SFX at a world position using AudioSource.PlayClipAtPoint style.
-    public void PlaySoundAtPosition(SFXData sfxData, Vector3 position)
+    public void PlaySoundAtPosition(SFXData sfxData, Vector3 position, int comboIndex = 0)
     {
         if (sfxData == null) return;
         
         AudioClip clip = sfxData.GetClip();
         if (clip == null) return;
         
-        // Create temporary object at position
         GameObject tempGO = new GameObject("TempAudio");
         tempGO.transform.position = position;
         
         AudioSource source = tempGO.AddComponent<AudioSource>();
-        ConfigureSource(source, sfxData);
-        source.spatialBlend = 1f; // Force 3D for positional
+        ConfigureSource(source, sfxData, comboIndex);
+        source.spatialBlend = 1f;
         source.clip = clip;
         source.Play();
         
-        Destroy(tempGO, clip.length / sfxData.GetPitch() + 0.1f);
+        Destroy(tempGO, clip.length / source.pitch + 0.1f);
     }
     
-    // Plays a simple AudioClip.
     public void PlayOneShot(AudioClip clip, float volume = 1f)
     {
         if (clip == null) return;
@@ -152,35 +150,12 @@ public class SFXManager : MonoBehaviour
         source.PlayOneShot(clip);
     }
     
-    // Configures an AudioSource with SFXData settings.
-    private void ConfigureSource(AudioSource source, SFXData sfxData)
+    private void ConfigureSource(AudioSource source, SFXData sfxData, int comboIndex)
     {
         source.volume = sfxData.volume * masterVolume;
-        source.pitch = sfxData.GetPitch();
+        source.pitch = sfxData.GetPitch(comboIndex);
         source.spatialBlend = sfxData.spatialBlend;
         source.priority = sfxData.priority;
         source.loop = sfxData.loop;
-    }
-    
-    // ============================================
-    // UTILITY METHODS
-    // ============================================
-    
-    // Stops all currently playing sounds.
-    public static void StopAll()
-    {
-        if (Instance == null) return;
-        
-        foreach (var source in Instance.audioSourcePool)
-        {
-            source.Stop();
-        }
-    }
-    
-    // Sets the master volume.
-    public static void SetMasterVolume(float volume)
-    {
-        if (Instance == null) return;
-        Instance.masterVolume = Mathf.Clamp01(volume);
     }
 }

@@ -822,10 +822,11 @@ MonoBehaviour:
   poolSize: 50
   nodeSpacingY: 300
   horizontalPadding: 0.1
-  bottomPadding: 0.5
-  topPadding: 0.5
-  pathNoise: 0.4
-  zigzagStrength: 0.8
+  bottomPadding: 0.1
+  topPadding: 0.1
+  pathNoise: 1
+  zigzagStrength: 1
+  randomizePattern: 1
   patternSeed: 12345
   scrollSpeed: 500
   dragSensitivity: 1

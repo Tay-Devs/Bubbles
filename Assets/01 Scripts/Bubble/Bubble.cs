@@ -31,7 +31,6 @@ public class Bubble : MonoBehaviour
 
     public void Explode()
     {
-        SFXManager.PlayAtPosition(popSound, transform.position);
         Destroy(gameObject);
     }
 }

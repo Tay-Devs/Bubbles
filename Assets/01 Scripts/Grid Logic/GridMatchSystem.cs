@@ -16,6 +16,9 @@ public class GridMatchSystem : MonoBehaviour
     [Header("Lose Condition")]
     public LoseZone loseZone;
     
+    [Header("Audio")]
+    public SFXData bubblePopSFX;
+    
     [Header("Score Popup")]
     public GameObject scorePopupPrefab;
     
@@ -106,7 +109,6 @@ public class GridMatchSystem : MonoBehaviour
     private IEnumerator DestroyMatchedBubblesSequentially(List<Vector2Int> positions)
     {
         isDestroying = true;
-        grid.Log($"Destroying {positions.Count} matched bubbles sequentially");
     
         float currentDelay = destructionDelay;
         int lastPoints = 0;
@@ -117,6 +119,9 @@ public class GridMatchSystem : MonoBehaviour
         
             Vector3 bubbleWorldPos = grid.GridToWorld(positions[i]);
             RemoveBubbleAt(positions[i]);
+        
+            // Play pop sound with combo index
+            SFXManager.PlayAtPosition(bubblePopSFX, transform.position, i);
         
             if (ScoreManager.Instance != null)
             {
