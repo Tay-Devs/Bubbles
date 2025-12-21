@@ -270,6 +270,7 @@ MonoBehaviour:
   type: 0
   visited: 0
   isAttached: 0
+  popSound: {fileID: 11400000, guid: 5ae69063b75ff6f4787620962f6a050f, type: 2}
 --- !u!114 &5400045266310780815
 MonoBehaviour:
   m_ObjectHideFlags: 0

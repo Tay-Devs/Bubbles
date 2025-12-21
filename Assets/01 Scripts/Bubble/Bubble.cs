@@ -7,6 +7,7 @@ public class Bubble : MonoBehaviour
     public Action onTouch;
     public bool visited = false;
     public bool isAttached = false;
+    public SFXData popSound;
 
     void Start()
     {
@@ -30,6 +31,7 @@ public class Bubble : MonoBehaviour
 
     public void Explode()
     {
+        SFXManager.PlayAtPosition(popSound, transform.position);
         Destroy(gameObject);
     }
 }
