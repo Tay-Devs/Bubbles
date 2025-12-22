@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
   m_Name: UI - Resume Button Outside
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 6869384347197286882, guid: 60770d83327bef9419e072bac43f19ba, type: 3}
-  nightSprite: {fileID: 0}
+  daySprite: {fileID: 2747845378497734486, guid: b3e4bf29884ca2d42b006618322a74e6, type: 3}
+  nightSprite: {fileID: 4929626274611208745, guid: ce674bdfc80ee034a97bfe2e471d03b6, type: 3}
