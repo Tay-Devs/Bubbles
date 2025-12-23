@@ -186,6 +186,10 @@ public class GridMatchSystem : MonoBehaviour
                 Vector3 bubbleWorldPos = grid.GridToWorld(floating[i]);
                 RemoveBubbleAt(floating[i]);
                 
+                // Play pop sound with continuing combo index
+                int comboIndex = startingComboIndex + i;
+                SFXManager.PlayAtPosition(bubblePopSFX, bubbleWorldPos, comboIndex);
+                
                 if (ScoreManager.Instance != null)
                 {
                     int points;
@@ -200,7 +204,6 @@ public class GridMatchSystem : MonoBehaviour
                     
                     ScoreManager.Instance.AddScore(points);
                     
-                    int comboIndex = startingComboIndex + i;
                     SpawnScorePopup(bubbleWorldPos, points, comboIndex);
                 }
                 

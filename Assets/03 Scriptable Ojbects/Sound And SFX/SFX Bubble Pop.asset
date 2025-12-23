@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9f7508a545ada9c498903682b084db50, type: 3}
   volume: 1
   minPitch: 1.1
-  maxPitch: 2.5
+  maxPitch: 2.6
   pitchMode: 1
   comboRate: 0.1
   spatialBlend: 0
