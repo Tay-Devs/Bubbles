@@ -12,6 +12,9 @@ public class LevelMapController : MonoBehaviour
     public GameSession gameSession;
     public string gameSceneName = "Game";
     
+    [Header("Popup")]
+    public LevelPopup levelPopup;
+    
     [Header("Node Settings")]
     public LevelNode nodePrefab;
     public RectTransform contentArea;
@@ -38,6 +41,9 @@ public class LevelMapController : MonoBehaviour
     
     [Header("References")]
     public LevelPathRenderer pathRenderer;
+    
+    [Header("Debug")]
+    public bool enableDebugLogs = false;
     
     // Runtime
     private List<LevelNode> nodePool = new List<LevelNode>();
@@ -95,7 +101,6 @@ public class LevelMapController : MonoBehaviour
     {
         cachedXPositions.Clear();
     
-        // Use random seed or fixed seed
         int seed = randomizePattern ? (int)System.DateTime.Now.Ticks : patternSeed;
         Random.InitState(seed);
     
@@ -137,11 +142,11 @@ public class LevelMapController : MonoBehaviour
         bool onRight = currentX > 0;
         return type switch
         {
-            0 => (onRight ? minX : maxX) * 0.7f,                    // Zigzag opposite
-            1 => Random.Range(minX, maxX) * 0.8f,                   // Cluster
-            2 => Random.Range(-0.1f, 0.1f) * availableWidth,        // Center
-            3 => (onRight ? minX : maxX) * 0.9f,                    // Wide swing
-            _ => Random.Range(minX, maxX) * 0.5f                    // Wave
+            0 => (onRight ? minX : maxX) * 0.7f,
+            1 => Random.Range(minX, maxX) * 0.8f,
+            2 => Random.Range(-0.1f, 0.1f) * availableWidth,
+            3 => (onRight ? minX : maxX) * 0.9f,
+            _ => Random.Range(minX, maxX) * 0.5f
         };
     }
     
@@ -151,7 +156,6 @@ public class LevelMapController : MonoBehaviour
         float smoothT = Mathf.SmoothStep(0, 1, t);
         float baseX = Mathf.Lerp(start, end, type == 1 ? t : smoothT);
         
-        // Add curve modifiers for swing and wave patterns
         if (type == 3) baseX += Mathf.Sin(t * Mathf.PI) * availableWidth * 0.2f * Mathf.Sign(end - start);
         if (type == 4) baseX += Mathf.Sin(t * Mathf.PI * 2) * availableWidth * 0.1f;
         
@@ -182,21 +186,23 @@ public class LevelMapController : MonoBehaviour
         }
     }
     
-    // Handles mouse wheel and drag input.
+    // Handles mouse wheel and drag input. Ignores input when popup is open.
     private void HandleInput()
     {
+        if (levelPopup != null && levelPopup.IsOpen)
+        {
+            return;
+        }
+        
         float delta = 0f;
         
-        // Mouse wheel
         if (Mouse.current != null)
             delta += Mouse.current.scroll.y.ReadValue() * scrollSpeed * Time.deltaTime * 0.01f;
         
-        // Touch drag
         if (Touchscreen.current?.primaryTouch.press.isPressed == true)
         {
             delta += Touchscreen.current.primaryTouch.delta.y.ReadValue() * dragSensitivity;
         }
-        // Mouse drag
         else if (Mouse.current?.leftButton.isPressed == true)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
@@ -234,13 +240,11 @@ public class LevelMapController : MonoBehaviour
         int bottomLevel = Mathf.Clamp(Mathf.FloorToInt(currentScrollY / nodeSpacingY) - bufferNodes, 1, totalLevels);
         int topLevel = Mathf.Clamp(Mathf.CeilToInt((currentScrollY + viewportHeight) / nodeSpacingY) + bufferNodes, 1, totalLevels);
         
-        // Return out-of-range nodes to pool
         List<int> toRemove = new List<int>();
         foreach (var kvp in activeNodes)
             if (kvp.Key < bottomLevel || kvp.Key > topLevel) toRemove.Add(kvp.Key);
         foreach (int level in toRemove) ReturnNode(level);
         
-        // Spawn or update visible nodes
         for (int level = bottomLevel; level <= topLevel; level++)
         {
             if (!activeNodes.ContainsKey(level)) SpawnNode(level);
@@ -278,7 +282,26 @@ public class LevelMapController : MonoBehaviour
         activeNodes.Remove(level);
     }
     
-    // Loads a level by number.
+    // Opens the level popup for the specified level number.
+    // Fetches star data from LevelDataManager and passes it to the popup.
+    public void OpenLevelPopup(int levelNumber)
+    {
+        if (levelPopup == null)
+        {
+            Debug.LogError("[LevelMapController] LevelPopup reference is missing!");
+            return;
+        }
+        
+        int starsEarned = LevelDataManager.Instance.GetStarsForLevel(levelNumber);
+        levelPopup.Show(levelNumber, starsEarned);
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[LevelMapController] Opened popup for level {levelNumber} with {starsEarned} stars");
+        }
+    }
+    
+    // Loads a level by number. Sets up GameSession and transitions to game scene.
     public void LoadLevel(int levelNumber)
     {
         if (levelDatabase == null || gameSession == null) return;

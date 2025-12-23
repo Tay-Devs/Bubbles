@@ -32,6 +32,9 @@ public class LevelNode : MonoBehaviour
     public Color lockedTextColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     public Color unlockedTextColor = Color.white;
     
+    [Header("Debug")]
+    public bool enableDebugLogs = false;
+    
     private int levelNumber;
     private bool isUnlocked;
     
@@ -96,8 +99,6 @@ public class LevelNode : MonoBehaviour
         {
             lockIcon.SetActive(!unlocked);
         }
-        
-        // Level number is always visible now
     }
     
     // Updates level number text color based on lock state.
@@ -155,13 +156,16 @@ public class LevelNode : MonoBehaviour
         }
     }
     
+    // Called when the node is clicked. Opens the level popup instead of loading directly.
+    // Only responds if the level is unlocked.
     private void OnNodeClicked()
     {
-        Debug.Log($"[LevelNode] Button clicked for level {levelNumber}, unlocked: {isUnlocked}");
-        
         if (!isUnlocked)
         {
-            Debug.Log("[LevelNode] Level is locked, ignoring click");
+            if (enableDebugLogs)
+            {
+                Debug.Log("[LevelNode] Level is locked, ignoring click");
+            }
             return;
         }
         
@@ -171,6 +175,11 @@ public class LevelNode : MonoBehaviour
             return;
         }
         
-        LevelMapController.Instance.LoadLevel(levelNumber);
+        LevelMapController.Instance.OpenLevelPopup(levelNumber);
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[LevelNode] Opening popup for level {levelNumber}");
+        }
     }
 }
