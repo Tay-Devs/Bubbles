@@ -41,9 +41,8 @@ public class GameManager : MonoBehaviour
     public float survivalMinInterval = 2f;
     
     [Header("UI References")]
-    public GameObject gameOverUI;
+    public GameObject resultsUI;
     public GameObject pauseMenuUI;
-    public GameObject victoryUI;
     
     [Header("Events")]
     public UnityEvent onGameOver;
@@ -75,9 +74,8 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        if (gameOverUI != null) gameOverUI.SetActive(false);
+        if (resultsUI != null) resultsUI.SetActive(false);
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
-        if (victoryUI != null) victoryUI.SetActive(false);
         
         if (randomizeWinCondition)
         {
@@ -136,16 +134,8 @@ public class GameManager : MonoBehaviour
                 break;
                 
             case WinConditionType.ReachTargetScore:
-                int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.CurrentScore : 0;
-                if (currentScore < targetScore)
-                {
-                    Debug.Log($"[GameManager] Cleared but score {currentScore} < target {targetScore} - Game Over!");
-                    GameOver();
-                }
-                else
-                {
-                    Victory(true);
-                }
+                Debug.Log("[GameManager] All bubbles cleared in score mode - Victory!");
+                Victory(true);
                 break;
                 
             case WinConditionType.Survival:
@@ -194,7 +184,7 @@ public class GameManager : MonoBehaviour
             LevelLoader.Instance.OnLevelLost();
         }
         
-        if (gameOverUI != null) gameOverUI.SetActive(true);
+        if (resultsUI != null) resultsUI.SetActive(true);
         
         onGameOver?.Invoke();
     }
@@ -211,7 +201,7 @@ public class GameManager : MonoBehaviour
             LevelLoader.Instance.OnLevelWon(clearedAllBubbles);
         }
         
-        if (victoryUI != null) victoryUI.SetActive(true);
+        if (resultsUI != null) resultsUI.SetActive(true);
         
         onVictory?.Invoke();
     }
