@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: Level_1
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 1
-  levelName: 'Pop Challenge '
-  levelIcon: {fileID: 11400000, guid: f7f343abb4bde4d4eb82c1d36e13c03f, type: 2}
+  levelName: 'POP
+
+    CHALLENGE'
+  levelIcon: {fileID: 11400000, guid: 40162a719b16b114b85d2b3d2403c7b9, type: 2}
   gridWidth: 9
   gridHeight: 5
   availableColors: 000000000100000002000000
   winCondition: 0
   threeStarTime: 4
-  twoStarTime: 180
-  oneStarTime: 300
+  twoStarTime: 8
+  oneStarTime: 16
   targetScore: 1000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5

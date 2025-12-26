@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Level_3
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 3
-  levelName: Level 3
+  levelName: 'TIMED
+
+    CHALLENGE'
+  levelIcon: {fileID: 11400000, guid: ce8748041c51b54409c2a28551c41042, type: 2}
   gridWidth: 9
   gridHeight: 5
   availableColors: 000000000100000002000000
@@ -22,9 +25,9 @@ MonoBehaviour:
   twoStarTime: 150
   oneStarTime: 300
   targetScore: 1000
-  survivalStartingInterval: 10
+  survivalStartingInterval: 5
   survivalIntervalDeduction: 0.5
   survivalMinInterval: 2
-  oneStarRows: 5
-  twoStarRows: 10
-  threeStarRows: 15
+  oneStarRows: 1
+  twoStarRows: 2
+  threeStarRows: 3152

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-[ExecuteAlways] // Run in edit mode
+[ExecuteAlways]
 public class ThemeManager : MonoBehaviour
 {
     // Singleton
@@ -62,7 +62,8 @@ public class ThemeManager : MonoBehaviour
         }
     }
     
-    // Set theme directly
+    // Sets the theme to the specified mode and saves the preference.
+    // Skips if already on the requested theme to avoid unnecessary updates.
     public void SetTheme(ThemeMode newTheme)
     {
         if (currentTheme == newTheme) return;
@@ -77,27 +78,27 @@ public class ThemeManager : MonoBehaviour
         ApplyTheme(newTheme);
     }
     
-    // Toggle between day and night
+    // Toggles between Day and Night themes.
+    // Convenience method for toggle buttons.
     public void ToggleTheme()
     {
         ThemeMode newTheme = currentTheme == ThemeMode.Day ? ThemeMode.Night : ThemeMode.Day;
         SetTheme(newTheme);
     }
     
-    // Apply theme and notify listeners
+    // Invokes the OnThemeChanged event to notify all subscribers.
+    // All themeable components listen to this event.
     private void ApplyTheme(ThemeMode theme)
     {
         OnThemeChanged?.Invoke(theme);
     }
     
-    // Save theme preference to PlayerPrefs
     private void SaveThemePreference()
     {
         PlayerPrefs.SetInt(THEME_PREF_KEY, (int)currentTheme);
         PlayerPrefs.Save();
     }
     
-    // Load theme preference from PlayerPrefs
     private void LoadThemePreference()
     {
         if (PlayerPrefs.HasKey(THEME_PREF_KEY))
@@ -110,7 +111,8 @@ public class ThemeManager : MonoBehaviour
     public bool IsDay() => currentTheme == ThemeMode.Day;
     public bool IsNight() => currentTheme == ThemeMode.Night;
     
-    // Update all themeable objects in scene (for editor use)
+    // Finds all themeable components in the scene and updates their previews.
+    // Used in editor mode when theme is changed via inspector.
     public void UpdateAllThemeables()
     {
         // Find all themeable UI images
@@ -133,9 +135,15 @@ public class ThemeManager : MonoBehaviour
         {
             toggle.UpdatePreview();
         }
+        
+        // Find all themeable UI text
+        ThemeableUIText[] texts = FindObjectsOfType<ThemeableUIText>();
+        foreach (var text in texts)
+        {
+            text.UpdatePreview();
+        }
     }
     
-    // Called when values change in inspector
     private void OnValidate()
     {
         if (!Application.isPlaying)

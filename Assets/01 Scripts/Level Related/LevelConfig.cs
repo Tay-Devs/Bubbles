@@ -6,6 +6,7 @@ public class LevelConfig : ScriptableObject
 {
     [Header("Level Info")]
     public int levelNumber = 1;
+    [TextArea]
     public string levelName = "Level 1";
     
     [Header("Level Icon")]

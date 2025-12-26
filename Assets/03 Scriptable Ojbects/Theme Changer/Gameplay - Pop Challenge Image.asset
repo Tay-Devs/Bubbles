@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
-  m_Name: UI - Level Background
+  m_Name: Gameplay - Pop Challenge Image
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 8826450348152797510, guid: e7aec756bbbaceb4b8870ef1cf4ae3bb, type: 3}
-  nightSprite: {fileID: 8755355004536518155, guid: ebe3c0a7cbefdfb428b3cd47088531a3, type: 3}
+  daySprite: {fileID: 7325192552632596920, guid: f8fa50a1ddfacde479a14774ffbc14bb, type: 3}
+  nightSprite: {fileID: -7806871258996146044, guid: dc163d7958fbabf4d8bd4c3158b02d5a, type: 3}

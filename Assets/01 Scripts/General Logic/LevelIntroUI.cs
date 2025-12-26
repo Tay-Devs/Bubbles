@@ -211,6 +211,7 @@ public class LevelIntroUI : MonoBehaviour
         
         Log($"[LevelIntroUI] Setting icon sprite: {iconSprite.name}");
         levelIconImage.sprite = iconSprite;
+        levelIconImage.SetNativeSize();
         levelIconImage.gameObject.SetActive(true);
     }
     

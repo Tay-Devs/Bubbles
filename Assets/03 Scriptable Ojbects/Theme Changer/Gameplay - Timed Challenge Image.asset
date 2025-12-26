@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
+  m_Name: Gameplay - Timed Challenge Image
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
+  daySprite: {fileID: 6607491414170832444, guid: 1af412eebbb41d3449176e863b072916, type: 3}
+  nightSprite: {fileID: 894454509110286680, guid: f65c3d6d6bd726949b8ca067766d21eb, type: 3}
