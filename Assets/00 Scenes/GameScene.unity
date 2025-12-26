@@ -356,6 +356,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &25839261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1583,6 +1585,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeToggle
   toggleImage: {fileID: 1479368519}
   toggleThemeSprite: {fileID: 11400000, guid: f7f343abb4bde4d4eb82c1d36e13c03f, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &579933860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2424,6 +2428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: d67670309572d734a919f34663b14a09, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &896030651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2708,6 +2714,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: d67670309572d734a919f34663b14a09, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &939772284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2980,8 +2988,8 @@ MonoBehaviour:
 
     123456789'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5d4973718765bc14a97c92ee6c69cd1a, type: 2}
-  m_sharedMaterial: {fileID: 384894914908900418, guid: 5d4973718765bc14a97c92ee6c69cd1a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f2f5c43408089f84f8dfab09e702b779, type: 2}
+  m_sharedMaterial: {fileID: 6778109173263776441, guid: f2f5c43408089f84f8dfab09e702b779, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3005,13 +3013,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 54.8
+  m_fontSize: 53.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -3286,6 +3294,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 4a702de0093565d4eafb2ed735e589e6, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &1382333944
 GameObject:
   m_ObjectHideFlags: 0
@@ -3687,6 +3697,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 69aff1645f7af5e4da2a0d2e8479baac, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &1566490465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3833,6 +3845,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: c523bba80a6b6d14faa164f2f03cdd38, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &1573529428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4365,7 +4379,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2134261501}
   m_FillRect: {fileID: 1611799477}
   m_HandleRect: {fileID: 2134261500}
@@ -4612,6 +4626,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 3d8bf909d51d4b84fafcd0b896c9f99a, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &1742009726
 GameObject:
   m_ObjectHideFlags: 0
@@ -5011,6 +5027,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: f6054cb9032c8814eabf28fb54cf7a5b, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &1893935075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5766,6 +5784,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 69aff1645f7af5e4da2a0d2e8479baac, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!114 &2077940429
 MonoBehaviour:
   m_ObjectHideFlags: 0

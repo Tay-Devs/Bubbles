@@ -328,6 +328,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &335706059
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,9 +898,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f449da87b5ac5264c96ee4011376828c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelDataManager
-  freeLevels: 9
+  freeLevels: 3
   starsPerUnlock: 3
-  clearSaveOnStart: 1
+  clearSaveOnStart: 0
 --- !u!1 &1170056311
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,6 +1229,7 @@ GameObject:
   - component: {fileID: 1525806601}
   - component: {fileID: 1525806600}
   - component: {fileID: 1525806599}
+  - component: {fileID: 1525806602}
   m_Layer: 5
   m_Name: Play Level Button
   m_TagString: Untagged
@@ -1251,7 +1254,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 150, y: 150}
+  m_SizeDelta: {x: 65, y: 95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1525806599
 MonoBehaviour:
@@ -1317,8 +1320,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -4668634801726062524, guid: 08659bc2fad9e3f439fcf680429b8f0b, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1335,6 +1338,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1525806597}
   m_CullTransparentMesh: 1
+--- !u!114 &1525806602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525806597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: -4668634801726062524, guid: 08659bc2fad9e3f439fcf680429b8f0b, type: 3}
+  nightSprite: {fileID: 0}
 --- !u!1 &1604714053
 GameObject:
   m_ObjectHideFlags: 0
