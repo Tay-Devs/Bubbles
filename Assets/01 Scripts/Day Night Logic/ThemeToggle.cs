@@ -2,12 +2,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
-[ExecuteAlways] // Run in edit mode
+[ExecuteAlways]
 public class ThemeToggle : MonoBehaviour
 {
     [Header("Toggle Checkmark")]
     [SerializeField] private Image toggleImage;
+    
+    [Header("Theme Settings")]
+    [Tooltip("Optional: Use a ThemeSprite ScriptableObject. Takes priority over individual sprites.")]
     [SerializeField] private ThemeSprite toggleThemeSprite;
+    
+    [Header("Direct Sprite Assignment (Used if ThemeSprite is not assigned)")]
+    [SerializeField] private Sprite daySprite;
+    [SerializeField] private Sprite nightSprite;
     
     private Toggle toggle;
     private bool isUpdating = false;
@@ -45,6 +52,8 @@ public class ThemeToggle : MonoBehaviour
         }
     }
     
+    // Called when user clicks the toggle. Sets isUpdating flag to prevent recursive calls.
+    // Maps toggle on/off to Day/Night theme modes.
     private void OnToggleValueChanged(bool isOn)
     {
         if (isUpdating) return;
@@ -58,6 +67,8 @@ public class ThemeToggle : MonoBehaviour
         UpdateToggleState(newTheme);
     }
     
+    // Syncs toggle isOn state with the current theme and updates visuals.
+    // Uses isUpdating flag to prevent OnToggleValueChanged from firing during sync.
     private void UpdateToggleState(ThemeMode theme)
     {
         isUpdating = true;
@@ -67,16 +78,36 @@ public class ThemeToggle : MonoBehaviour
         UpdateVisuals(theme);
     }
     
+    // Updates the toggle image sprite based on current theme.
+    // Uses ScriptableObject if assigned, otherwise falls back to direct sprites.
     private void UpdateVisuals(ThemeMode theme)
     {
-        if (toggleImage != null && toggleThemeSprite != null)
+        if (toggleImage == null) return;
+        
+        Sprite targetSprite = GetSpriteForTheme(theme);
+        if (targetSprite != null)
         {
-            toggleImage.sprite = toggleThemeSprite.GetSprite(theme);
-            if (Application.isPlaying)
-            {
-                toggleImage.enabled = true;
-            }
+            toggleImage.sprite = targetSprite;
         }
+        
+        if (Application.isPlaying)
+        {
+            toggleImage.enabled = true;
+        }
+    }
+    
+    // Returns the appropriate sprite for the given theme.
+    // Priority: ThemeSprite ScriptableObject > Direct sprite assignment.
+    private Sprite GetSpriteForTheme(ThemeMode theme)
+    {
+        // If ScriptableObject is assigned, use it
+        if (toggleThemeSprite != null)
+        {
+            return toggleThemeSprite.GetSprite(theme);
+        }
+        
+        // Otherwise use direct sprite assignment
+        return theme == ThemeMode.Day ? daySprite : nightSprite;
     }
     
     private void Update()
@@ -87,7 +118,6 @@ public class ThemeToggle : MonoBehaviour
         }
     }
     
-    // Called in editor when values change
     private void OnValidate()
     {
         if (!Application.isPlaying)
@@ -96,7 +126,8 @@ public class ThemeToggle : MonoBehaviour
         }
     }
     
-    // Update preview in editor
+    // Updates the toggle preview in the editor based on ThemeManager's current theme.
+    // Allows seeing theme changes without entering play mode.
     public void UpdatePreview()
     {
         if (toggle == null)
@@ -104,13 +135,13 @@ public class ThemeToggle : MonoBehaviour
         if (toggleImage == null)
             return;
             
-        if (toggleThemeSprite != null && toggleImage != null)
+        ThemeManager manager = FindObjectOfType<ThemeManager>();
+        ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
+        
+        Sprite targetSprite = GetSpriteForTheme(previewTheme);
+        if (targetSprite != null)
         {
-            // In edit mode, check if ThemeManager exists and use its theme
-            ThemeManager manager = FindObjectOfType<ThemeManager>();
-            ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
-            
-            toggleImage.sprite = toggleThemeSprite.GetSprite(previewTheme);
+            toggleImage.sprite = targetSprite;
         }
     }
 }

@@ -176,6 +176,20 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.GameOver || currentState == GameState.Victory) return;
         
+        // In Survival mode, check if player earned 3 stars - if so, it's a victory
+        if (winCondition == WinConditionType.Survival)
+        {
+            int rowsSurvived = GetSurvivalRowsCount();
+            LevelConfig currentLevel = LevelLoader.Instance != null ? LevelLoader.Instance.CurrentLevel : null;
+            
+            if (currentLevel != null && rowsSurvived >= currentLevel.threeStarRows)
+            {
+                Debug.Log($"[GameManager] Survival mode - reached 3 stars ({rowsSurvived} rows) - Victory!");
+                Victory(false);
+                return;
+            }
+        }
+        
         currentState = GameState.GameOver;
         Debug.Log("Game Over!");
         
