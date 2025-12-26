@@ -2,11 +2,16 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-[ExecuteAlways] // Run in edit mode
+[ExecuteAlways]
 public class ThemeableUIImage : MonoBehaviour
 {
     [Header("Theme Settings")]
+    [Tooltip("Optional: Use a ThemeSprite ScriptableObject. Takes priority over individual sprites.")]
     [SerializeField] private ThemeSprite themeSprite;
+    
+    [Header("Direct Sprite Assignment (Used if ThemeSprite is not assigned)")]
+    [SerializeField] private Sprite daySprite;
+    [SerializeField] private Sprite nightSprite;
     
     private Image image;
     
@@ -37,14 +42,33 @@ public class ThemeableUIImage : MonoBehaviour
         ApplyTheme(newTheme);
     }
     
+    // Applies the correct sprite based on current theme.
+    // Checks if ScriptableObject is assigned first, otherwise uses direct sprite fields.
     private void ApplyTheme(ThemeMode theme)
     {
-        if (themeSprite == null || image == null) return;
+        if (image == null) return;
         
-        image.sprite = themeSprite.GetSprite(theme);
+        Sprite targetSprite = GetSpriteForTheme(theme);
+        if (targetSprite != null)
+        {
+            image.sprite = targetSprite;
+        }
     }
     
-    // Called in editor when values change
+    // Returns the appropriate sprite for the given theme.
+    // Priority: ThemeSprite ScriptableObject > Direct sprite assignment.
+    private Sprite GetSpriteForTheme(ThemeMode theme)
+    {
+        // If ScriptableObject is assigned, use it
+        if (themeSprite != null)
+        {
+            return themeSprite.GetSprite(theme);
+        }
+        
+        // Otherwise use direct sprite assignment
+        return theme == ThemeMode.Day ? daySprite : nightSprite;
+    }
+    
     private void OnValidate()
     {
         if (!Application.isPlaying)
@@ -53,19 +77,23 @@ public class ThemeableUIImage : MonoBehaviour
         }
     }
     
-    // Update preview in editor
+    // Updates the sprite preview in the editor based on ThemeManager's current theme.
+    // Allows seeing theme changes without entering play mode.
     public void UpdatePreview()
     {
         if (image == null)
             image = GetComponent<Image>();
             
-        if (themeSprite != null && image != null)
+        if (image != null)
         {
-            // In edit mode, check if ThemeManager exists and use its theme
             ThemeManager manager = FindObjectOfType<ThemeManager>();
             ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
             
-            image.sprite = themeSprite.GetSprite(previewTheme);
+            Sprite targetSprite = GetSpriteForTheme(previewTheme);
+            if (targetSprite != null)
+            {
+                image.sprite = targetSprite;
+            }
         }
     }
 }

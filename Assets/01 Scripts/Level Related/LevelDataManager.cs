@@ -6,8 +6,8 @@ public class LevelDataManager : MonoBehaviour
     public static LevelDataManager Instance { get; private set; }
     
     [Header("Unlock Settings")]
-    public int freeLevels = 3; // Levels 1-3 are free
-    public int starsPerUnlock = 3; // Stars needed per level after free levels
+    public int freeLevels = 3;
+    public int starsPerUnlock = 3;
     
     [Header("Debug")]
     public bool clearSaveOnStart = false;
@@ -35,42 +35,30 @@ public class LevelDataManager : MonoBehaviour
         LoadProgress();
         CalculateTotalStars();
     }
+    
     void Start()
     {
-       
-        // Add test data - remove this after testing!
         if (clearSaveOnStart)
         {
-           
-            /*ClearSave();
-            // Simulate completing some levels
-            CompleteLevel(1, 3);
-            CompleteLevel(2, 2);
-            CompleteLevel(3, 3);
-            CompleteLevel(4, 1);*/
+            // Test data - remove after testing
         }
     }
-    // Returns the star requirement for a specific level.
-    // First N levels are free, then increases by starsPerUnlock each level.
+    
     public int GetStarsRequired(int levelNumber)
     {
         if (levelNumber <= freeLevels) return 0;
-        
         return (levelNumber - freeLevels) * starsPerUnlock;
     }
     
-    // Checks if a level is unlocked based on total stars earned.
     public bool IsLevelUnlocked(int levelNumber)
     {
         return TotalStars >= GetStarsRequired(levelNumber);
     }
     
-    // Returns the highest level number that the player has unlocked.
     public int GetHighestUnlockedLevel()
     {
         int highest = 1;
         
-        // Check up to a reasonable max
         for (int i = 1; i <= 1000; i++)
         {
             if (IsLevelUnlocked(i))
@@ -86,7 +74,24 @@ public class LevelDataManager : MonoBehaviour
         return highest;
     }
     
-    // Returns the highest level the player has completed.
+    // Returns the first level that has 0 stars (first incomplete level).
+    public int GetFirstIncompleteLevel()
+    {
+        int highestUnlocked = GetHighestUnlockedLevel();
+        
+        for (int i = 1; i <= highestUnlocked; i++)
+        {
+            int stars = GetStarsForLevel(i);
+            if (stars == 0)
+            {
+                return i;
+            }
+        }
+        
+        // All unlocked levels have stars, return highest unlocked
+        return highestUnlocked;
+    }
+    
     public int GetHighestCompletedLevel()
     {
         int highest = 0;
@@ -102,7 +107,6 @@ public class LevelDataManager : MonoBehaviour
         return highest;
     }
     
-    // Gets level data, creating new entry if it doesn't exist.
     public LevelData GetLevelData(int levelNumber)
     {
         if (!levelDataDict.ContainsKey(levelNumber))
@@ -113,7 +117,6 @@ public class LevelDataManager : MonoBehaviour
         return levelDataDict[levelNumber];
     }
     
-    // Returns stars earned on a specific level.
     public int GetStarsForLevel(int levelNumber)
     {
         if (levelDataDict.ContainsKey(levelNumber))
@@ -123,8 +126,6 @@ public class LevelDataManager : MonoBehaviour
         return 0;
     }
     
-    // Completes a level with the given star count.
-    // Only updates if new stars are higher than previous.
     public void CompleteLevel(int levelNumber, int stars)
     {
         var data = GetLevelData(levelNumber);
@@ -141,7 +142,6 @@ public class LevelDataManager : MonoBehaviour
         Debug.Log($"[LevelDataManager] Level {levelNumber} completed with {stars} stars. Total: {TotalStars}");
     }
     
-    // Recalculates total stars from all completed levels.
     private void CalculateTotalStars()
     {
         TotalStars = 0;
@@ -151,7 +151,6 @@ public class LevelDataManager : MonoBehaviour
         }
     }
     
-    // Saves progress to PlayerPrefs as JSON.
     public void SaveProgress()
     {
         var saveData = new LevelSaveData();
@@ -164,7 +163,6 @@ public class LevelDataManager : MonoBehaviour
         Debug.Log("[LevelDataManager] Progress saved");
     }
     
-    // Loads progress from PlayerPrefs.
     public void LoadProgress()
     {
         levelDataDict.Clear();
@@ -186,7 +184,6 @@ public class LevelDataManager : MonoBehaviour
         }
     }
     
-    // Clears all saved progress.
     public void ClearSave()
     {
         PlayerPrefs.DeleteKey(SAVE_KEY);

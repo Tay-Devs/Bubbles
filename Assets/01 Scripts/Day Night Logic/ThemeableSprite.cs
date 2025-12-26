@@ -1,11 +1,16 @@
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
-[ExecuteAlways] // Run in edit mode
+[ExecuteAlways]
 public class ThemeableSprite : MonoBehaviour
 {
     [Header("Theme Settings")]
+    [Tooltip("Optional: Use a ThemeSprite ScriptableObject. Takes priority over individual sprites.")]
     [SerializeField] private ThemeSprite themeSprite;
+    
+    [Header("Direct Sprite Assignment (Used if ThemeSprite is not assigned)")]
+    [SerializeField] private Sprite daySprite;
+    [SerializeField] private Sprite nightSprite;
     
     private SpriteRenderer spriteRenderer;
     
@@ -36,14 +41,33 @@ public class ThemeableSprite : MonoBehaviour
         ApplyTheme(newTheme);
     }
     
+    // Applies the correct sprite based on current theme.
+    // Checks if ScriptableObject is assigned first, otherwise uses direct sprite fields.
     private void ApplyTheme(ThemeMode theme)
     {
-        if (themeSprite == null || spriteRenderer == null) return;
+        if (spriteRenderer == null) return;
         
-        spriteRenderer.sprite = themeSprite.GetSprite(theme);
+        Sprite targetSprite = GetSpriteForTheme(theme);
+        if (targetSprite != null)
+        {
+            spriteRenderer.sprite = targetSprite;
+        }
     }
     
-    // Called in editor when values change
+    // Returns the appropriate sprite for the given theme.
+    // Priority: ThemeSprite ScriptableObject > Direct sprite assignment.
+    private Sprite GetSpriteForTheme(ThemeMode theme)
+    {
+        // If ScriptableObject is assigned, use it
+        if (themeSprite != null)
+        {
+            return themeSprite.GetSprite(theme);
+        }
+        
+        // Otherwise use direct sprite assignment
+        return theme == ThemeMode.Day ? daySprite : nightSprite;
+    }
+    
     private void OnValidate()
     {
         if (!Application.isPlaying)
@@ -52,19 +76,23 @@ public class ThemeableSprite : MonoBehaviour
         }
     }
     
-    // Update preview in editor
+    // Updates the sprite preview in the editor based on ThemeManager's current theme.
+    // Allows seeing theme changes without entering play mode.
     public void UpdatePreview()
     {
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
             
-        if (themeSprite != null && spriteRenderer != null)
+        if (spriteRenderer != null)
         {
-            // In edit mode, check if ThemeManager exists and use its theme
             ThemeManager manager = FindObjectOfType<ThemeManager>();
             ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
             
-            spriteRenderer.sprite = themeSprite.GetSprite(previewTheme);
+            Sprite targetSprite = GetSpriteForTheme(previewTheme);
+            if (targetSprite != null)
+            {
+                spriteRenderer.sprite = targetSprite;
+            }
         }
     }
 }

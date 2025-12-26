@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Level_7
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
   levelNumber: 7
-  levelName: Level 7
+  levelName: 'Pop Challenge '
+  levelIcon: {fileID: 0}
   gridWidth: 12
   gridHeight: 15
   availableColors: 0000000001000000020000000300000004000000

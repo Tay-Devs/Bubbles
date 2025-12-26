@@ -59,7 +59,7 @@ public class GridStartHeightLimit : MonoBehaviour
         float cameraWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
         zoneWidth = cameraWidth;
         
-        Debug.Log($"[GridStartHeightLimit] Width updated to {zoneWidth}");
+        //Debug.Log($"[GridStartHeightLimit] Width updated to {zoneWidth}");
     }
     
     // Check if a world Y position is below the limit (should stop generating)

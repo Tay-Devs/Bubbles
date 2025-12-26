@@ -13,13 +13,14 @@ public class UIWorldAnchor : MonoBehaviour
     public bool anchorY = true;
     
     [Header("Debug")]
-    public bool showDebug = true;
+    public bool showDebug = false;
     
     // Event fired after position is applied
     public event Action onPositionApplied;
     
     void Start()
     {
+        showDebug = false;
         if (gameCamera == null)
             gameCamera = Camera.main;
         

@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
         if (worldAnchor != null)
         {
             worldAnchor.onPositionApplied += OnPositionApplied;
-            Debug.Log("[PlayerController] Subscribed to UIWorldAnchor.onPositionApplied, waiting for position...");
+            //Debug.Log("[PlayerController] Subscribed to UIWorldAnchor.onPositionApplied, waiting for position...");
         }
         else
         {
@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
     
     void OnPositionApplied()
     {
-        Debug.Log($"[PlayerController] OnPositionApplied received! Position is now: {transform.position}");
+        //Debug.Log($"[PlayerController] OnPositionApplied received! Position is now: {transform.position}");
         InitializeBubbles();
     }
     

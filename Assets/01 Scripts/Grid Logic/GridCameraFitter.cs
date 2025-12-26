@@ -36,7 +36,7 @@ public class GridCameraFitter : MonoBehaviour
             return;
         }
         
-        Debug.Log($"[GridCameraFitter] Fitting camera for grid width: {grid.width}");
+        //Debug.Log($"[GridCameraFitter] Fitting camera for grid width: {grid.width}");
         
         // Step 1: Get UI boundary position as a screen ratio BEFORE changing camera
         float uiBoundaryScreenRatio = GetUIBoundaryScreenRatio();
@@ -85,7 +85,7 @@ public class GridCameraFitter : MonoBehaviour
         // Refresh UI anchors
         RefreshAllUIAnchors();
         
-        Debug.Log($"[GridCameraFitter] Camera ortho: {requiredOrthoSize}, Grid at: {grid.transform.position}");
+        //Debug.Log($"[GridCameraFitter] Camera ortho: {requiredOrthoSize}, Grid at: {grid.transform.position}");
     }
     
     private bool needsAnchorRefresh = false;
@@ -108,7 +108,7 @@ public class GridCameraFitter : MonoBehaviour
     private void DoRefreshAnchors()
     {
         var anchors = FindObjectsByType<UIWorldAnchor>(FindObjectsSortMode.None);
-        Debug.Log($"[GridCameraFitter] Refreshing {anchors.Length} UI world anchors");
+        //Debug.Log($"[GridCameraFitter] Refreshing {anchors.Length} UI world anchors");
         foreach (var anchor in anchors)
         {
             anchor.Refresh();
@@ -117,7 +117,7 @@ public class GridCameraFitter : MonoBehaviour
         // Initialize grid after anchors are positioned
         if (grid != null && !grid.autoGenerate)
         {
-            Debug.Log("[GridCameraFitter] Initializing grid");
+            //Debug.Log("[GridCameraFitter] Initializing grid");
             grid.InitializeGrid();
         }
     }

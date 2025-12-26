@@ -36,7 +36,7 @@ public class ScreenBoundary : MonoBehaviour
         float screenWidth = screenHeight * cam.aspect;
         Vector3 camPos = cam.transform.position;
         
-        Debug.Log($"[ScreenBoundary] Creating boundaries for camera size: {screenWidth}x{screenHeight}");
+        //Debug.Log($"[ScreenBoundary] Creating boundaries for camera size: {screenWidth}x{screenHeight}");
         
         if (bouncyMaterial == null)
         {
