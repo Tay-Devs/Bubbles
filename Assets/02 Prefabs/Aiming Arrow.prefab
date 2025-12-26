@@ -104,3 +104,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
   themeSprite: {fileID: 11400000, guid: fb9affaca602bcb4dbdae12d990deb51, type: 2}
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}

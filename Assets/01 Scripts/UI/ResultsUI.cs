@@ -26,8 +26,22 @@ public class ResultsUI : MonoBehaviour
     [Header("Debug")]
     public bool enableDebugLogs = false;
     
+    private RectTransform rt;
+
+    private void Awake()
+    {
+        rt = GetComponent<RectTransform>();
+        rt.anchoredPosition = Vector2.zero;
+    }
+    
     void OnEnable()
     {
+        if (rt == null)
+        {
+            rt = GetComponent<RectTransform>();
+        }
+       
+        rt.anchoredPosition = Vector2.zero;
         UpdateDisplay();
     }
     

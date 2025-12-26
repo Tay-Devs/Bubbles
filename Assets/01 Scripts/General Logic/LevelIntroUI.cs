@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -38,6 +39,14 @@ public class LevelIntroUI : MonoBehaviour
     private CanvasGroup canvasGroup;
     private bool isInitialized = false;
     
+    private RectTransform rt;
+
+    private void Awake()
+    {
+        rt = GetComponent<RectTransform>();
+        rt.anchoredPosition = Vector2.zero;
+    }
+
     void Start()
     {
         if (useFade && popupBox != null)

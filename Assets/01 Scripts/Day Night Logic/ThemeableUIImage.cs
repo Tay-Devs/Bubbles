@@ -8,6 +8,7 @@ public class ThemeableUIImage : MonoBehaviour
     [Header("Theme Settings")]
     [Tooltip("Optional: Use a ThemeSprite ScriptableObject. Takes priority over individual sprites.")]
     [SerializeField] private ThemeSprite themeSprite;
+    [SerializeField] private bool useThemeSprite = false;
     
     [Header("Direct Sprite Assignment (Used if ThemeSprite is not assigned)")]
     [SerializeField] private Sprite daySprite;
@@ -60,7 +61,7 @@ public class ThemeableUIImage : MonoBehaviour
     private Sprite GetSpriteForTheme(ThemeMode theme)
     {
         // If ScriptableObject is assigned, use it
-        if (themeSprite != null)
+        if (themeSprite != null && useThemeSprite)
         {
             return themeSprite.GetSprite(theme);
         }
