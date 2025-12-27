@@ -106,7 +106,7 @@ public class GridRowSystem : MonoBehaviour
     
     // Called when bubble connects to grid.
     // If destruction is in progress, wait for it to complete.
-    // If no match was made, spawn pending rows immediately.
+    // If no match was made, spawn pending rows immediately (only if game still active).
     private void OnBubbleConnected()
     {
         if (!IsSurvivalMode) return;
@@ -119,17 +119,32 @@ public class GridRowSystem : MonoBehaviour
             return;
         }
         
+        // Don't spawn rows if game ended
+        if (GameManager.Instance == null || !GameManager.Instance.IsPlaying)
+        {
+            rowPending = false;
+            return;
+        }
+        
         // No match/destruction - spawn pending rows now
         grid.Log("[GridRowSystem] Bubble connected with no match - spawning pending rows");
         SpawnPendingRows();
     }
     
     // Called when destruction sequence completes.
-    // Spawns pending rows if any are waiting.
+    // Spawns pending rows only if game is still active (not victory/game over).
     private void OnDestructionComplete()
     {
         if (!IsSurvivalMode) return;
         if (!rowPending) return;
+        
+        // Don't spawn rows if game ended (victory or game over)
+        if (GameManager.Instance == null || !GameManager.Instance.IsPlaying)
+        {
+            rowPending = false;
+            grid.Log("[GridRowSystem] Destruction complete but game ended - skipping pending rows");
+            return;
+        }
         
         grid.Log("[GridRowSystem] Destruction complete - spawning pending rows");
         SpawnPendingRows();
