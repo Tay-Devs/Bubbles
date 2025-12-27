@@ -137,7 +137,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 1
-  m_fontSizeMax: 6
+  m_fontSizeMax: 5
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -231,6 +231,6 @@ MonoBehaviour:
   floatUpDistance: 0.3
   popInEase: 27
   popOutEase: 26
-  startingFontSize: 3
-  maxFontSize: 6
+  startingFontSize: 2.5
+  maxFontSize: 5
   stepsToMaxSize: 8

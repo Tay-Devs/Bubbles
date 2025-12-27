@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 593972928966625655}
   - component: {fileID: 6920546691007017538}
+  - component: {fileID: 6155338101722255651}
   m_Layer: 0
   m_Name: Red
   m_TagString: Untagged
@@ -79,17 +80,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1977874015752901547, guid: cb9e81cce44b1864e88cddd654d7591e, type: 3}
+  m_Sprite: {fileID: -2064626938123508318, guid: eba4947764bfb3047871df6ba13fd199, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.81, y: 0.82}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6155338101722255651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600865646626213513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f12828a482b9fa4695c816e63026400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: -2064626938123508318, guid: eba4947764bfb3047871df6ba13fd199, type: 3}
+  nightSprite: {fileID: -8063554991532440264, guid: bc644add45e6ce34497d7ad249b29aad, type: 3}
 --- !u!1 &3716287690380474867
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,6 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8810213178274743979}
   - component: {fileID: 2450517692230475273}
+  - component: {fileID: 5887383510033052971}
   m_Layer: 0
   m_Name: Purple
   m_TagString: Untagged
@@ -169,17 +186,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1442923022569852071, guid: 0ef2b33353eca7746855f41c07420f50, type: 3}
+  m_Sprite: {fileID: 3423763120466254227, guid: f70b2b7eb99d411488206307a4aeb215, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.81, y: 0.82}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5887383510033052971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3716287690380474867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f12828a482b9fa4695c816e63026400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: 3423763120466254227, guid: f70b2b7eb99d411488206307a4aeb215, type: 3}
+  nightSprite: {fileID: -2443427015903704203, guid: 0d7c7439ba724b843888d9a54d5cbd65, type: 3}
 --- !u!1 &3721673634156578823
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,7 +286,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.4
 --- !u!114 &651544079549411836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,13 +326,14 @@ GameObject:
   m_Component:
   - component: {fileID: 7869731759417764317}
   - component: {fileID: 2218809024504194398}
+  - component: {fileID: 4234191383416632349}
   m_Layer: 0
   m_Name: Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7869731759417764317
 Transform:
   m_ObjectHideFlags: 0
@@ -363,17 +396,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8755355004536518155, guid: 00b6e878d8fd086478e297197de86f27, type: 3}
+  m_Sprite: {fileID: 8043284035439139733, guid: 257517e758daef443afec57e1217e6c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.81, y: 0.82}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4234191383416632349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4114410533168325409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f12828a482b9fa4695c816e63026400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: 8043284035439139733, guid: 257517e758daef443afec57e1217e6c0, type: 3}
+  nightSprite: {fileID: 4609254143449975427, guid: 2583ca0f4e2adec4cb0c7d4786197b0d, type: 3}
 --- !u!1 &8756135159794482815
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,6 +432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1846666822046954660}
   - component: {fileID: 1374230364889498471}
+  - component: {fileID: 949559106918223212}
   m_Layer: 0
   m_Name: Green
   m_TagString: Untagged
@@ -453,17 +502,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7538030444803137059, guid: 3523fd6afe6aac646ae552f66330cee3, type: 3}
+  m_Sprite: {fileID: -8951508773116876919, guid: 03b7eb6fa8ea7574d9dee0b543b40f25, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.81, y: 0.82}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &949559106918223212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8756135159794482815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f12828a482b9fa4695c816e63026400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: -8951508773116876919, guid: 03b7eb6fa8ea7574d9dee0b543b40f25, type: 3}
+  nightSprite: {fileID: -1668303589317511500, guid: 50d2df83b4ab63840b55df4cb12440a9, type: 3}
 --- !u!1 &9122797113727720000
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7735552028557084130}
   - component: {fileID: 8682605282585390037}
+  - component: {fileID: 4141724704093195945}
   m_Layer: 0
   m_Name: Yellow
   m_TagString: Untagged
@@ -543,14 +608,29 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2290419000990616701, guid: dc7adb19aab76614aa5877469240046e, type: 3}
+  m_Sprite: {fileID: -195620875209501211, guid: dc07899af804c1d48b7ea2d9e22a2a19, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.81, y: 0.82}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4141724704093195945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9122797113727720000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f12828a482b9fa4695c816e63026400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableSprite
+  themeSprite: {fileID: 0}
+  daySprite: {fileID: -195620875209501211, guid: dc07899af804c1d48b7ea2d9e22a2a19, type: 3}
+  nightSprite: {fileID: 2883204798134775805, guid: b880bff5dc270364cbcafdf3e5aa5ebc, type: 3}
