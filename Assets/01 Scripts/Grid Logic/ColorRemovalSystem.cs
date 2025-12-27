@@ -1,17 +1,25 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ColorRemovalSystem : MonoBehaviour
 {
     [Header("Bonus Settings")]
     public int scoreBonus = 1000;
     
-    [Header("Animation")]
-    public Animator colorRemovedAnimator;
+    [Header("Day Popup")]
+    [SerializeField] private Animator dayPopupAnimator;
+    [SerializeField] private CanvasGroup dayPopupCanvasGroup;
+    [SerializeField] private TextMeshProUGUI dayBonusText;
+    
+    [Header("Night Popup")]
+    [SerializeField] private Animator nightPopupAnimator;
+    [SerializeField] private CanvasGroup nightPopupCanvasGroup;
+    [SerializeField] private TextMeshProUGUI nightBonusText;
     
     [Header("Debug")]
-    public bool enableDebugLogs = false;
+    [SerializeField] private bool enableDebugLogs = false;
     
     // Events
     public Action<BubbleType> onColorRemoved;
@@ -26,6 +34,17 @@ public class ColorRemovalSystem : MonoBehaviour
     
     // Returns how many rows should spawn per trigger (1 + colors removed).
     public int RowsPerSpawn => 1 + colorsRemovedCount;
+    
+    private void Start()
+    {
+        ThemeManager.OnThemeChanged += OnThemeChanged;
+        
+        // Set initial visibility
+        if (ThemeManager.Instance != null)
+        {
+            UpdatePopupVisibility(ThemeManager.Instance.CurrentTheme);
+        }
+    }
     
     // Initializes the system with grid reference and subscribes to color change events.
     // Call this after the grid is ready.
@@ -45,6 +64,39 @@ public class ColorRemovalSystem : MonoBehaviour
         {
             grid.onColorsChanged -= CheckForRemovedColors;
         }
+        
+        ThemeManager.OnThemeChanged -= OnThemeChanged;
+    }
+    
+    // Called when theme changes. Swaps which popup is visible.
+    // Both popups keep playing, only visibility changes.
+    private void OnThemeChanged(ThemeMode newTheme)
+    {
+        UpdatePopupVisibility(newTheme);
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[ColorRemovalSystem] Theme changed to {newTheme}, updated popup visibility");
+        }
+    }
+    
+    // Sets CanvasGroup alpha to show/hide the correct popup.
+    // Uses alpha instead of SetActive so animators keep running.
+    private void UpdatePopupVisibility(ThemeMode theme)
+    {
+        bool isDay = theme == ThemeMode.Day;
+        
+        if (dayPopupCanvasGroup != null)
+        {
+            dayPopupCanvasGroup.alpha = isDay ? 1f : 0f;
+            dayPopupCanvasGroup.blocksRaycasts = isDay;
+        }
+        
+        if (nightPopupCanvasGroup != null)
+        {
+            nightPopupCanvasGroup.alpha = isDay ? 0f : 1f;
+            nightPopupCanvasGroup.blocksRaycasts = !isDay;
+        }
     }
     
     // Stores initial colors from the grid. Call after grid is generated.
@@ -63,11 +115,14 @@ public class ColorRemovalSystem : MonoBehaviour
             }
         }
         
-        Log($"Starting with {previousColors.Count} colors. Rows per spawn: {RowsPerSpawn}");
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[ColorRemovalSystem] Starting with {previousColors.Count} colors. Rows per spawn: {RowsPerSpawn}");
+        }
     }
     
     // Called when grid colors change. Compares current colors against previous
-    // to detect if any color was completely removed from the grid.
+    // to detect if any colors were completely removed from the grid.
     private void CheckForRemovedColors()
     {
         if (grid == null) return;
@@ -84,10 +139,10 @@ public class ColorRemovalSystem : MonoBehaviour
             }
         }
         
-        // Process each removed color
-        foreach (var removedColor in removedColors)
+        // Process all removed colors together
+        if (removedColors.Count > 0)
         {
-            OnColorCompletelyRemoved(removedColor);
+            OnColorsCompletelyRemoved(removedColors);
         }
         
         // Update previous colors for next check
@@ -98,30 +153,47 @@ public class ColorRemovalSystem : MonoBehaviour
         }
     }
     
-    // Called when a color is completely removed from the grid.
-    // Awards bonus score, plays animation, and fires event.
-    private void OnColorCompletelyRemoved(BubbleType color)
+    // Called when one or more colors are completely removed from the grid.
+    // Calculates combined bonus, updates text, plays animations, and fires events.
+    private void OnColorsCompletelyRemoved(List<BubbleType> removedColors)
     {
-        colorsRemovedCount++;
+        int colorCount = removedColors.Count;
+        colorsRemovedCount += colorCount;
         
-        Log($"Color {color} removed! Total removed: {colorsRemovedCount}, Rows per spawn now: {RowsPerSpawn}");
+        // Calculate combined bonus
+        int totalBonus = scoreBonus * colorCount;
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[ColorRemovalSystem] {colorCount} color(s) removed! Total removed: {colorsRemovedCount}, Bonus: +{totalBonus}, Rows per spawn now: {RowsPerSpawn}");
+        }
         
         // Add score bonus
         if (ScoreManager.Instance != null)
         {
-            ScoreManager.Instance.AddScore(scoreBonus);
-            Log($"Added {scoreBonus} bonus points");
+            ScoreManager.Instance.AddScore(totalBonus);
         }
         
-        // Play animation
-        if (colorRemovedAnimator != null)
+        // Update bonus text on both popups with singular/plural
+        string colorWord = colorCount == 1 ? "Color" : "Colors";
+        string bonusString = $"{colorWord} Removed\n+{totalBonus}";
+        if (dayBonusText != null) dayBonusText.text = bonusString;
+        if (nightBonusText != null) nightBonusText.text = bonusString;
+        
+        // Play both animations simultaneously (only visible one is seen)
+        if (dayPopupAnimator != null) dayPopupAnimator.SetTrigger(PlayTrigger);
+        if (nightPopupAnimator != null) nightPopupAnimator.SetTrigger(PlayTrigger);
+        
+        if (enableDebugLogs)
         {
-            colorRemovedAnimator.SetTrigger(PlayTrigger);
-            Log("Triggered color removed animation");
+            Debug.Log($"[ColorRemovalSystem] Triggered popup animations with bonus: {bonusString}");
         }
         
-        // Fire event
-        onColorRemoved?.Invoke(color);
+        // Fire event for each removed color
+        foreach (var color in removedColors)
+        {
+            onColorRemoved?.Invoke(color);
+        }
     }
     
     // Resets the system for a new game.
@@ -130,10 +202,5 @@ public class ColorRemovalSystem : MonoBehaviour
     {
         colorsRemovedCount = 0;
         previousColors.Clear();
-    }
-    
-    private void Log(string msg)
-    {
-        if (enableDebugLogs) Debug.Log($"[ColorRemovalSystem] {msg}");
     }
 }
