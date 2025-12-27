@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[ExecuteAlways]
 public class LevelPopup : MonoBehaviour
 {
     [Header("UI References")]
@@ -15,13 +16,18 @@ public class LevelPopup : MonoBehaviour
     
     [Header("Star Sprites")]
     public Sprite starEarnedSprite;
-    public Sprite starUnearnedSprite;
+    
+    [Header("Unearned Star Theme Sprites")]
+    [SerializeField] private Sprite unearnedStarDaySprite;
+    [SerializeField] private Sprite unearnedStarNightSprite;
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
     
     private int selectedLevelNumber;
+    private int currentStarsEarned;
     private bool isOpen;
+    private ThemeMode currentTheme;
     
     public bool IsOpen => isOpen;
     
@@ -29,6 +35,45 @@ public class LevelPopup : MonoBehaviour
     {
         SetupButtons();
         Hide();
+    }
+    
+    void Start()
+    {
+        if (Application.isPlaying)
+        {
+            ThemeManager.OnThemeChanged += OnThemeChanged;
+            
+            if (ThemeManager.Instance != null)
+            {
+                currentTheme = ThemeManager.Instance.CurrentTheme;
+            }
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (Application.isPlaying)
+        {
+            ThemeManager.OnThemeChanged -= OnThemeChanged;
+        }
+    }
+    
+    // Called when theme changes. Updates unearned star sprites.
+    private void OnThemeChanged(ThemeMode newTheme)
+    {
+        currentTheme = newTheme;
+        UpdateStars(currentStarsEarned);
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[LevelPopup] Theme changed to {newTheme}, updated stars");
+        }
+    }
+    
+    // Returns the appropriate unearned star sprite for the given theme.
+    private Sprite GetUnearnedSpriteForTheme(ThemeMode theme)
+    {
+        return theme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
     }
     
     // Subscribes button click events to their respective handlers.
@@ -53,6 +98,13 @@ public class LevelPopup : MonoBehaviour
     public void Show(int levelNumber, int starsEarned)
     {
         selectedLevelNumber = levelNumber;
+        currentStarsEarned = starsEarned;
+        
+        // Get current theme
+        if (ThemeManager.Instance != null)
+        {
+            currentTheme = ThemeManager.Instance.CurrentTheme;
+        }
         
         if (levelNameText != null)
         {
@@ -75,17 +127,21 @@ public class LevelPopup : MonoBehaviour
     }
     
     // Updates star images based on how many stars the player earned.
-    // Earned stars show gold sprite, unearned show grey sprite.
+    // Earned stars show gold sprite, unearned use day/night themed sprite.
     private void UpdateStars(int starsEarned)
     {
+        currentStarsEarned = starsEarned;
+        
         if (starImages == null) return;
+        
+        Sprite unearnedSprite = GetUnearnedSpriteForTheme(currentTheme);
         
         for (int i = 0; i < starImages.Length; i++)
         {
             if (starImages[i] == null) continue;
             
             bool isEarned = i < starsEarned;
-            starImages[i].sprite = isEarned ? starEarnedSprite : starUnearnedSprite;
+            starImages[i].sprite = isEarned ? starEarnedSprite : unearnedSprite;
         }
     }
     
@@ -120,6 +176,37 @@ public class LevelPopup : MonoBehaviour
         else
         {
             Debug.LogError("[LevelPopup] LevelMapController.Instance is null!");
+        }
+    }
+    
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            UpdatePreview();
+        }
+    }
+    
+    // Updates the star preview in editor based on ThemeManager's current theme.
+    // Allows seeing theme changes without entering play mode.
+    public void UpdatePreview()
+    {
+        if (starImages == null) return;
+        
+        ThemeManager manager = FindObjectOfType<ThemeManager>();
+        ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
+        
+        Sprite unearnedSprite = previewTheme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
+        
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            if (starImages[i] == null) continue;
+            
+            bool isEarned = i < currentStarsEarned;
+            if (!isEarned && unearnedSprite != null)
+            {
+                starImages[i].sprite = unearnedSprite;
+            }
         }
     }
 }
