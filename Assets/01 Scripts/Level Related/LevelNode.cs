@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[ExecuteAlways]
 public class LevelNode : MonoBehaviour
 {
     [Header("UI References")]
@@ -14,12 +15,10 @@ public class LevelNode : MonoBehaviour
     
     [Header("Star Sprites")]
     public Sprite starEarnedSprite;
-    public Sprite starUnearnedSprite;
     
-    [Header("Or Use Colors (if no sprites)")]
-    public bool useColors = false;
-    public Color starEarnedColor = Color.yellow;
-    public Color starUnearnedColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
+    [Header("Unearned Star Theme Sprites")]
+    [SerializeField] private Sprite unearnedStarDaySprite;
+    [SerializeField] private Sprite unearnedStarNightSprite;
     
     [Header("Lock State")]
     public GameObject lockIcon;
@@ -37,6 +36,8 @@ public class LevelNode : MonoBehaviour
     
     private int levelNumber;
     private bool isUnlocked;
+    private int currentStarsEarned;
+    private ThemeMode currentTheme;
     
     public int LevelNumber => levelNumber;
     public Vector3 Position => transform.position;
@@ -49,6 +50,45 @@ public class LevelNode : MonoBehaviour
         }
         
         DisableChildRaycasts();
+    }
+    
+    void Start()
+    {
+        if (Application.isPlaying)
+        {
+            ThemeManager.OnThemeChanged += OnThemeChanged;
+            
+            if (ThemeManager.Instance != null)
+            {
+                currentTheme = ThemeManager.Instance.CurrentTheme;
+            }
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (Application.isPlaying)
+        {
+            ThemeManager.OnThemeChanged -= OnThemeChanged;
+        }
+    }
+    
+    // Called when theme changes. Updates unearned star sprites.
+    private void OnThemeChanged(ThemeMode newTheme)
+    {
+        currentTheme = newTheme;
+        UpdateStars(currentStarsEarned, isUnlocked);
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[LevelNode] Theme changed to {newTheme}, updated stars");
+        }
+    }
+    
+    // Returns the appropriate unearned star sprite for the given theme.
+    private Sprite GetUnearnedSpriteForTheme(ThemeMode theme)
+    {
+        return theme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
     }
     
     private void DisableChildRaycasts()
@@ -74,6 +114,13 @@ public class LevelNode : MonoBehaviour
     {
         levelNumber = level;
         isUnlocked = unlocked;
+        currentStarsEarned = starsEarned;
+        
+        // Get current theme
+        if (ThemeManager.Instance != null)
+        {
+            currentTheme = ThemeManager.Instance.CurrentTheme;
+        }
         
         if (levelNumberText != null)
         {
@@ -109,14 +156,20 @@ public class LevelNode : MonoBehaviour
         levelNumberText.color = unlocked ? unlockedTextColor : lockedTextColor;
     }
     
+    // Updates star visuals based on stars earned and current theme.
+    // Earned stars use starEarnedSprite, unearned use day/night themed sprite.
     private void UpdateStars(int starsEarned, bool unlocked)
     {
+        currentStarsEarned = starsEarned;
+        
         if (starsContainer != null)
         {
             starsContainer.SetActive(unlocked);
         }
         
         if (starImages == null) return;
+        
+        Sprite unearnedSprite = GetUnearnedSpriteForTheme(currentTheme);
         
         for (int i = 0; i < starImages.Length; i++)
         {
@@ -125,16 +178,8 @@ public class LevelNode : MonoBehaviour
             starImages[i].gameObject.SetActive(true);
             
             bool isEarned = i < starsEarned;
-            
-            if (useColors)
-            {
-                starImages[i].color = isEarned ? starEarnedColor : starUnearnedColor;
-            }
-            else
-            {
-                starImages[i].sprite = isEarned ? starEarnedSprite : starUnearnedSprite;
-                starImages[i].color = Color.white;
-            }
+            starImages[i].sprite = isEarned ? starEarnedSprite : unearnedSprite;
+            starImages[i].color = Color.white;
         }
     }
     
@@ -180,6 +225,37 @@ public class LevelNode : MonoBehaviour
         if (enableDebugLogs)
         {
             Debug.Log($"[LevelNode] Opening popup for level {levelNumber}");
+        }
+    }
+    
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            UpdatePreview();
+        }
+    }
+    
+    // Updates the star preview in editor based on ThemeManager's current theme.
+    // Allows seeing theme changes without entering play mode.
+    public void UpdatePreview()
+    {
+        if (starImages == null) return;
+        
+        ThemeManager manager = FindObjectOfType<ThemeManager>();
+        ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
+        
+        Sprite unearnedSprite = previewTheme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
+        
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            if (starImages[i] == null) continue;
+            
+            bool isEarned = i < currentStarsEarned;
+            if (!isEarned && unearnedSprite != null)
+            {
+                starImages[i].sprite = unearnedSprite;
+            }
         }
     }
 }
