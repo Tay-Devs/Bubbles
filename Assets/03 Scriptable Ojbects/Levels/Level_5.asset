@@ -17,7 +17,7 @@ MonoBehaviour:
 
     CHALLENGE'
   levelIcon: {fileID: 11400000, guid: a2ec434686bf39744905145812a3ef8f, type: 2}
-  gridWidth: 12
+  gridWidth: 11
   gridHeight: 6
   availableColors: 00000000010000000200000003000000
   winCondition: 1
