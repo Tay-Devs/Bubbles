@@ -304,7 +304,6 @@ MonoBehaviour:
   visited: 0
   isAttached: 0
   popSound: {fileID: 11400000, guid: 5ae69063b75ff6f4787620962f6a050f, type: 2}
-  animator: {fileID: 0}
   timeToDestroy: 0.41
   effectData: {fileID: 11400000, guid: 4bf1f7cb7cd5b3542aa5a805fa24bf85, type: 2}
 --- !u!114 &5400045266310780815

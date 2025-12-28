@@ -167,11 +167,6 @@ public class LevelPopup : MonoBehaviour
     // Called when play button is clicked. Loads the selected level through LevelMapController.
     private void OnPlayClicked()
     {
-        if (enableDebugLogs)
-        {
-            Debug.Log($"[LevelPopup] Play clicked for level {selectedLevelNumber}");
-        }
-        
         if (LevelMapController.Instance != null)
         {
             LevelMapController.Instance.LoadLevel(selectedLevelNumber);
