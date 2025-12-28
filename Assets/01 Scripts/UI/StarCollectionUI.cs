@@ -58,6 +58,7 @@ public class StarCollectionUI : MonoBehaviour
     }
     
     // Caches star data from GameSession before it gets cleared.
+    // Calculates delta (new stars) vs what player already had on this level.
     private void CacheResultsData()
     {
         if (gameSession == null || !gameSession.hasResults)
@@ -78,13 +79,33 @@ public class StarCollectionUI : MonoBehaviour
             return;
         }
         
-        starsEarned = gameSession.starsEarned;
         completedLevelNumber = gameSession.selectedLevel != null ? gameSession.selectedLevel.levelNumber : 0;
+        
+        // Get stars player already had on this level BEFORE results are saved
+        int previousStarsOnLevel = 0;
+        if (LevelDataManager.Instance != null && completedLevelNumber > 0)
+        {
+            previousStarsOnLevel = LevelDataManager.Instance.GetStarsForLevel(completedLevelNumber);
+        }
+        
+        // Calculate delta - only new stars count
+        int deltaStars = Mathf.Max(0, gameSession.starsEarned - previousStarsOnLevel);
+        
+        if (deltaStars <= 0)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[StarCollectionUI] No new stars (had {previousStarsOnLevel}, earned {gameSession.starsEarned})");
+            }
+            return;
+        }
+        
+        starsEarned = deltaStars;
         hasNewStars = true;
         
         if (enableDebugLogs)
         {
-            Debug.Log($"[StarCollectionUI] Cached {starsEarned} stars from level {completedLevelNumber}");
+            Debug.Log($"[StarCollectionUI] Level {completedLevelNumber}: had {previousStarsOnLevel}, earned {gameSession.starsEarned}, delta {deltaStars}");
         }
     }
     
