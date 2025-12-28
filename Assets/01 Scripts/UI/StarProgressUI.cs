@@ -43,6 +43,15 @@ public class StarProgressUI : MonoBehaviour
     [SerializeField] private Vector2 loseTargetOffset = new Vector2(200f, 0f);
     [SerializeField] private float loseFadeDuration = 0.3f;
     
+    [Header("Classic Mode Lose Animation")]
+    [SerializeField] private float classicGrowScale = 1.5f;
+    [SerializeField] private float classicGrowDuration = 0.2f;
+    [SerializeField] private float classicSpinAmount = 360f;
+    [SerializeField] private float classicMoveDistance = 100f;
+    [SerializeField] private float classicFadeDuration = 0.4f;
+    [SerializeField] private Ease classicGrowEase = Ease.OutBack;
+    [SerializeField] private Ease classicFadeEase = Ease.InQuad;
+    
     [Header("Audio")]
     [SerializeField] private SFXData starEarnedSFX;
     [SerializeField] private SFXData starLostSFX;
@@ -362,17 +371,15 @@ public class StarProgressUI : MonoBehaviour
     }
     
     // Called when a star is about to change (earned or lost).
-    // Spawns and animates a flying star.
+    // Routes to appropriate animation based on mode and direction.
     private void OnStarChanging(int starIndex, bool isEarning, Vector3 starWorldPos)
     {
         if (flyingStarPrefab == null || flyingStarParent == null)
         {
-            // No prefab, just update immediately
             starIndicator?.OnStarAnimationComplete(starIndex, isEarning);
             return;
         }
         
-        // Delay animation if multiple stars changing
         float delay = pendingAnimations * delayBetweenStars;
         pendingAnimations++;
         
@@ -382,7 +389,15 @@ public class StarProgressUI : MonoBehaviour
         }
         else
         {
-            SpawnLosingStarWithDelay(starIndex, starWorldPos, delay);
+            // Classic mode uses a different lose animation
+            if (winCondition == WinConditionType.ClearAllBubbles)
+            {
+                SpawnClassicLosingStarWithDelay(starIndex, starWorldPos, delay);
+            }
+            else
+            {
+                SpawnLosingStarWithDelay(starIndex, starWorldPos, delay);
+            }
         }
     }
     
@@ -417,8 +432,15 @@ public class StarProgressUI : MonoBehaviour
         Vector2 startLocalPos = GetLocalPosition(progressText.transform.position);
         Vector2 targetLocalPos = GetLocalPosition(targetWorldPos);
         
+        // Set initial position and scale
         starRect.anchoredPosition = startLocalPos;
         starRect.localScale = Vector3.one * startScale;
+        
+        // Play SFX at animation start with combo pitch
+        if (starEarnedSFX != null)
+        {
+            SFXManager.Play(starEarnedSFX, starIndex);
+        }
         
         // Create animation sequence
         Sequence sequence = DOTween.Sequence();
@@ -432,16 +454,95 @@ public class StarProgressUI : MonoBehaviour
         {
             Destroy(star);
             OnAnimationComplete(starIndex, true);
-            
-            if (starEarnedSFX != null)
-            {
-                SFXManager.Play(starEarnedSFX);
-            }
         });
         
         if (enableDebugLogs)
         {
             Debug.Log($"[StarProgressUI] Earning star {starIndex} flying to display");
+        }
+    }
+    
+    // Delays the Classic mode lose animation spawn.
+    private void SpawnClassicLosingStarWithDelay(int starIndex, Vector3 starWorldPos, float delay)
+    {
+        DOVirtual.DelayedCall(delay, () =>
+        {
+            SpawnClassicLosingStar(starIndex, starWorldPos);
+        });
+    }
+    
+    // Spawns earned star at indicator, grows it, swaps indicator sprite, then spins/moves/fades.
+    private void SpawnClassicLosingStar(int starIndex, Vector3 starWorldPos)
+    {
+        if (flyingStarPrefab == null || flyingStarParent == null)
+        {
+            starIndicator?.OnStarAnimationComplete(starIndex, false);
+            return;
+        }
+        
+        GameObject star = Instantiate(flyingStarPrefab, flyingStarParent);
+        RectTransform starRect = star.GetComponent<RectTransform>();
+        Image starImage = star.GetComponent<Image>();
+        
+        if (starRect == null)
+        {
+            Destroy(star);
+            starIndicator?.OnStarAnimationComplete(starIndex, false);
+            return;
+        }
+        
+        // Match source star size
+        RectTransform sourceStarRect = starIndicator.GetStarRectTransform(starIndex);
+        if (sourceStarRect != null)
+        {
+            starRect.sizeDelta = sourceStarRect.sizeDelta;
+        }
+        
+        // Position at the star indicator
+        Vector2 localPos = GetLocalPosition(starWorldPos);
+        starRect.anchoredPosition = localPos;
+        starRect.localScale = Vector3.one;
+        starRect.localRotation = Quaternion.identity;
+        
+        // Add CanvasGroup for fading
+        CanvasGroup canvasGroup = star.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = star.AddComponent<CanvasGroup>();
+        }
+        canvasGroup.alpha = 1f;
+        
+        Sequence sequence = DOTween.Sequence();
+        
+        // Phase 1: Grow to max size
+        sequence.Append(starRect.DOScale(classicGrowScale, classicGrowDuration).SetEase(classicGrowEase));
+        
+        // At max size, swap the indicator sprite to empty
+        sequence.AppendCallback(() =>
+        {
+            starIndicator?.OnStarAnimationComplete(starIndex, false);
+        });
+        
+        // Phase 2: Spin, move right, and fade out
+        sequence.Append(starRect.DOAnchorPosX(localPos.x + classicMoveDistance, classicFadeDuration).SetEase(Ease.OutQuad));
+        sequence.Join(starRect.DOLocalRotate(new Vector3(0, 0, classicSpinAmount), classicFadeDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+        sequence.Join(starRect.DOScale(0f, classicFadeDuration).SetEase(classicFadeEase));
+        sequence.Join(canvasGroup.DOFade(0f, classicFadeDuration).SetEase(classicFadeEase));
+        
+        sequence.OnComplete(() =>
+        {
+            Destroy(star);
+            pendingAnimations = Mathf.Max(0, pendingAnimations - 1);
+            
+            if (starLostSFX != null)
+            {
+                SFXManager.Play(starLostSFX);
+            }
+        });
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[StarProgressUI] Classic lose - star {starIndex} growing then flying away");
         }
     }
     

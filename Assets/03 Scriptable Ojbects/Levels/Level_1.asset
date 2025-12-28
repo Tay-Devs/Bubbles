@@ -22,8 +22,8 @@ MonoBehaviour:
   availableColors: 000000000100000002000000
   winCondition: 0
   threeStarTime: 45
-  twoStarTime: 70
-  oneStarTime: 90
+  twoStarTime: 65
+  oneStarTime: 80
   targetScore: 1000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5

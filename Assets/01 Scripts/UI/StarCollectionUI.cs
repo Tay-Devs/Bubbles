@@ -196,14 +196,14 @@ public class StarCollectionUI : MonoBehaviour
         for (int i = 0; i < starsEarned; i++)
         {
             Vector2 randomOffset = Random.insideUnitCircle * spawnSpread;
-            SpawnStar(spawnLocalPos + randomOffset);
+            SpawnStar(spawnLocalPos + randomOffset, i);
             
             yield return new WaitForSeconds(delayBetweenStars);
         }
     }
     
     // Spawns a single star and animates it to the target position.
-    private void SpawnStar(Vector2 spawnPos)
+    private void SpawnStar(Vector2 spawnPos, int starIndex)
     {
         if (starPrefab == null || spawnParent == null || targetPosition == null) return;
         
@@ -219,6 +219,12 @@ public class StarCollectionUI : MonoBehaviour
         // Set initial position and scale
         starRect.anchoredPosition = spawnPos;
         starRect.localScale = Vector3.one * startScale;
+        
+        // Play SFX at animation start with combo pitch
+        if (starCollectSFX != null)
+        {
+            SFXManager.Play(starCollectSFX, starIndex);
+        }
         
         // Calculate target position in local space
         Vector2 targetLocalPos = GetTargetLocalPosition();
@@ -241,7 +247,7 @@ public class StarCollectionUI : MonoBehaviour
         
         if (enableDebugLogs)
         {
-            Debug.Log($"[StarCollectionUI] Spawned star at {spawnPos}, flying to {targetLocalPos}");
+            Debug.Log($"[StarCollectionUI] Spawned star {starIndex} at {spawnPos}, flying to {targetLocalPos}");
         }
     }
     
@@ -257,12 +263,6 @@ public class StarCollectionUI : MonoBehaviour
     // Called when a star reaches the target position.
     private void OnStarArrived(GameObject star)
     {
-        // Play collect sound
-        if (starCollectSFX != null)
-        {
-            SFXManager.Play(starCollectSFX);
-        }
-        
         // Increment counter with punch effect
         if (totalStarsUI != null)
         {

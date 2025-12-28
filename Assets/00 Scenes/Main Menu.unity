@@ -3476,16 +3476,16 @@ MonoBehaviour:
   starPrefab: {fileID: 7417871910002395890, guid: 225f28ff5d147774ab97e9afc20dd272, type: 3}
   spawnParent: {fileID: 713341269}
   spawnSpread: 50
-  delayBeforeStart: 0.5
-  delayBetweenStars: 0.2
-  flyDuration: 0.8
+  delayBeforeStart: 0.75
+  delayBetweenStars: 0.5
+  flyDuration: 1
   flyEase: 7
   startScale: 1.5
   endScale: 0.5
   rotationAmount: 360
-  punchScale: 0.3
-  punchDuration: 0.2
-  starCollectSFX: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
+  punchScale: 0.5
+  punchDuration: 0.3
+  starCollectSFX: {fileID: 11400000, guid: 1184acac2ad381d49aece3f779f8166d, type: 2}
   enableDebugLogs: 1
 --- !u!1 &1525806597
 GameObject:

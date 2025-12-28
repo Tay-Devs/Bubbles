@@ -9,6 +9,12 @@ public class LoseZoneWarning : MonoBehaviour
     [SerializeField] private GridStartHeightLimit heightLimit;
     [SerializeField] private Image warningImage;
 
+    [Header("Themed Warning Objects")]
+    [SerializeField] private GameObject dayWarningObject;
+    [SerializeField] private GameObject nightWarningObject;
+    [SerializeField] private Animator dayAnimator;
+    [SerializeField] private Animator nightAnimator;
+
     [Header("Fade Settings")]
     [SerializeField] private float fadeDuration = 0.3f;
 
@@ -36,6 +42,19 @@ public class LoseZoneWarning : MonoBehaviour
 
         PlayerController.onBubbleConnected += CheckBubblePositions;
 
+        // Subscribe to theme changes
+        ThemeManager.OnThemeChanged += OnThemeChanged;
+        
+        if (ThemeManager.Instance != null)
+        {
+            UpdateThemedObjects(ThemeManager.Instance.IsDay());
+        }
+        else
+        {
+            // Default to day mode if no ThemeManager
+            UpdateThemedObjects(true);
+        }
+
         // Initial hidden state
         if (warningImage != null)
         {
@@ -57,6 +76,52 @@ public class LoseZoneWarning : MonoBehaviour
         }
 
         PlayerController.onBubbleConnected -= CheckBubblePositions;
+
+        ThemeManager.OnThemeChanged -= OnThemeChanged;
+    }
+
+    // Called when theme changes. Syncs animator state and swaps visible object.
+    private void OnThemeChanged(ThemeMode themeMode)
+    {
+        bool isDayMode = themeMode == ThemeMode.Day;
+        UpdateThemedObjects(isDayMode);
+
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[LoseZoneWarning] Theme changed to {themeMode}");
+        }
+    }
+
+    // Enables the correct themed object and syncs animator playback.
+    private void UpdateThemedObjects(bool isDayMode)
+    {
+        if (dayWarningObject == null || nightWarningObject == null)
+            return;
+
+        // Get current animator state before switching
+        float normalizedTime = 0f;
+        int stateHash = 0;
+        
+        Animator activeAnimator = isDayMode ? nightAnimator : dayAnimator;
+        Animator targetAnimator = isDayMode ? dayAnimator : nightAnimator;
+
+        // Capture current playback position from the previously active animator
+        if (activeAnimator != null && activeAnimator.gameObject.activeSelf)
+        {
+            AnimatorStateInfo stateInfo = activeAnimator.GetCurrentAnimatorStateInfo(0);
+            normalizedTime = stateInfo.normalizedTime;
+            stateHash = stateInfo.fullPathHash;
+        }
+
+        // Swap active objects
+        dayWarningObject.SetActive(isDayMode);
+        nightWarningObject.SetActive(!isDayMode);
+
+        // Sync the new animator to the same frame
+        if (targetAnimator != null && stateHash != 0)
+        {
+            targetAnimator.Play(stateHash, 0, normalizedTime);
+        }
     }
 
     private void CheckBubblePositions()
