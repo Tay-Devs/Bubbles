@@ -139,7 +139,7 @@ public class SFXManager : MonoBehaviour
         
         AudioSource source = tempGO.AddComponent<AudioSource>();
         ConfigureSource(source, sfxData, comboIndex);
-        source.spatialBlend = 1f;
+        source.spatialBlend = 0f;
         source.clip = clip;
         source.Play();
         

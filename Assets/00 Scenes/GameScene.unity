@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.976, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9727, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -4942,7 +4942,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LoseZoneWarning
   grid: {fileID: 2107963924}
   heightLimit: {fileID: 2035140162}
-  warningUI: {fileID: 2012145310}
+  warningImage: {fileID: 2012145312}
+  fadeDuration: 0.3
   enableDebugLogs: 0
 --- !u!1 &1263520452
 GameObject:
@@ -5883,7 +5884,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Next Row
+  m_text: NEXT ROW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 815049e44d7d2a34698a9919e05f738d, type: 2}
   m_sharedMaterial: {fileID: -5798139950659009932, guid: 815049e44d7d2a34698a9919e05f738d, type: 2}
@@ -5910,13 +5911,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 35.35
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -7934,7 +7935,6 @@ GameObject:
   - component: {fileID: 2012145311}
   - component: {fileID: 2012145313}
   - component: {fileID: 2012145312}
-  - component: {fileID: 2012145314}
   - component: {fileID: 2012145315}
   m_Layer: 5
   m_Name: Losing Zone
@@ -7952,13 +7952,13 @@ RectTransform:
   m_GameObject: {fileID: 2012145310}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 878620977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.27800003}
-  m_AnchorMax: {x: 1, y: 0.28800002}
+  m_AnchorMin: {x: 0, y: 0.27400002}
+  m_AnchorMax: {x: 1, y: 0.296}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7982,7 +7982,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7797783336148711221, guid: e3ac98aa906578a49a24e094826e8e5c, type: 3}
+  m_Sprite: {fileID: -1614596562615302633, guid: 46f5875598f8ed5479f2257a09ffa8b5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8000,22 +8000,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2012145310}
   m_CullTransparentMesh: 1
---- !u!114 &2012145314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2012145310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 0}
-  useThemeSprite: 0
-  daySprite: {fileID: 7797783336148711221, guid: e3ac98aa906578a49a24e094826e8e5c, type: 3}
-  nightSprite: {fileID: 7494582521339547488, guid: a97519a6f4b140f4e9ec3b20d9a7a1cd, type: 3}
 --- !u!95 &2012145315
 Animator:
   serializedVersion: 7
@@ -8718,8 +8702,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -242.32, y: 77.76004}
-  m_SizeDelta: {x: 484.63, y: 155.52}
+  m_AnchoredPosition: {x: -258.86, y: 98.63493}
+  m_SizeDelta: {x: 451.54, y: 113.77}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2124329706
 MonoBehaviour:
@@ -8768,12 +8752,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 35
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 35
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -8837,15 +8821,21 @@ MonoBehaviour:
   canvas: {fileID: 587257511}
   flyingStarPrefab: {fileID: 7417871910002395890, guid: 225f28ff5d147774ab97e9afc20dd272, type: 3}
   flyingStarParent: {fileID: 2124329705}
-  timeFormat: '{0:F1} / {1:F1}'
-  scoreFormat: '{0:N0} / {1:N0}'
-  rowsFormat: '{0} / {1}'
+  timeFormat: 'TIME LEFT
+
+    {0:F1} / {1:F1}'
+  scoreFormat: 'TARGET SCORE
+
+    {0:N0} / {1:N0}'
+  rowsFormat: 'SURVIVE ROWS
+
+    {0} / {1}'
   numberCountDuration: 0.3
   numberCountEase: 6
   goalPunchScale: 0.2
   goalPunchDuration: 0.3
   goalPunchVibrato: 5
-  flyDuration: 1.5
+  flyDuration: 1
   flyEase: 7
   startScale: 0.5
   endScale: 1

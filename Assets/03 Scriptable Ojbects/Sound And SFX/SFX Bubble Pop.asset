@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SFXData
   clips:
   - {fileID: 8300000, guid: 9f7508a545ada9c498903682b084db50, type: 3}
-  volume: 1
+  volume: 0.5
   minPitch: 1.1
   maxPitch: 2.6
   pitchMode: 1

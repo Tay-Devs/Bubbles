@@ -15,8 +15,11 @@ public class StarProgressUI : MonoBehaviour
     [SerializeField] private RectTransform flyingStarParent;
     
     [Header("Format Settings")]
+    [TextArea]
     [SerializeField] private string timeFormat = "{0:F1} / {1:F1}";
+    [TextArea]
     [SerializeField] private string scoreFormat = "{0:N0} / {1:N0}";
+    [TextArea]
     [SerializeField] private string rowsFormat = "{0} / {1}";
     
     [Header("Number Animation")]
