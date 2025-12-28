@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89157a3449ef91a4db4e980ae6347766, type: 3}
-  m_Name: Level_8
+  m_Name: Level_16
   m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
-  levelNumber: 8
-  levelName: 'SCORE
+  levelNumber: 13
+  levelName: 'POP
 
     CHALLENGE'
-  levelIcon: {fileID: 11400000, guid: a2ec434686bf39744905145812a3ef8f, type: 2}
-  gridWidth: 12
-  gridHeight: 7
+  levelIcon: {fileID: 11400000, guid: 40162a719b16b114b85d2b3d2403c7b9, type: 2}
+  gridWidth: 14
+  gridHeight: 10
   availableColors: 0000000001000000020000000300000004000000
-  winCondition: 1
-  threeStarTime: 90
-  twoStarTime: 150
-  oneStarTime: 300
-  targetScore: 15000
+  winCondition: 0
+  threeStarTime: 270
+  twoStarTime: 330
+  oneStarTime: 360
+  targetScore: 1000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5
   survivalMinInterval: 2

@@ -24,7 +24,7 @@ MonoBehaviour:
   threeStarTime: 90
   twoStarTime: 150
   oneStarTime: 300
-  targetScore: 10000
+  targetScore: 7000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5
   survivalMinInterval: 2

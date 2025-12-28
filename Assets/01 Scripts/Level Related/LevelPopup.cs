@@ -108,7 +108,7 @@ public class LevelPopup : MonoBehaviour
         
         if (levelNameText != null)
         {
-            levelNameText.text = "Level " + levelNumber;
+            levelNameText.text = "LEVEL " + levelNumber;
         }
         
         UpdateStars(starsEarned);
