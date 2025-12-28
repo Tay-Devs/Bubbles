@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3272941429194860456}
   - component: {fileID: 3843670037560537773}
   - component: {fileID: 1703652249643969881}
+  - component: {fileID: 3117787463895129694}
   m_Layer: 5
   m_Name: Level Node
   m_TagString: Untagged
@@ -115,6 +116,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3117787463895129694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2572086939429172977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &2671934578421957050
 GameObject:
   m_ObjectHideFlags: 0

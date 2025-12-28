@@ -1019,6 +1019,8 @@ GameObject:
   - component: {fileID: 423699350}
   - component: {fileID: 423699349}
   - component: {fileID: 423699351}
+  - component: {fileID: 423699353}
+  - component: {fileID: 423699352}
   m_Layer: 5
   m_Name: Mute SFX
   m_TagString: Untagged
@@ -1099,6 +1101,63 @@ MonoBehaviour:
   useThemeSprite: 0
   daySprite: {fileID: 1442699288557643280, guid: 106d0552a23da2142b4981cc2ba8362f, type: 3}
   nightSprite: {fileID: -729425612940843710, guid: f4b8eec9b731d3941b39e18d40b98b1a, type: 3}
+--- !u!114 &423699352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423699347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
+--- !u!114 &423699353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423699347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 423699349}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &434832606
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,6 +1171,7 @@ GameObject:
   - component: {fileID: 434832610}
   - component: {fileID: 434832609}
   - component: {fileID: 434832608}
+  - component: {fileID: 434832612}
   m_Layer: 5
   m_Name: Settings Button
   m_TagString: Untagged
@@ -1248,6 +1308,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 434832606}
   m_CullTransparentMesh: 1
+--- !u!114 &434832612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434832606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &436572715
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,6 +1641,8 @@ GameObject:
   - component: {fileID: 581174531}
   - component: {fileID: 581174530}
   - component: {fileID: 581174532}
+  - component: {fileID: 581174534}
+  - component: {fileID: 581174533}
   m_Layer: 5
   m_Name: Mute Music
   m_TagString: Untagged
@@ -1648,6 +1723,63 @@ MonoBehaviour:
   useThemeSprite: 0
   daySprite: {fileID: 4543166563630081026, guid: c5fb8ff3deb600746a57f1ce9c4a6d8d, type: 3}
   nightSprite: {fileID: -5355760188808907006, guid: 99a17cff004f9dc43ad139440bcd77f7, type: 3}
+--- !u!114 &581174533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581174528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
+--- !u!114 &581174534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581174528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 581174530}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &647606079
 GameObject:
   m_ObjectHideFlags: 0
@@ -2108,6 +2240,7 @@ GameObject:
   - component: {fileID: 848068608}
   - component: {fileID: 848068607}
   - component: {fileID: 848068606}
+  - component: {fileID: 848068610}
   m_Layer: 5
   m_Name: Toggle
   m_TagString: Untagged
@@ -2233,6 +2366,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &848068610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848068604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &916340298
 GameObject:
   m_ObjectHideFlags: 0
@@ -2247,6 +2393,7 @@ GameObject:
   - component: {fileID: 916340299}
   - component: {fileID: 916340303}
   - component: {fileID: 916340304}
+  - component: {fileID: 916340305}
   m_Layer: 5
   m_Name: Closing level popup button
   m_TagString: Untagged
@@ -2386,6 +2533,19 @@ MonoBehaviour:
   useThemeSprite: 1
   daySprite: {fileID: 0}
   nightSprite: {fileID: 0}
+--- !u!114 &916340305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 916340298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &1170056311
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,6 +2892,7 @@ GameObject:
   - component: {fileID: 1525806600}
   - component: {fileID: 1525806599}
   - component: {fileID: 1525806602}
+  - component: {fileID: 1525806603}
   m_Layer: 5
   m_Name: Play Level Button
   m_TagString: Untagged
@@ -2856,6 +3017,19 @@ MonoBehaviour:
   useThemeSprite: 0
   daySprite: {fileID: -1994918885516852923, guid: 0d1f0ddc2162e0646acf8eba0fba2e40, type: 3}
   nightSprite: {fileID: 6857283142692922114, guid: f04b430bd95749141911ed3641c3cc75, type: 3}
+--- !u!114 &1525806603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525806597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &1596250891
 GameObject:
   m_ObjectHideFlags: 0
@@ -3276,7 +3450,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1811091432
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3336,6 +3510,7 @@ GameObject:
   - component: {fileID: 1893873219}
   - component: {fileID: 1893873218}
   - component: {fileID: 1893873217}
+  - component: {fileID: 1893873222}
   m_Layer: 5
   m_Name: Closing level popup button
   m_TagString: Untagged
@@ -3487,6 +3662,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1893873215}
   m_CullTransparentMesh: 1
+--- !u!114 &1893873222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893873215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
+  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &1904532580
 GameObject:
   m_ObjectHideFlags: 0
@@ -3855,6 +4043,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SFXManager
   audioSourcePoolSize: 10
   masterVolume: 1
+  sfxEnabled: 1
 --- !u!4 &2016666353
 Transform:
   m_ObjectHideFlags: 0

@@ -13,8 +13,16 @@ public class SFXManager : MonoBehaviour
     public float masterVolume = 1f;
     
     private List<AudioSource> audioSourcePool = new List<AudioSource>();
-    private int currentIndex = 0;
     
+    private int currentIndex = 0;
+    [Header("SFX Toggle")]
+    [SerializeField] private bool sfxEnabled = true;
+    
+    public bool SFXEnabled
+    {
+        get => sfxEnabled;
+        set => sfxEnabled = value;
+    }
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -62,14 +70,14 @@ public class SFXManager : MonoBehaviour
     // Play SFX with default settings.
     public static void Play(SFXData sfxData)
     {
-        if (Instance == null) return;
+        if (Instance == null || !Instance.sfxEnabled) return;
         Instance.PlaySound(sfxData, 0);
     }
     
     // Play SFX with combo index for pitch scaling.
     public static void Play(SFXData sfxData, int comboIndex)
     {
-        if (Instance == null) return;
+        if (Instance == null || !Instance.sfxEnabled) return;
         Instance.PlaySound(sfxData, comboIndex);
     }
     
@@ -83,7 +91,7 @@ public class SFXManager : MonoBehaviour
     // Play a one-off AudioClip.
     public static void PlayClip(AudioClip clip, float volume = 1f)
     {
-        if (Instance == null) return;
+        if (Instance == null || !Instance.sfxEnabled) return;
         Instance.PlayOneShot(clip, volume);
     }
     
