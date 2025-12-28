@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42db1750019348546bf312a8f3903c42, type: 3}
+  m_Name: BubbleEffectData
+  m_EditorClassIdentifier: Assembly-CSharp::BubbleEffectData
+  effects:
+  - bubbleType: 2
+    effectPrefab: {fileID: 3721673634156578823, guid: d03b564529037d247b328dc068ba52f2, type: 3}
+  - bubbleType: 0
+    effectPrefab: {fileID: 3721673634156578823, guid: 37b40e65cae9551498338ce9eb135005, type: 3}
+  - bubbleType: 1
+    effectPrefab: {fileID: 3721673634156578823, guid: 03de6cbaeb9213343985faa4453649dc, type: 3}
+  - bubbleType: 3
+    effectPrefab: {fileID: 3721673634156578823, guid: 9880b7f14271cd64ea1f047392016334, type: 3}
+  - bubbleType: 4
+    effectPrefab: {fileID: 3721673634156578823, guid: cddc4217d60127943a0909a8f20e600a, type: 3}

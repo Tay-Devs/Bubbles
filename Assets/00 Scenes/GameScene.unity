@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9863, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9822, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -8444,6 +8444,7 @@ MonoBehaviour:
   loseZone: {fileID: 1224630969}
   bubblePopSFX: {fileID: 11400000, guid: 5ae69063b75ff6f4787620962f6a050f, type: 2}
   scorePopupPrefab: {fileID: 8546667382689669616, guid: 82ad6ec421ee0694e807bfd4f00e2e02, type: 3}
+  enableDebugLogs: 1
 --- !u!114 &2107963927
 MonoBehaviour:
   m_ObjectHideFlags: 0

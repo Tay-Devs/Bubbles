@@ -4,5 +4,6 @@ public enum BubbleType
     Green, 
     Blue, 
     Yellow,
-    Purple
+    Purple,
+    Null
 }

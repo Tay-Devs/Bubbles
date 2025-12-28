@@ -22,9 +22,13 @@ public class GridMatchSystem : MonoBehaviour
     [Header("Score Popup")]
     public GameObject scorePopupPrefab;
     
+    [Header("Debug")]
+    [SerializeField] private bool enableDebugLogs = false;
+    
     private HexGrid grid;
     private bool isDestroying = false;
-    private bool hadMatchThisShot = false; // Track if current shot made a match
+    private bool hadMatchThisShot = false;
+    private int pendingDestructions = 0;
     
     public bool IsDestroying => isDestroying;
     public bool HadMatchThisShot => hadMatchThisShot;
@@ -104,11 +108,12 @@ public class GridMatchSystem : MonoBehaviour
 
     #region Destruction
     
-    // Destroys matched bubbles sequentially with scoring and popups.
-    // After destruction completes, fires onDestructionComplete event.
+    // Destroys matched bubbles sequentially, then immediately starts floating bubbles.
+    // Waits for ALL animations to complete before firing events.
     private IEnumerator DestroyMatchedBubblesSequentially(List<Vector2Int> positions)
     {
         isDestroying = true;
+        pendingDestructions = 0;
     
         float currentDelay = destructionDelay;
         int lastPoints = 0;
@@ -135,7 +140,17 @@ public class GridMatchSystem : MonoBehaviour
         }
     
         int matchCount = positions.Count;
-        yield return StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay, matchCount, lastPoints));
+        
+        // Immediately start floating bubbles destruction (no wait)
+        StartCoroutine(DestroyFloatingBubblesCoroutine(currentDelay, matchCount, lastPoints));
+        
+        // Wait for ALL animations (match + floating) to complete
+        yield return StartCoroutine(WaitForPendingDestructions());
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log("[GridMatchSystem] All destruction animations complete");
+        }
     
         isDestroying = false;
         hadMatchThisShot = false;
@@ -168,7 +183,28 @@ public class GridMatchSystem : MonoBehaviour
         onDestructionComplete?.Invoke();
     }
     
+    // Waits until all pending bubble destruction animations are complete.
+    private IEnumerator WaitForPendingDestructions()
+    {
+        while (pendingDestructions > 0)
+        {
+            yield return null;
+        }
+    }
+    
+    // Called when a bubble's destruction animation completes.
+    private void OnBubbleDestroyed()
+    {
+        pendingDestructions--;
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[GridMatchSystem] Bubble destroyed, {pendingDestructions} remaining");
+        }
+    }
+    
     // Destroys floating bubbles with combo scoring continuation.
+    // Runs in parallel with pending match animations.
     private IEnumerator DestroyFloatingBubblesCoroutine(float startingDelay, int startingComboIndex = 0, int lastMatchPoints = 0)
     {
         var floating = GetFloatingBubbles();
@@ -218,12 +254,16 @@ public class GridMatchSystem : MonoBehaviour
         ScorePopup.Create(scorePopupPrefab, position, points, comboIndex);
     }
     
+    // Removes bubble from grid and triggers its explosion animation.
+    // Tracks pending destruction count via callback.
     public void RemoveBubbleAt(Vector2Int pos) => RemoveBubbleAt(pos.x, pos.y);
     public void RemoveBubbleAt(int x, int y)
     {
         var bubble = grid.GetBubbleAt(x, y);
         if (bubble != null)
         {
+            pendingDestructions++;
+            bubble.onDestroyed = OnBubbleDestroyed;
             bubble.Explode();
             grid.SetBubbleAt(x, y, null);
         }
