@@ -1,0 +1,468 @@
+fileFormatVersion: 2
+guid: e229355ae77c06b4891418794a8a9a38
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4277283772054436802
+    second: Line_Effect-7_0
+  - first:
+      213: -1377518107320759112
+    second: Line_Effect-7_1
+  - first:
+      213: 4895768252508114289
+    second: Line_Effect-7_2
+  - first:
+      213: -1152235938017839324
+    second: Line_Effect-7_3
+  - first:
+      213: 2285613593247776916
+    second: Line_Effect-7_4
+  - first:
+      213: 5145644581184228685
+    second: Line_Effect-7_5
+  - first:
+      213: 1123506494576969463
+    second: Line_Effect-7_6
+  - first:
+      213: 9099788380790558213
+    second: Line_Effect-7_7
+  - first:
+      213: -8436843888820607172
+    second: Line_Effect-7_8
+  - first:
+      213: 4316514349658840253
+    second: Line_Effect-7_9
+  - first:
+      213: 1024402897094362463
+    second: Line_Effect-7_10
+  - first:
+      213: 3237828683487916851
+    second: Line_Effect-7_11
+  - first:
+      213: 1980630895995059438
+    second: Line_Effect-7_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Line_Effect-7_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 529
+        width: 78
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e340723421904a4c0800000000000000
+      internalID: -4277283772054436802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_1
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 526
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bc4a7d649212ece0800000000000000
+      internalID: -1377518107320759112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_2
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 529
+        width: 109
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17d8169694341f340800000000000000
+      internalID: 4895768252508114289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_3
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 526
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 427f109e48f6200f0800000000000000
+      internalID: -1152235938017839324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_4
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 529
+        width: 108
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 490865f047128bf10800000000000000
+      internalID: 2285613593247776916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4d46e9db70096740800000000000000
+      internalID: 5145644581184228685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_6
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 529
+        width: 108
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f6ca18443f779f00800000000000000
+      internalID: 1123506494576969463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_7
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50e8f30d151f84e70800000000000000
+      internalID: 9099788380790558213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_8
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 529
+        width: 108
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c372c65fe2f4aea80800000000000000
+      internalID: -8436843888820607172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_9
+      rect:
+        serializedVersion: 2
+        x: 762
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbc9a4f5ee657eb30800000000000000
+      internalID: 4316514349658840253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_10
+      rect:
+        serializedVersion: 2
+        x: 807
+        y: 529
+        width: 108
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f55c034e109673e00800000000000000
+      internalID: 1024402897094362463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_11
+      rect:
+        serializedVersion: 2
+        x: 933
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3333eda68041fec20800000000000000
+      internalID: 3237828683487916851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-7_12
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 529
+        width: 99
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eecf2fa5e4d9c7b10800000000000000
+      internalID: 1980630895995059438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Line_Effect-7_0: -4277283772054436802
+      Line_Effect-7_1: -1377518107320759112
+      Line_Effect-7_10: 1024402897094362463
+      Line_Effect-7_11: 3237828683487916851
+      Line_Effect-7_12: 1980630895995059438
+      Line_Effect-7_2: 4895768252508114289
+      Line_Effect-7_3: -1152235938017839324
+      Line_Effect-7_4: 2285613593247776916
+      Line_Effect-7_5: 5145644581184228685
+      Line_Effect-7_6: 1123506494576969463
+      Line_Effect-7_7: 9099788380790558213
+      Line_Effect-7_8: -8436843888820607172
+      Line_Effect-7_9: 4316514349658840253
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

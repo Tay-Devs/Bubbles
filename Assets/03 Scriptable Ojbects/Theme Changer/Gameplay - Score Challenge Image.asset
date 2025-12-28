@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df592d05fa80e4aac92e865d21ed26, type: 3}
   m_Name: Gameplay - Score Challenge Image
   m_EditorClassIdentifier: Assembly-CSharp::ThemeSprite
-  daySprite: {fileID: 6607491414170832444, guid: 1af412eebbb41d3449176e863b072916, type: 3}
-  nightSprite: {fileID: 894454509110286680, guid: f65c3d6d6bd726949b8ca067766d21eb, type: 3}
+  daySprite: {fileID: 6104038681114906497, guid: 815297e8b6de7b444926e671eeafde50, type: 3}
+  nightSprite: {fileID: 6104038681114906497, guid: 815297e8b6de7b444926e671eeafde50, type: 3}
