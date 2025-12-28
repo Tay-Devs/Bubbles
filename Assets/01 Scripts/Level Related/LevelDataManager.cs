@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
 public class LevelDataManager : MonoBehaviour
 {
@@ -8,9 +9,6 @@ public class LevelDataManager : MonoBehaviour
     [Header("Unlock Settings")]
     public int freeLevels = 3;
     public int starsPerUnlock = 3;
-    
-    [Header("Debug")]
-    public bool clearSaveOnStart = false;
     
     private Dictionary<int, LevelData> levelDataDict = new Dictionary<int, LevelData>();
     private const string SAVE_KEY = "LevelProgress";
@@ -27,23 +25,10 @@ public class LevelDataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         
-        if (clearSaveOnStart)
-        {
-            ClearSave();
-        }
-        
         LoadProgress();
         CalculateTotalStars();
     }
-    
-    void Start()
-    {
-        if (clearSaveOnStart)
-        {
-            // Test data - remove after testing
-        }
-    }
-    
+
     public int GetStarsRequired(int levelNumber)
     {
         if (levelNumber <= freeLevels) return 0;
@@ -183,7 +168,7 @@ public class LevelDataManager : MonoBehaviour
             Debug.Log($"[LevelDataManager] Loaded {levelDataDict.Count} levels");
         }
     }
-    
+    [Button]
     public void ClearSave()
     {
         PlayerPrefs.DeleteKey(SAVE_KEY);

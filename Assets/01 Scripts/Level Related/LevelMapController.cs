@@ -316,4 +316,22 @@ public class LevelMapController : MonoBehaviour
     // Public accessors for path renderer
     public float GetXPositionForLevel(int level) => cachedXPositions.GetValueOrDefault(level, 0f);
     public float GetYPositionForLevel(int level) => -viewportHeight / 2f + BottomPaddingPx + (level - 1) * nodeSpacingY;
+    
+    // Returns the screen position of a level node.
+    // Accounts for current scroll offset and converts to screen space.
+    public Vector2 GetLevelScreenPosition(int level)
+    {
+        float x = cachedXPositions.GetValueOrDefault(level, 0f);
+        float y = -viewportHeight / 2f + BottomPaddingPx + (level - 1) * nodeSpacingY - currentScrollY;
+        
+        // Convert local position to world position
+        Vector3 localPos = new Vector3(x, y, 0);
+        Vector3 worldPos = contentArea.TransformPoint(localPos);
+        
+        // Convert world to screen
+        Canvas canvas = contentArea.GetComponentInParent<Canvas>();
+        Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        
+        return RectTransformUtility.WorldToScreenPoint(cam, worldPos);
+    }
 }
