@@ -22,6 +22,7 @@ public class LiveStarIndicatorUI : MonoBehaviour
     private int displayedStars = 0;
     private bool isTracking = false;
     private bool useAnimations = true;
+    private bool bonusStarsAwarded = false;
     
     public int CurrentStars => currentStars;
     public int DisplayedStars => displayedStars;
@@ -144,9 +145,18 @@ public class LiveStarIndicatorUI : MonoBehaviour
     }
     
     // Called when game ends. Forces immediate visual update without animation.
+    // If bonus stars are pending, lets animations complete naturally.
     private void OnGameEnd()
     {
         isTracking = false;
+        
+        // If bonus stars triggered, let earning animations play naturally
+        if (bonusStarsAwarded)
+        {
+            Log($"Game ended with bonus stars - animations in progress");
+            return;
+        }
+        
         useAnimations = false;
         
         switch (currentMode)
@@ -365,6 +375,27 @@ public class LiveStarIndicatorUI : MonoBehaviour
         }
     }
     
+    // Triggers earning animations for bonus stars when grid is cleared in Survival mode.
+    // Called before victory to award remaining stars with visual feedback.
+    public void TriggerBonusStarsOnClear()
+    {
+        if (currentMode != WinConditionType.Survival) return;
+        if (currentStars >= 3) return;
+        
+        int oldStars = currentStars;
+        currentStars = 3;
+        bonusStarsAwarded = true;
+        
+        // Fire earning events for each bonus star (left to right)
+        for (int i = oldStars; i < 3; i++)
+        {
+            Vector3 starPos = GetStarWorldPosition(i);
+            onStarChanging?.Invoke(i, true, starPos);
+        }
+        
+        Log($"Bonus stars triggered on clear: {oldStars} -> 3");
+    }
+    
     // Returns the world position of a star image by index.
     public Vector3 GetStarWorldPosition(int index)
     {
@@ -424,6 +455,7 @@ public class LiveStarIndicatorUI : MonoBehaviour
         elapsedTime = 0f;
         isTracking = false;
         useAnimations = true;
+        bonusStarsAwarded = false;
         CacheReferences();
         InitializeDisplay();
     }

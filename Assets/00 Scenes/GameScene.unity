@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9685, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.968, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -8845,7 +8845,7 @@ MonoBehaviour:
   startScale: 0.5
   endScale: 1
   rotationAmount: 360
-  delayBetweenStars: 0.15
+  delayBetweenStars: 0.5
   loseTargetOffset: {x: 2000, y: 0}
   loseFadeDuration: 2
   classicGrowScale: 1.5

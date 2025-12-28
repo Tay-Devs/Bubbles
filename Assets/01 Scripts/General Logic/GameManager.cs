@@ -139,9 +139,22 @@ public class GameManager : MonoBehaviour
                 break;
                 
             case WinConditionType.Survival:
+                // Trigger bonus star animations before victory
+                TriggerBonusStarsForClear();
                 Debug.Log("[GameManager] All bubbles cleared in survival - Victory!");
                 Victory(true);
                 break;
+        }
+    }
+    
+    // Finds LiveStarIndicatorUI and triggers bonus star animations for grid clear.
+    // Awards remaining stars when player clears the grid in Survival mode.
+    private void TriggerBonusStarsForClear()
+    {
+        LiveStarIndicatorUI starIndicator = FindFirstObjectByType<LiveStarIndicatorUI>();
+        if (starIndicator != null)
+        {
+            starIndicator.TriggerBonusStarsOnClear();
         }
     }
     
