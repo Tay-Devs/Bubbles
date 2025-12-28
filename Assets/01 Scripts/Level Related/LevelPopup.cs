@@ -33,8 +33,11 @@ public class LevelPopup : MonoBehaviour
     
     void Awake()
     {
+        if (Time.frameCount <= 1)
+        {
+            Hide();
+        }
         SetupButtons();
-        Hide();
     }
     
     void Start()

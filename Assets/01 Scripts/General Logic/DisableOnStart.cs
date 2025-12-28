@@ -5,6 +5,9 @@ public class DisableOnStart : MonoBehaviour
 {
     private void Awake()
     {
-        gameObject.SetActive(false);
+        if (Time.frameCount <= 1)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
