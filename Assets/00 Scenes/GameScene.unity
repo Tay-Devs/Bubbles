@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.968, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9668, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -4949,7 +4949,7 @@ MonoBehaviour:
   dayAnimator: {fileID: 2133001479}
   nightAnimator: {fileID: 2012145315}
   fadeDuration: 1
-  enableDebugLogs: 0
+  enableDebugLogs: 1
 --- !u!1 &1263520452
 GameObject:
   m_ObjectHideFlags: 0

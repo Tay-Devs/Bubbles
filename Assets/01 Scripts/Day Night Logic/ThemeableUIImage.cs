@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,13 @@ public class ThemeableUIImage : MonoBehaviour
             ApplyTheme(ThemeManager.Instance.CurrentTheme);
         }
     }
-    
+
+    private void OnEnable()
+    {
+        ThemeManager.OnThemeChanged += OnThemeChanged;
+        ApplyTheme(ThemeManager.Instance.CurrentTheme);
+    }
+
     private void OnDestroy()
     {
         if (Application.isPlaying)

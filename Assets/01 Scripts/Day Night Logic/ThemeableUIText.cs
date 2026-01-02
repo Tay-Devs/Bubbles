@@ -64,7 +64,11 @@ public class ThemeableUIText : MonoBehaviour
         // Otherwise use direct color assignment
         return theme == ThemeMode.Day ? dayColor : nightColor;
     }
-    
+    private void OnEnable()
+    {
+        ThemeManager.OnThemeChanged += OnThemeChanged;
+        ApplyTheme(ThemeManager.Instance.CurrentTheme);
+    }
     private void OnValidate()
     {
         if (!Application.isPlaying)
