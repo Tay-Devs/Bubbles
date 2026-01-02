@@ -23,9 +23,8 @@ public class LevelConfig : ScriptableObject
     public WinConditionType winCondition = WinConditionType.ClearAllBubbles;
     
     [Header("Clear All Settings")]
-    public float threeStarTime = 90f;
-    public float twoStarTime = 150f;
-    public float oneStarTime = 300f;
+    [Tooltip("Time in seconds before losing each star. Total time = interval * 3")]
+    public float starTimeInterval = 30f;
     
     [Header("Score Settings")]
     public int targetScore = 1000;
@@ -37,6 +36,11 @@ public class LevelConfig : ScriptableObject
     public int oneStarRows = 5;
     public int twoStarRows = 10;
     public int threeStarRows = 15;
+    
+    // Calculated time thresholds based on interval
+    public float ThreeStarTime => starTimeInterval;
+    public float TwoStarTime => starTimeInterval * 2f;
+    public float OneStarTime => starTimeInterval * 3f;
     
     public Sprite GetIcon(ThemeMode theme)
     {
@@ -76,12 +80,13 @@ public class LevelConfig : ScriptableObject
         }
     }
     
+    // Calculates stars based on interval. Lose 1 star per interval elapsed.
     private int CalculateClearAllStars(float completionTime)
     {
-        if (completionTime <= threeStarTime) return 3;
-        if (completionTime <= twoStarTime) return 2;
-        if (completionTime <= oneStarTime) return 1;
-        return 0;
+        // Count how many intervals have passed (how many stars lost)
+        int starsLost = Mathf.FloorToInt(completionTime / starTimeInterval);
+        int starsEarned = 3 - starsLost;
+        return Mathf.Clamp(starsEarned, 0, 3);
     }
     
     private int CalculateScoreStars(int score)
@@ -112,13 +117,14 @@ public class LevelConfig : ScriptableObject
         }
     }
     
+    // Returns time threshold for given star count using interval.
     public float GetTimeForStars(int stars)
     {
         switch (stars)
         {
-            case 1: return oneStarTime;
-            case 2: return twoStarTime;
-            case 3: return threeStarTime;
+            case 1: return OneStarTime;
+            case 2: return TwoStarTime;
+            case 3: return ThreeStarTime;
             default: return float.MaxValue;
         }
     }

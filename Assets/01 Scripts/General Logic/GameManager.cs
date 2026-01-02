@@ -151,10 +151,10 @@ public class GameManager : MonoBehaviour
     // Awards remaining stars when player clears the grid in Survival mode.
     private void TriggerBonusStarsForClear()
     {
-        LiveStarIndicatorUI starIndicator = FindFirstObjectByType<LiveStarIndicatorUI>();
-        if (starIndicator != null)
+        StarProgressUI starProgress = FindFirstObjectByType<StarProgressUI>();
+        if (starProgress != null)
         {
-            starIndicator.TriggerBonusStarsOnClear();
+            starProgress.TriggerBonusStarsOnClear();
         }
     }
     

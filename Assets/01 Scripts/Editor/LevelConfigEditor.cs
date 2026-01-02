@@ -7,7 +7,7 @@ public class LevelConfigEditor : Editor
     // Level Info
     private SerializedProperty levelNumber;
     private SerializedProperty levelName;
-    private SerializedProperty levelIcon; // Add this
+    private SerializedProperty levelIcon;
     
     // Grid
     private SerializedProperty gridWidth;
@@ -20,9 +20,7 @@ public class LevelConfigEditor : Editor
     private SerializedProperty winCondition;
     
     // Clear All
-    private SerializedProperty threeStarTime;
-    private SerializedProperty twoStarTime;
-    private SerializedProperty oneStarTime;
+    private SerializedProperty starTimeInterval;
     
     // Score
     private SerializedProperty targetScore;
@@ -53,9 +51,7 @@ public class LevelConfigEditor : Editor
         winCondition = serializedObject.FindProperty("winCondition");
         
         // Clear All
-        threeStarTime = serializedObject.FindProperty("threeStarTime");
-        twoStarTime = serializedObject.FindProperty("twoStarTime");
-        oneStarTime = serializedObject.FindProperty("oneStarTime");
+        starTimeInterval = serializedObject.FindProperty("starTimeInterval");
         
         // Score
         targetScore = serializedObject.FindProperty("targetScore");
@@ -127,21 +123,28 @@ public class LevelConfigEditor : Editor
         
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
-        EditorGUILayout.LabelField("★★★ Three Stars", EditorStyles.miniLabel);
-        EditorGUILayout.PropertyField(threeStarTime, new GUIContent("Complete Under (seconds)"));
-        EditorGUILayout.LabelField($"= {threeStarTime.floatValue / 60f:F1} minutes", EditorStyles.miniLabel);
+        EditorGUILayout.PropertyField(starTimeInterval, new GUIContent("Star Interval (seconds)"));
+        EditorGUILayout.LabelField("Lose 1 star every interval", EditorStyles.miniLabel);
+        
+        EditorGUILayout.Space(10);
+        
+        // Calculate and display thresholds
+        float interval = starTimeInterval.floatValue;
+        float threeStarTime = interval;
+        float twoStarTime = interval * 2f;
+        float oneStarTime = interval * 3f;
+        
+        EditorGUILayout.LabelField("Star Thresholds:", EditorStyles.boldLabel);
         
         EditorGUILayout.Space(5);
         
-        EditorGUILayout.LabelField("★★ Two Stars", EditorStyles.miniLabel);
-        EditorGUILayout.PropertyField(twoStarTime, new GUIContent("Complete Under (seconds)"));
-        EditorGUILayout.LabelField($"= {twoStarTime.floatValue / 60f:F1} minutes", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"★★★ Three Stars: Complete under {threeStarTime:F0}s ({threeStarTime / 60f:F1} min)", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"★★ Two Stars: Complete under {twoStarTime:F0}s ({twoStarTime / 60f:F1} min)", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"★ One Star: Complete under {oneStarTime:F0}s ({oneStarTime / 60f:F1} min)", EditorStyles.miniLabel);
         
         EditorGUILayout.Space(5);
         
-        EditorGUILayout.LabelField("★ One Star", EditorStyles.miniLabel);
-        EditorGUILayout.PropertyField(oneStarTime, new GUIContent("Complete Under (seconds)"));
-        EditorGUILayout.LabelField($"= {oneStarTime.floatValue / 60f:F1} minutes", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"Total time before 0 stars: {oneStarTime:F0}s ({oneStarTime / 60f:F1} min)", EditorStyles.miniLabel);
         
         EditorGUILayout.EndVertical();
     }

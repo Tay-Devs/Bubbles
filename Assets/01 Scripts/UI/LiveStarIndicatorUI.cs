@@ -17,19 +17,10 @@ public class LiveStarIndicatorUI : MonoBehaviour
     
     private LevelConfig currentLevel;
     private WinConditionType currentMode;
-    private float elapsedTime = 0f;
-    private int currentStars = 0;
     private int displayedStars = 0;
     private bool isTracking = false;
-    private bool useAnimations = true;
-    private bool bonusStarsAwarded = false;
     
-    public int CurrentStars => currentStars;
     public int DisplayedStars => displayedStars;
-    
-    // Events for star changes (fired before visual update)
-    // Parameters: (starIndex, isEarning, starWorldPosition)
-    public Action<int, bool, Vector3> onStarChanging;
     
     // Event fired when animation should be skipped (game end)
     public Action onForceUpdate;
@@ -46,18 +37,6 @@ public class LiveStarIndicatorUI : MonoBehaviour
         UnsubscribeFromEvents();
     }
     
-    void Update()
-    {
-        if (!isTracking) return;
-        if (GameManager.Instance == null || !GameManager.Instance.IsPlaying) return;
-        
-        if (currentMode == WinConditionType.ClearAllBubbles)
-        {
-            elapsedTime += Time.deltaTime;
-            UpdateStarsForClassicMode();
-        }
-    }
-    
     // Caches level config and win condition from LevelLoader/GameManager.
     private void CacheReferences()
     {
@@ -72,21 +51,15 @@ public class LiveStarIndicatorUI : MonoBehaviour
         }
     }
     
-    // Subscribes to game events based on the current win condition.
+    // Subscribes to game events for state tracking.
     private void SubscribeToEvents()
     {
         if (GameManager.Instance != null)
         {
             GameManager.Instance.onGameStart.AddListener(OnGameStart);
             GameManager.Instance.onWinConditionSet.AddListener(OnWinConditionSet);
-            GameManager.Instance.onSurvivalRowSpawned.AddListener(OnSurvivalRowSpawned);
             GameManager.Instance.onVictory.AddListener(OnGameEnd);
             GameManager.Instance.onGameOver.AddListener(OnGameEnd);
-        }
-        
-        if (ScoreManager.Instance != null)
-        {
-            ScoreManager.Instance.onScoreChanged += OnScoreChanged;
         }
     }
     
@@ -96,31 +69,17 @@ public class LiveStarIndicatorUI : MonoBehaviour
         {
             GameManager.Instance.onGameStart.RemoveListener(OnGameStart);
             GameManager.Instance.onWinConditionSet.RemoveListener(OnWinConditionSet);
-            GameManager.Instance.onSurvivalRowSpawned.RemoveListener(OnSurvivalRowSpawned);
             GameManager.Instance.onVictory.RemoveListener(OnGameEnd);
             GameManager.Instance.onGameOver.RemoveListener(OnGameEnd);
         }
-        
-        if (ScoreManager.Instance != null)
-        {
-            ScoreManager.Instance.onScoreChanged -= OnScoreChanged;
-        }
     }
     
-    // Sets up the initial star display based on win condition.
+    // Sets up the initial star display. All modes now start with empty stars
+    // since StarProgressUI handles earning/burning via slider milestones.
     private void InitializeDisplay()
     {
-        if (currentMode == WinConditionType.ClearAllBubbles)
-        {
-            currentStars = 3;
-            displayedStars = 3;
-        }
-        else
-        {
-            currentStars = 0;
-            displayedStars = 0;
-        }
-        
+        // All modes start with 0 displayed stars - earned via slider milestones
+        displayedStars = 0;
         UpdateStarVisuals();
         
         if (GameManager.Instance != null && GameManager.Instance.IsPlaying)
@@ -128,12 +87,11 @@ public class LiveStarIndicatorUI : MonoBehaviour
             isTracking = true;
         }
         
-        Log($"Initialized for {currentMode} mode with {currentStars} stars");
+        Log($"Initialized for {currentMode} mode with {displayedStars} displayed stars");
     }
     
     private void OnGameStart()
     {
-        elapsedTime = 0f;
         isTracking = true;
         Log("Game started - tracking enabled");
     }
@@ -144,256 +102,12 @@ public class LiveStarIndicatorUI : MonoBehaviour
         InitializeDisplay();
     }
     
-    // Called when game ends. Forces immediate visual update without animation.
-    // If bonus stars are pending, lets animations complete naturally.
+    // Called when game ends. May force immediate visual update if needed.
     private void OnGameEnd()
     {
         isTracking = false;
-        
-        // If bonus stars triggered, let earning animations play naturally
-        if (bonusStarsAwarded)
-        {
-            Log($"Game ended with bonus stars - animations in progress");
-            return;
-        }
-        
-        useAnimations = false;
-        
-        switch (currentMode)
-        {
-            case WinConditionType.ClearAllBubbles:
-                FinalUpdateClassicMode();
-                break;
-            case WinConditionType.ReachTargetScore:
-                FinalUpdateScoreMode();
-                break;
-            case WinConditionType.Survival:
-                FinalUpdateSurvivalMode();
-                break;
-        }
-        
         onForceUpdate?.Invoke();
-        Log($"Game ended - final stars: {currentStars}");
-    }
-    
-    private void FinalUpdateClassicMode()
-    {
-        if (currentLevel == null) return;
-        
-        if (elapsedTime <= currentLevel.threeStarTime)
-            currentStars = 3;
-        else if (elapsedTime <= currentLevel.twoStarTime)
-            currentStars = 2;
-        else if (elapsedTime <= currentLevel.oneStarTime)
-            currentStars = 1;
-        else
-            currentStars = 0;
-        
-        displayedStars = currentStars;
-        UpdateStarVisuals();
-    }
-    
-    private void FinalUpdateScoreMode()
-    {
-        if (currentLevel == null || ScoreManager.Instance == null) return;
-        
-        int score = ScoreManager.Instance.CurrentScore;
-        int target = currentLevel.targetScore;
-        
-        if (score >= target)
-            currentStars = 3;
-        else if (score >= Mathf.CeilToInt(target * 2f / 3f))
-            currentStars = 2;
-        else if (score >= Mathf.CeilToInt(target / 3f))
-            currentStars = 1;
-        else
-            currentStars = 0;
-        
-        displayedStars = currentStars;
-        UpdateStarVisuals();
-    }
-    
-    private void FinalUpdateSurvivalMode()
-    {
-        if (currentLevel == null) return;
-        
-        HexGrid grid = FindFirstObjectByType<HexGrid>();
-        if (grid != null && grid.IsGridEmpty())
-        {
-            currentStars = 3;
-            displayedStars = 3;
-            UpdateStarVisuals();
-            return;
-        }
-        
-        int rowsSurvived = GameManager.Instance != null ? GameManager.Instance.GetSurvivalRowsCount() : 0;
-        
-        if (rowsSurvived >= currentLevel.threeStarRows)
-            currentStars = 3;
-        else if (rowsSurvived >= currentLevel.twoStarRows)
-            currentStars = 2;
-        else if (rowsSurvived >= currentLevel.oneStarRows)
-            currentStars = 1;
-        else
-            currentStars = 0;
-        
-        displayedStars = currentStars;
-        UpdateStarVisuals();
-    }
-    
-    private void OnScoreChanged(int newScore, int pointsAdded)
-    {
-        if (currentMode != WinConditionType.ReachTargetScore) return;
-        UpdateStarsForScoreMode(newScore);
-    }
-    
-    private void OnSurvivalRowSpawned(int totalRows)
-    {
-        if (currentMode != WinConditionType.Survival) return;
-        UpdateStarsForSurvivalMode(totalRows);
-    }
-    
-    // Updates stars for ClearAllBubbles. Fires event when star is lost.
-    private void UpdateStarsForClassicMode()
-    {
-        if (currentLevel == null) return;
-        
-        int newStars;
-        
-        if (elapsedTime <= currentLevel.threeStarTime)
-            newStars = 3;
-        else if (elapsedTime <= currentLevel.twoStarTime)
-            newStars = 2;
-        else if (elapsedTime <= currentLevel.oneStarTime)
-            newStars = 1;
-        else
-            newStars = 0;
-        
-        if (newStars != currentStars)
-        {
-            int oldStars = currentStars;
-            currentStars = newStars;
-            
-            // Fire event for each star lost (from right to left)
-            // Visual update happens when animation completes
-            if (useAnimations && newStars < oldStars)
-            {
-                for (int i = oldStars - 1; i >= newStars; i--)
-                {
-                    Vector3 starPos = GetStarWorldPosition(i);
-                    onStarChanging?.Invoke(i, false, starPos);
-                }
-            }
-            else
-            {
-                displayedStars = currentStars;
-                UpdateStarVisuals();
-            }
-            
-            Log($"Classic mode: {elapsedTime:F1}s, stars {oldStars} -> {newStars}");
-        }
-    }
-    
-    // Updates stars for ReachTargetScore. Fires event when star is earned.
-    private void UpdateStarsForScoreMode(int score)
-    {
-        if (currentLevel == null) return;
-        
-        int target = currentLevel.targetScore;
-        int newStars;
-        
-        if (score >= target)
-            newStars = 3;
-        else if (score >= Mathf.CeilToInt(target * 2f / 3f))
-            newStars = 2;
-        else if (score >= Mathf.CeilToInt(target / 3f))
-            newStars = 1;
-        else
-            newStars = 0;
-        
-        if (newStars != currentStars)
-        {
-            int oldStars = currentStars;
-            currentStars = newStars;
-            
-            // Fire event for each star earned (from left to right)
-            if (useAnimations && newStars > oldStars)
-            {
-                for (int i = oldStars; i < newStars; i++)
-                {
-                    Vector3 starPos = GetStarWorldPosition(i);
-                    onStarChanging?.Invoke(i, true, starPos);
-                }
-            }
-            else
-            {
-                displayedStars = currentStars;
-                UpdateStarVisuals();
-            }
-            
-            Log($"Score mode: {score} pts, stars {oldStars} -> {newStars}");
-        }
-    }
-    
-    // Updates stars for Survival. Fires event when star is earned.
-    private void UpdateStarsForSurvivalMode(int rowsSurvived)
-    {
-        if (currentLevel == null) return;
-        
-        int newStars;
-        
-        if (rowsSurvived >= currentLevel.threeStarRows)
-            newStars = 3;
-        else if (rowsSurvived >= currentLevel.twoStarRows)
-            newStars = 2;
-        else if (rowsSurvived >= currentLevel.oneStarRows)
-            newStars = 1;
-        else
-            newStars = 0;
-        
-        if (newStars != currentStars)
-        {
-            int oldStars = currentStars;
-            currentStars = newStars;
-            
-            // Fire event for each star earned (from left to right)
-            if (useAnimations && newStars > oldStars)
-            {
-                for (int i = oldStars; i < newStars; i++)
-                {
-                    Vector3 starPos = GetStarWorldPosition(i);
-                    onStarChanging?.Invoke(i, true, starPos);
-                }
-            }
-            else
-            {
-                displayedStars = currentStars;
-                UpdateStarVisuals();
-            }
-            
-            Log($"Survival mode: {rowsSurvived} rows, stars {oldStars} -> {newStars}");
-        }
-    }
-    
-    // Triggers earning animations for bonus stars when grid is cleared in Survival mode.
-    // Called before victory to award remaining stars with visual feedback.
-    public void TriggerBonusStarsOnClear()
-    {
-        if (currentMode != WinConditionType.Survival) return;
-        if (currentStars >= 3) return;
-        
-        int oldStars = currentStars;
-        currentStars = 3;
-        bonusStarsAwarded = true;
-        
-        // Fire earning events for each bonus star (left to right)
-        for (int i = oldStars; i < 3; i++)
-        {
-            Vector3 starPos = GetStarWorldPosition(i);
-            onStarChanging?.Invoke(i, true, starPos);
-        }
-        
-        Log($"Bonus stars triggered on clear: {oldStars} -> 3");
+        Log($"Game ended - final displayed stars: {displayedStars}");
     }
     
     // Returns the world position of a star image by index.
@@ -416,21 +130,27 @@ public class LiveStarIndicatorUI : MonoBehaviour
         return null;
     }
     
-    // Called by animation system when a star animation completes.
+    // Called by StarProgressUI when a star animation completes.
     // Updates the displayed star count and refreshes visuals.
     public void OnStarAnimationComplete(int starIndex, bool wasEarned)
     {
         if (wasEarned)
         {
+            // Earning: ensure this star and all previous are shown as earned
             displayedStars = Mathf.Max(displayedStars, starIndex + 1);
-        }
-        else
-        {
-            displayedStars = Mathf.Min(displayedStars, starIndex);
         }
         
         UpdateStarVisuals();
-        Log($"Animation complete for star {starIndex}, displayed: {displayedStars}");
+        Log($"Animation complete for star {starIndex} (earned={wasEarned}), displayed: {displayedStars}");
+    }
+    
+    // Forces a specific star count display without animation.
+    // Used for immediate updates when animations are skipped.
+    public void ForceDisplayStars(int starCount)
+    {
+        displayedStars = Mathf.Clamp(starCount, 0, 3);
+        UpdateStarVisuals();
+        Log($"Force display: {displayedStars} stars");
     }
     
     // Updates the visual state of all star images.
@@ -452,17 +172,9 @@ public class LiveStarIndicatorUI : MonoBehaviour
     // Resets the indicator for a new game.
     public void Reset()
     {
-        elapsedTime = 0f;
         isTracking = false;
-        useAnimations = true;
-        bonusStarsAwarded = false;
         CacheReferences();
         InitializeDisplay();
-    }
-    
-    public float GetElapsedTime()
-    {
-        return elapsedTime;
     }
     
     private void Log(string msg)

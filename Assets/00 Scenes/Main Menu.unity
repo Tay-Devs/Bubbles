@@ -314,8 +314,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
   useThemeSprite: 0
-  daySprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
-  nightSprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  daySprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  nightSprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
 --- !u!114 &72334664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,14 +329,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.12}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -366,8 +366,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 0.6
-  nightOpacity: 0.12
+  dayOpacity: 1
+  nightOpacity: 1
   enableDebugLogs: 0
 --- !u!1 &116653520
 GameObject:
@@ -3920,7 +3920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1768315023
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4117,7 +4117,6 @@ GameObject:
   - component: {fileID: 1893873219}
   - component: {fileID: 1893873218}
   - component: {fileID: 1893873217}
-  - component: {fileID: 1893873222}
   m_Layer: 5
   m_Name: Closing level popup button
   m_TagString: Untagged
@@ -4269,19 +4268,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1893873215}
   m_CullTransparentMesh: 1
---- !u!114 &1893873222
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1893873215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 936a688bcfc679e4887faf9206f75003, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonSFX
-  clickSound: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
 --- !u!1 &1904532580
 GameObject:
   m_ObjectHideFlags: 0
@@ -4405,7 +4391,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1938147494
 RectTransform:
   m_ObjectHideFlags: 0
