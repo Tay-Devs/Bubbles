@@ -7,7 +7,6 @@ public class LoseZoneWarning : MonoBehaviour
     [Header("References")]
     [SerializeField] private HexGrid grid;
     [SerializeField] private GridStartHeightLimit heightLimit;
-    [SerializeField] private Image warningImage;
 
     [Header("Themed Warning Objects")]
     [SerializeField] private GameObject dayWarningObject;
@@ -21,8 +20,11 @@ public class LoseZoneWarning : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool enableDebugLogs = false;
 
+    private Image dayWarningImage;
+    private Image nightWarningImage;
     private bool isWarningActive = false;
     private Coroutine fadeRoutine;
+    private float currentAlpha = 0f;
 
     void Start()
     {
@@ -31,6 +33,13 @@ public class LoseZoneWarning : MonoBehaviour
 
         if (heightLimit == null)
             heightLimit = FindFirstObjectByType<GridStartHeightLimit>();
+
+        // Cache both Image components from the themed objects
+        if (dayWarningObject != null)
+            dayWarningImage = dayWarningObject.GetComponent<Image>();
+        
+        if (nightWarningObject != null)
+            nightWarningImage = nightWarningObject.GetComponent<Image>();
 
         if (grid != null)
         {
@@ -42,7 +51,6 @@ public class LoseZoneWarning : MonoBehaviour
 
         PlayerController.onBubbleConnected += CheckBubblePositions;
 
-        // Subscribe to theme changes
         ThemeManager.OnThemeChanged += OnThemeChanged;
         
         if (ThemeManager.Instance != null)
@@ -51,18 +59,13 @@ public class LoseZoneWarning : MonoBehaviour
         }
         else
         {
-            // Default to day mode if no ThemeManager
             UpdateThemedObjects(true);
         }
 
-        // Initial hidden state
-        if (warningImage != null)
-        {
-            Color c = warningImage.color;
-            c.a = 0f;
-            warningImage.color = c;
-            warningImage.raycastTarget = false;
-        }
+        // Initialize both images to hidden state
+        SetImageAlpha(dayWarningImage, 0f);
+        SetImageAlpha(nightWarningImage, 0f);
+        currentAlpha = 0f;
     }
 
     void OnDestroy()
@@ -76,36 +79,37 @@ public class LoseZoneWarning : MonoBehaviour
         }
 
         PlayerController.onBubbleConnected -= CheckBubblePositions;
-
         ThemeManager.OnThemeChanged -= OnThemeChanged;
     }
 
-    // Called when theme changes. Syncs animator state and swaps visible object.
+    // Called when theme changes. Syncs alpha to the newly active image and swaps visible object.
     private void OnThemeChanged(ThemeMode themeMode)
     {
         bool isDayMode = themeMode == ThemeMode.Day;
         UpdateThemedObjects(isDayMode);
 
+        // Sync alpha to the newly active image so it matches the current fade state
+        Image activeImage = isDayMode ? dayWarningImage : nightWarningImage;
+        SetImageAlpha(activeImage, currentAlpha);
+
         if (enableDebugLogs)
         {
-            Debug.Log($"[LoseZoneWarning] Theme changed to {themeMode}");
+            Debug.Log($"[LoseZoneWarning] Theme changed to {themeMode}, synced alpha: {currentAlpha}");
         }
     }
 
-    // Enables the correct themed object and syncs animator playback.
+    // Enables the correct themed object and syncs animator playback position.
     private void UpdateThemedObjects(bool isDayMode)
     {
         if (dayWarningObject == null || nightWarningObject == null)
             return;
 
-        // Get current animator state before switching
         float normalizedTime = 0f;
         int stateHash = 0;
         
         Animator activeAnimator = isDayMode ? nightAnimator : dayAnimator;
         Animator targetAnimator = isDayMode ? dayAnimator : nightAnimator;
 
-        // Capture current playback position from the previously active animator
         if (activeAnimator != null && activeAnimator.gameObject.activeSelf)
         {
             AnimatorStateInfo stateInfo = activeAnimator.GetCurrentAnimatorStateInfo(0);
@@ -113,20 +117,33 @@ public class LoseZoneWarning : MonoBehaviour
             stateHash = stateInfo.fullPathHash;
         }
 
-        // Swap active objects
         dayWarningObject.SetActive(isDayMode);
         nightWarningObject.SetActive(!isDayMode);
 
-        // Sync the new animator to the same frame
         if (targetAnimator != null && stateHash != 0)
         {
             targetAnimator.Play(stateHash, 0, normalizedTime);
         }
     }
 
+    // Sets the alpha and raycast state for an Image component.
+    // Tracks currentAlpha so both themed images can stay synchronized.
+    private void SetImageAlpha(Image image, float alpha)
+    {
+        if (image == null) return;
+        
+        Color c = image.color;
+        c.a = alpha;
+        image.color = c;
+        image.raycastTarget = alpha > 0f;
+    }
+
     private void CheckBubblePositions()
     {
-        if (grid == null || heightLimit == null || warningImage == null)
+        if (grid == null || heightLimit == null)
+            return;
+
+        if (dayWarningImage == null && nightWarningImage == null)
             return;
 
         bool anyBubbleBelowLimit = false;
@@ -163,30 +180,44 @@ public class LoseZoneWarning : MonoBehaviour
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
 
-        fadeRoutine = StartCoroutine(FadeImage(show));
+        fadeRoutine = StartCoroutine(FadeImages(show));
     }
 
-    private IEnumerator FadeImage(bool show)
+    // Fades the currently active themed image and updates currentAlpha.
+    // Both images share the same alpha state so theme switching stays seamless.
+    private IEnumerator FadeImages(bool show)
     {
-        Color color = warningImage.color;
-        float startAlpha = color.a;
+        float startAlpha = currentAlpha;
         float targetAlpha = show ? 1f : 0f;
         float time = 0f;
-
-        if (show)
-            warningImage.raycastTarget = true;
 
         while (time < fadeDuration)
         {
             time += Time.deltaTime;
-            float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / fadeDuration);
-            warningImage.color = new Color(color.r, color.g, color.b, alpha);
+            currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, time / fadeDuration);
+            
+            // Only update the currently active image
+            Image activeImage = GetActiveImage();
+            SetImageAlpha(activeImage, currentAlpha);
+            
             yield return null;
         }
 
-        warningImage.color = new Color(color.r, color.g, color.b, targetAlpha);
+        currentAlpha = targetAlpha;
+        Image finalActiveImage = GetActiveImage();
+        SetImageAlpha(finalActiveImage, currentAlpha);
+    }
 
-        if (!show)
-            warningImage.raycastTarget = false;
+    // Returns the Image component of whichever themed object is currently active.
+    // Falls back to day image if neither object is active.
+    private Image GetActiveImage()
+    {
+        if (dayWarningObject != null && dayWarningObject.activeSelf)
+            return dayWarningImage;
+        
+        if (nightWarningObject != null && nightWarningObject.activeSelf)
+            return nightWarningImage;
+        
+        return dayWarningImage;
     }
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ae1a2808f4bcec44e876382b766bf058
+guid: 4f961e296520b2440b542d412a10dc5f
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -23,6 +23,24 @@ TextureImporter:
   - first:
       213: -5453479284795392712
     second: Line_Effect-4_6
+  - first:
+      213: -1152213338896115848
+    second: Line_Effect-4_7
+  - first:
+      213: 3385481624578232595
+    second: Line_Effect-4_8
+  - first:
+      213: 7789951841978628888
+    second: Line_Effect-4_9
+  - first:
+      213: 5446698611564322710
+    second: Line_Effect-4_10
+  - first:
+      213: -6321975695657414403
+    second: Line_Effect-4_11
+  - first:
+      213: -6044131953609796582
+    second: Line_Effect-4_12
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,10 +152,10 @@ TextureImporter:
       name: Line_Effect-4_0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 525
-        width: 1016
-        height: 19
+        x: 17
+        y: 526
+        width: 1063
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,10 +174,10 @@ TextureImporter:
       name: Line_Effect-4_1
       rect:
         serializedVersion: 2
-        x: 74
-        y: 525
-        width: 143
-        height: 19
+        x: 142
+        y: 526
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -178,10 +196,10 @@ TextureImporter:
       name: Line_Effect-4_2
       rect:
         serializedVersion: 2
-        x: 239
-        y: 525
-        width: 271
-        height: 19
+        x: 180
+        y: 529
+        width: 108
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,10 +218,10 @@ TextureImporter:
       name: Line_Effect-4_3
       rect:
         serializedVersion: 2
-        x: 530
-        y: 525
-        width: 145
-        height: 19
+        x: 306
+        y: 526
+        width: 17
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -222,10 +240,10 @@ TextureImporter:
       name: Line_Effect-4_4
       rect:
         serializedVersion: 2
-        x: 695
-        y: 525
-        width: 145
-        height: 19
+        x: 346
+        y: 529
+        width: 108
+        height: 11
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -244,10 +262,10 @@ TextureImporter:
       name: Line_Effect-4_5
       rect:
         serializedVersion: 2
-        x: 863
-        y: 525
-        width: 142
-        height: 19
+        x: 472
+        y: 526
+        width: 17
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -266,10 +284,10 @@ TextureImporter:
       name: Line_Effect-4_6
       rect:
         serializedVersion: 2
-        x: 1029
-        y: 525
-        width: 19
-        height: 19
+        x: 517
+        y: 529
+        width: 108
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -284,11 +302,143 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_7
+      rect:
+        serializedVersion: 2
+        x: 643
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87751ada2148200f0800000000000000
+      internalID: -1152213338896115848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_8
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 529
+        width: 108
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 311199ab995abfe20800000000000000
+      internalID: 3385481624578232595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_9
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81b39866de77b1c60800000000000000
+      internalID: 7789951841978628888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_10
+      rect:
+        serializedVersion: 2
+        x: 862
+        y: 529
+        width: 108
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69f97e4878f869b40800000000000000
+      internalID: 5446698611564322710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_11
+      rect:
+        serializedVersion: 2
+        x: 988
+        y: 526
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df0dfad9994d348a0800000000000000
+      internalID: -6321975695657414403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Line_Effect-4_12
+      rect:
+        serializedVersion: 2
+        x: 1031
+        y: 529
+        width: 49
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a141089e20eee1ca0800000000000000
+      internalID: -6044131953609796582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 18152d415f316664e8c9030839c03746
+    spriteID: 93bf2788a69ad3b46ba6f591e807eea2
     internalID: 0
     vertices: []
     indices: 
@@ -300,11 +450,17 @@ TextureImporter:
     nameFileIdTable:
       Line_Effect-4_0: 873439763159240751
       Line_Effect-4_1: 2804670038527576677
+      Line_Effect-4_10: 5446698611564322710
+      Line_Effect-4_11: -6321975695657414403
+      Line_Effect-4_12: -6044131953609796582
       Line_Effect-4_2: -5465439295046514546
       Line_Effect-4_3: 7447829755515492919
       Line_Effect-4_4: 5267702567376429052
       Line_Effect-4_5: -1428773663839739254
       Line_Effect-4_6: -5453479284795392712
+      Line_Effect-4_7: -1152213338896115848
+      Line_Effect-4_8: 3385481624578232595
+      Line_Effect-4_9: 7789951841978628888
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
