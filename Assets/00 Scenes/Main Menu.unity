@@ -4001,7 +4001,7 @@ MonoBehaviour:
   zigzagStrength: 1
   randomizePattern: 1
   patternSeed: 12345
-  scrollSpeed: 500
+  scrollSpeed: -500
   dragSensitivity: 1
   bufferNodes: 3
   pathRenderer: {fileID: 579318683}
