@@ -11,9 +11,9 @@ public class StarProgressUI : MonoBehaviour
     [SerializeField] private Canvas canvas;
     
     [Header("Slider Star Milestones")]
-    [SerializeField] private List<RectTransform> starMarkers = new List<RectTransform>(); // UI markers at 33%, 66%, 100%
+    [SerializeField] private List<RectTransform> starMarkers = new List<RectTransform>();
     [SerializeField] private List<Image> sliderStarImages = new List<Image>();
-    [SerializeField] private float starYOffset = 30f; // How far above the markers to place stars
+    [SerializeField] private float starYOffset = 30f;
     
     [Header("Star Sprites")]
     [SerializeField] private Sprite starEarned;
@@ -156,12 +156,12 @@ public class StarProgressUI : MonoBehaviour
     // Stars positioned at equal intervals (33%, 66%, 100%) and burn when passed.
     private void InitializeClassicMode()
     {
-        maxValue = currentLevel.OneStarTime; // interval * 3
+        maxValue = currentLevel.OneStarTime;
         
         // Equal spacing for visual alignment with slider dividers
-        normalizedThresholds[0] = 1f / 3f;  // 33% - first star burns
-        normalizedThresholds[1] = 2f / 3f;  // 66% - second star burns
-        normalizedThresholds[2] = 1f;       // 100% - third star burns
+        normalizedThresholds[0] = 1f / 3f;
+        normalizedThresholds[1] = 2f / 3f;
+        normalizedThresholds[2] = 1f;
         
         progressSlider.minValue = 0f;
         progressSlider.maxValue = 1f;
@@ -177,9 +177,9 @@ public class StarProgressUI : MonoBehaviour
         maxValue = currentLevel.targetScore;
         
         // Equal spacing for visual alignment with slider dividers
-        normalizedThresholds[0] = 1f / 3f;  // 33%
-        normalizedThresholds[1] = 2f / 3f;  // 66%
-        normalizedThresholds[2] = 1f;       // 100%
+        normalizedThresholds[0] = 1f / 3f;
+        normalizedThresholds[1] = 2f / 3f;
+        normalizedThresholds[2] = 1f;
         
         progressSlider.minValue = 0f;
         progressSlider.maxValue = 1f;
@@ -195,9 +195,9 @@ public class StarProgressUI : MonoBehaviour
         maxValue = currentLevel.threeStarRows;
         
         // Equal spacing for visual alignment with slider dividers
-        normalizedThresholds[0] = 1f / 3f;  // 33%
-        normalizedThresholds[1] = 2f / 3f;  // 66%
-        normalizedThresholds[2] = 1f;       // 100%
+        normalizedThresholds[0] = 1f / 3f;
+        normalizedThresholds[1] = 2f / 3f;
+        normalizedThresholds[2] = 1f;
         
         progressSlider.minValue = 0f;
         progressSlider.maxValue = 1f;
@@ -305,9 +305,17 @@ public class StarProgressUI : MonoBehaviour
         }
     }
     
-    // Called when game ends. For Classic mode, animates remaining unpassed stars to indicator.
+    // Called when game ends. Forces final update for Score/Survival modes to catch
+    // pending milestones, then handles Classic mode star awarding.
     private void OnGameEnd()
     {
+        // For Score/Survival: force one final update to catch any pending milestones
+        // This handles cases where score/rows change and victory trigger in the same frame
+        if (winCondition == WinConditionType.ReachTargetScore || winCondition == WinConditionType.Survival)
+        {
+            UpdateSlider();
+        }
+        
         isGameEnded = true;
         
         if (winCondition == WinConditionType.ClearAllBubbles)
@@ -319,20 +327,23 @@ public class StarProgressUI : MonoBehaviour
     }
     
     // Awards all stars that weren't burned during Classic mode.
-    // Stars animate one-by-one from left to right with configurable delay.
+    // Stars animate from their slider position to sequential indicator slots (left-to-right).
     private void AwardRemainingClassicStars()
     {
         float delay = 0f;
+        int targetSlot = 0;
         
         for (int i = 0; i < 3; i++)
         {
             if (!milestoneReached[i])
             {
-                int starIndex = i;
+                int sourceIndex = i;
+                int targetIndex = targetSlot;
                 DOVirtual.DelayedCall(delay, () =>
                 {
-                    FlyStarToIndicator(starIndex);
+                    FlyStarToIndicator(sourceIndex, targetIndex);
                 });
+                targetSlot++;
                 delay += endLevelStarDelay;
             }
         }
@@ -348,18 +359,27 @@ public class StarProgressUI : MonoBehaviour
         if (winCondition != WinConditionType.Survival) return;
         
         float delay = 0f;
+        int targetSlot = 0;
+        
+        // Count how many stars already earned to determine starting target slot
+        for (int i = 0; i < 3; i++)
+        {
+            if (milestoneReached[i]) targetSlot++;
+        }
         
         for (int i = 0; i < 3; i++)
         {
             if (!milestoneReached[i])
             {
                 milestoneReached[i] = true;
-                int starIndex = i;
+                int sourceIndex = i;
+                int targetIndex = targetSlot;
                 
                 DOVirtual.DelayedCall(delay, () =>
                 {
-                    FlyStarToIndicator(starIndex);
+                    FlyStarToIndicator(sourceIndex, targetIndex);
                 });
+                targetSlot++;
                 delay += endLevelStarDelay;
             }
         }
@@ -465,23 +485,25 @@ public class StarProgressUI : MonoBehaviour
         // Hide slider star
         sliderStar.gameObject.SetActive(false);
         
-        // Fly to indicator
-        FlyStarToIndicator(starIndex);
+        // Fly to indicator (same index for Score/Survival since stars are earned in order)
+        FlyStarToIndicator(starIndex, starIndex);
     }
     
     // Spawns a flying star from the slider position to the indicator position.
-    private void FlyStarToIndicator(int starIndex)
+    // sourceStarIndex: which slider star to animate from
+    // targetIndicatorIndex: which indicator slot to fly to
+    private void FlyStarToIndicator(int sourceStarIndex, int targetIndicatorIndex)
     {
-        if (starIndex < 0 || starIndex >= sliderStarImages.Count) return;
+        if (sourceStarIndex < 0 || sourceStarIndex >= sliderStarImages.Count) return;
         if (starIndicator == null) return;
         
-        Image sliderStar = sliderStarImages[starIndex];
+        Image sliderStar = sliderStarImages[sourceStarIndex];
         Vector3 sourcePos = sliderStar != null ? sliderStar.transform.position : transform.position;
-        Vector3 targetPos = starIndicator.GetStarWorldPosition(starIndex);
+        Vector3 targetPos = starIndicator.GetStarWorldPosition(targetIndicatorIndex);
         
         if (flyingStarPrefab == null || flyingStarParent == null)
         {
-            starIndicator.OnStarAnimationComplete(starIndex, true);
+            starIndicator.OnStarAnimationComplete(targetIndicatorIndex, true);
             return;
         }
         
@@ -499,7 +521,7 @@ public class StarProgressUI : MonoBehaviour
         if (starRect == null)
         {
             Destroy(flyingStar);
-            starIndicator.OnStarAnimationComplete(starIndex, true);
+            starIndicator.OnStarAnimationComplete(targetIndicatorIndex, true);
             return;
         }
         
@@ -525,7 +547,7 @@ public class StarProgressUI : MonoBehaviour
         // Play SFX with combo pitch
         if (starEarnedSFX != null)
         {
-            SFXManager.Play(starEarnedSFX, starIndex);
+            SFXManager.PlayAtPosition(starEarnedSFX,Vector3.zero, targetIndicatorIndex);
         }
         
         // Animation sequence
@@ -535,14 +557,15 @@ public class StarProgressUI : MonoBehaviour
         sequence.Join(starRect.DOScale(endScale, flyDuration).SetEase(Ease.OutBack));
         sequence.Join(starRect.DORotate(new Vector3(0, 0, rotationAmount), flyDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear));
         
+        int capturedTargetIndex = targetIndicatorIndex;
         sequence.OnComplete(() =>
         {
             Destroy(flyingStar);
             pendingAnimations--;
-            starIndicator.OnStarAnimationComplete(starIndex, true);
+            starIndicator.OnStarAnimationComplete(capturedTargetIndex, true);
         });
         
-        Log($"Flying star {starIndex} to indicator");
+        Log($"Flying star from slider {sourceStarIndex} to indicator {targetIndicatorIndex}");
     }
     
     // Updates the visual state of all slider star images.
