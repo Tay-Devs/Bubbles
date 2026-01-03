@@ -136,10 +136,10 @@ public class LiveStarIndicatorUI : MonoBehaviour
     {
         if (wasEarned)
         {
-            // Earning: ensure this star and all previous are shown as earned
-            displayedStars = Mathf.Max(displayedStars, starIndex + 1);
+            // Simply increment - works for all modes since each earned star adds 1
+            displayedStars = Mathf.Min(displayedStars + 1, 3);
         }
-        
+    
         UpdateStarVisuals();
         Log($"Animation complete for star {starIndex} (earned={wasEarned}), displayed: {displayedStars}");
     }
