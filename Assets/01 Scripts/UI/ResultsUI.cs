@@ -17,8 +17,9 @@ public class ResultsUI : MonoBehaviour
     [Header("Star References")]
     public Image[] starImages;
     
-    [Header("Star Sprites")]
-    public Sprite starEarnedSprite;
+    [Header("Earned Star Theme Sprites")]
+    [SerializeField] private Sprite starEarnedDaySprite;
+    [SerializeField] private Sprite starEarnedNightSprite;
     
     [Header("Unearned Star Theme Sprites")]
     [SerializeField] private Sprite unearnedStarDaySprite;
@@ -61,7 +62,7 @@ public class ResultsUI : MonoBehaviour
         }
     }
     
-    // Called when theme changes. Updates unearned star sprites.
+    // Called when theme changes. Updates both earned and unearned star sprites.
     private void OnThemeChanged(ThemeMode newTheme)
     {
         currentTheme = newTheme;
@@ -73,7 +74,13 @@ public class ResultsUI : MonoBehaviour
         }
     }
     
-    // Returns the appropriate unearned star sprite for the given theme.
+    // Returns the earned star sprite matching the current theme (day or night).
+    private Sprite GetEarnedSpriteForTheme(ThemeMode theme)
+    {
+        return theme == ThemeMode.Day ? starEarnedDaySprite : starEarnedNightSprite;
+    }
+    
+    // Returns the unearned star sprite matching the current theme (day or night).
     private Sprite GetUnearnedSpriteForTheme(ThemeMode theme)
     {
         return theme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
@@ -90,7 +97,6 @@ public class ResultsUI : MonoBehaviour
         
         if (Application.isPlaying)
         {
-            // Get current theme
             if (ThemeManager.Instance != null)
             {
                 currentTheme = ThemeManager.Instance.CurrentTheme;
@@ -160,13 +166,14 @@ public class ResultsUI : MonoBehaviour
     }
     
     // Updates star images based on how many stars were earned.
-    // Earned stars show gold sprite, unearned use day/night themed sprite.
+    // Both earned and unearned stars use theme-specific sprites.
     private void UpdateStars(int starsEarned)
     {
         currentStarsEarned = starsEarned;
         
         if (starImages == null) return;
         
+        Sprite earnedSprite = GetEarnedSpriteForTheme(currentTheme);
         Sprite unearnedSprite = GetUnearnedSpriteForTheme(currentTheme);
         
         for (int i = 0; i < starImages.Length; i++)
@@ -174,7 +181,7 @@ public class ResultsUI : MonoBehaviour
             if (starImages[i] == null) continue;
             
             bool isEarned = i < starsEarned;
-            starImages[i].sprite = isEarned ? starEarnedSprite : unearnedSprite;
+            starImages[i].sprite = isEarned ? earnedSprite : unearnedSprite;
         }
     }
     
@@ -187,7 +194,7 @@ public class ResultsUI : MonoBehaviour
     }
     
     // Updates the star preview in editor based on ThemeManager's current theme.
-    // Allows seeing theme changes without entering play mode.
+    // Shows both earned and unearned sprites with correct theme variants.
     public void UpdatePreview()
     {
         if (starImages == null) return;
@@ -195,6 +202,7 @@ public class ResultsUI : MonoBehaviour
         ThemeManager manager = FindObjectOfType<ThemeManager>();
         ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
         
+        Sprite earnedSprite = previewTheme == ThemeMode.Day ? starEarnedDaySprite : starEarnedNightSprite;
         Sprite unearnedSprite = previewTheme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
         
         for (int i = 0; i < starImages.Length; i++)
@@ -202,9 +210,11 @@ public class ResultsUI : MonoBehaviour
             if (starImages[i] == null) continue;
             
             bool isEarned = i < currentStarsEarned;
-            if (!isEarned && unearnedSprite != null)
+            Sprite targetSprite = isEarned ? earnedSprite : unearnedSprite;
+            
+            if (targetSprite != null)
             {
-                starImages[i].sprite = unearnedSprite;
+                starImages[i].sprite = targetSprite;
             }
         }
     }

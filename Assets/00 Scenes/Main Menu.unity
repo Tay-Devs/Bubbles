@@ -1627,7 +1627,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 5321207421828672711, guid: c15033197ec539948b5737ea37a30bb7, type: 3}
+  m_Sprite: {fileID: 5715163460876116209, guid: f8f9f8ede6d928344889e2cf299a8d03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3152,7 +3152,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4280289536
   m_fontColor: {r: 0, g: 0.03529412, b: 0.1254902, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3294,7 +3294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 5321207421828672711, guid: c15033197ec539948b5737ea37a30bb7, type: 3}
+  m_Sprite: {fileID: 5715163460876116209, guid: f8f9f8ede6d928344889e2cf299a8d03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3812,7 +3812,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 5321207421828672711, guid: c15033197ec539948b5737ea37a30bb7, type: 3}
+  m_Sprite: {fileID: 5715163460876116209, guid: f8f9f8ede6d928344889e2cf299a8d03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4116,9 +4116,10 @@ MonoBehaviour:
   - {fileID: 1604714055}
   - {fileID: 486566717}
   - {fileID: 1235169226}
-  starEarnedSprite: {fileID: -8402483982924262342, guid: c6bd600feaab0ff4aa1cbb637ea61cef, type: 3}
-  unearnedStarDaySprite: {fileID: 5321207421828672711, guid: c15033197ec539948b5737ea37a30bb7, type: 3}
-  unearnedStarNightSprite: {fileID: 260089893501521846, guid: a4946ce6b94dd7140aacb8a5b0c8963d, type: 3}
+  starEarnedDaySprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
+  starEarnedNightSprite: {fileID: -5642654969772852654, guid: 9776f6e602538b341ad4d38913f9f6d9, type: 3}
+  unearnedStarDaySprite: {fileID: 5715163460876116209, guid: f8f9f8ede6d928344889e2cf299a8d03, type: 3}
+  unearnedStarNightSprite: {fileID: -1923809834246763172, guid: 4c469d17fb440d94c99b9fff3dae29ea, type: 3}
   enableDebugLogs: 0
 --- !u!1 &1893873215
 GameObject:
