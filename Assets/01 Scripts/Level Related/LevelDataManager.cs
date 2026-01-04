@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VInspector;
 
 public class LevelDataManager : MonoBehaviour
@@ -174,6 +175,7 @@ public class LevelDataManager : MonoBehaviour
         PlayerPrefs.DeleteKey(SAVE_KEY);
         levelDataDict.Clear();
         TotalStars = 0;
+        SceneManager.LoadScene("Main Menu");
         Debug.Log("[LevelDataManager] Save cleared");
     }
     

@@ -21,7 +21,7 @@ MonoBehaviour:
   gridHeight: 5
   availableColors: 000000000100000002000000
   winCondition: 0
-  starTimeInterval: 35
+  starTimeInterval: 45
   targetScore: 1000
   survivalStartingInterval: 10
   survivalIntervalDeduction: 0.5
