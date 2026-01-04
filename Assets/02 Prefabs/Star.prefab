@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5984393233540319058}
   - component: {fileID: 2012662939185462994}
   - component: {fileID: 2533515174119149312}
+  - component: {fileID: 3399901003077015659}
   m_Layer: 5
   m_Name: Star
   m_TagString: Untagged
@@ -35,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 86, y: 78}
+  m_SizeDelta: {x: 55, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2012662939185462994
 CanvasRenderer:
@@ -65,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8402483982924262342, guid: c6bd600feaab0ff4aa1cbb637ea61cef, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -75,3 +76,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3399901003077015659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7417871910002395890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
+  themeSprite: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  useThemeSprite: 1
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}

@@ -58,6 +58,9 @@ public class LevelMapController : MonoBehaviour
     private Vector2 lastPointerPos;
     private bool isDragging;
     
+    // Tracks which levels were just unlocked this session
+    private HashSet<int> newlyUnlockedLevels = new HashSet<int>();
+    
     // Calculated padding in pixels
     private float BottomPaddingPx => viewportHeight * bottomPadding;
     private float TopPaddingPx => viewportHeight * topPadding;
@@ -78,8 +81,25 @@ public class LevelMapController : MonoBehaviour
         CheckForResults();
         CreatePool();
         
-        int targetLevel = Mathf.Min(LevelDataManager.Instance.GetFirstIncompleteLevel(), totalLevels);
+        int targetLevel = DetermineScrollTarget();
         ScrollToLevel(targetLevel);
+    }
+    
+    // Determines which level to scroll to on start.
+    // If there are newly unlocked levels, scrolls to the first one.
+    private int DetermineScrollTarget()
+    {
+        if (newlyUnlockedLevels.Count > 0)
+        {
+            int lowestUnlocked = int.MaxValue;
+            foreach (int level in newlyUnlockedLevels)
+            {
+                if (level < lowestUnlocked) lowestUnlocked = level;
+            }
+            return Mathf.Min(lowestUnlocked, totalLevels);
+        }
+        
+        return Mathf.Min(LevelDataManager.Instance.GetFirstIncompleteLevel(), totalLevels);
     }
     
     void Update() => HandleInput();
@@ -162,15 +182,42 @@ public class LevelMapController : MonoBehaviour
         return baseX;
     }
     
-    // Checks for and saves results from completed level.
+    // Checks for results from completed level and detects newly unlocked levels.
+    // Compares unlock state before and after saving results.
     private void CheckForResults()
     {
         if (gameSession == null || !gameSession.hasResults) return;
         
         if (gameSession.selectedLevel != null && gameSession.starsEarned > 0)
         {
+            // Capture which levels were unlocked BEFORE saving new results
+            HashSet<int> previouslyUnlocked = new HashSet<int>();
+            for (int i = 1; i <= totalLevels; i++)
+            {
+                if (LevelDataManager.Instance.IsLevelUnlocked(i))
+                {
+                    previouslyUnlocked.Add(i);
+                }
+            }
+            
+            // Save the new results
             LevelDataManager.Instance.CompleteLevel(gameSession.selectedLevel.levelNumber, gameSession.starsEarned);
+            
+            // Find which levels are now unlocked that weren't before
+            for (int i = 1; i <= totalLevels; i++)
+            {
+                if (LevelDataManager.Instance.IsLevelUnlocked(i) && !previouslyUnlocked.Contains(i))
+                {
+                    newlyUnlockedLevels.Add(i);
+                    
+                    if (enableDebugLogs)
+                    {
+                        Debug.Log($"[LevelMapController] Level {i} was just unlocked!");
+                    }
+                }
+            }
         }
+        
         gameSession.ClearResults();
     }
     
@@ -255,15 +302,35 @@ public class LevelMapController : MonoBehaviour
     }
     
     // Spawns a node for a specific level.
+    // Passes playUnlockAnimation flag if level was just unlocked.
     private void SpawnNode(int level)
     {
         LevelNode node = nodePool.Find(n => !n.gameObject.activeSelf);
         if (node == null) return;
         
-        node.Setup(level, LevelDataManager.Instance.IsLevelUnlocked(level), LevelDataManager.Instance.GetStarsForLevel(level));
+        bool shouldPlayUnlockAnim = newlyUnlockedLevels.Contains(level);
+        
+        node.Setup(
+            level, 
+            LevelDataManager.Instance.IsLevelUnlocked(level), 
+            LevelDataManager.Instance.GetStarsForLevel(level),
+            shouldPlayUnlockAnim
+        );
+        
         PositionNode(node, level);
         node.gameObject.SetActive(true);
         activeNodes[level] = node;
+        
+        // Clear from set after spawning so animation only plays once
+        if (shouldPlayUnlockAnim)
+        {
+            newlyUnlockedLevels.Remove(level);
+            
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[LevelMapController] Spawned level {level} with unlock animation");
+            }
+        }
     }
     
     // Positions a node based on level number and scroll.

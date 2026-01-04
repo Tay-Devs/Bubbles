@@ -22,6 +22,7 @@ public class LevelNode : MonoBehaviour
     
     [Header("Lock State")]
     public GameObject lockIcon;
+    public GameObject closedLock;
     public GameObject starsContainer;
     public Color lockedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     public Color unlockedColor = Color.white;
@@ -110,13 +111,14 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    public void Setup(int level, bool unlocked, int starsEarned)
+    // Main setup method with optional unlock animation trigger.
+    // When playUnlockAnimation is true, activates closedLock to trigger DOTween's Play On Enable.
+    public void Setup(int level, bool unlocked, int starsEarned, bool playUnlockAnimation = false)
     {
         levelNumber = level;
         isUnlocked = unlocked;
         currentStarsEarned = starsEarned;
         
-        // Get current theme
         if (ThemeManager.Instance != null)
         {
             currentTheme = ThemeManager.Instance.CurrentTheme;
@@ -134,17 +136,66 @@ public class LevelNode : MonoBehaviour
             levelButton.interactable = unlocked;
         }
         
-        UpdateLockVisual(unlocked);
+        if (playUnlockAnimation)
+        {
+            SetupForUnlockAnimation();
+        }
+        else
+        {
+            UpdateLockVisual(unlocked);
+        }
+        
         UpdateLevelNumberColor(unlocked);
         UpdateStars(starsEarned, unlocked);
         UpdateNodeColor(unlocked, starsEarned > 0);
+        
+        if (enableDebugLogs && playUnlockAnimation)
+        {
+            Debug.Log($"[LevelNode] Level {levelNumber} setup with unlock animation");
+        }
     }
     
+    // Prepares visuals for unlock animation by activating closedLock.
+    // DOTween's Play On Enable will automatically start the animation sequence.
+    private void SetupForUnlockAnimation()
+    {
+        // Hide normal lock icon since closedLock will handle the animation
+        if (lockIcon != null)
+        {
+            lockIcon.SetActive(false);
+        }
+        
+        if (starsContainer != null)
+        {
+            starsContainer.SetActive(false);
+        }
+        
+        // Activate closedLock to trigger DOTween's Play On Enable
+        if (closedLock != null)
+        {
+            closedLock.SetActive(true);
+        }
+    }
+    
+    // Legacy setup method for backwards compatibility.
+    public void Setup(int level, bool unlocked, int starsEarned)
+    {
+        Setup(level, unlocked, starsEarned, false);
+    }
+    
+    // Updates lock visibility for normal levels (not animation).
+    // closedLock is never touched here - it's only for the unlock animation.
     private void UpdateLockVisual(bool unlocked)
     {
         if (lockIcon != null)
         {
             lockIcon.SetActive(!unlocked);
+        }
+        
+        // Ensure closedLock is disabled for normal display
+        if (closedLock != null)
+        {
+            closedLock.SetActive(false);
         }
     }
     
