@@ -375,8 +375,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: -1082864746254555610, guid: 5078b897463684648aa339979b8046f6, type: 3}
-  nightSprite: {fileID: -4386241728274090788, guid: 9f06e0eec340f604bb95ef72a9d9fc39, type: 3}
+  daySprite: {fileID: 7910238707312281067, guid: a5e060c62ea35f7478375a4629805488, type: 3}
+  nightSprite: {fileID: -5872603023100764874, guid: d96337bedd95e454496aaa7d85fc2635, type: 3}
 --- !u!114 &25839261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1082864746254555610, guid: 5078b897463684648aa339979b8046f6, type: 3}
+  m_Sprite: {fileID: 7910238707312281067, guid: a5e060c62ea35f7478375a4629805488, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9556, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9553, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678

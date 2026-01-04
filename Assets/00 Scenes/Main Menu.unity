@@ -2331,8 +2331,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 4907627600810948284, guid: 03cf1b97519cf2442ae30ced5c2384dc, type: 3}
-  nightSprite: {fileID: 8826450348152797510, guid: 992099c09a8733c41851fb66f2c4befd, type: 3}
+  daySprite: {fileID: -2782463093025066816, guid: ac6a61646b9bda64b913b33c960b2707, type: 3}
+  nightSprite: {fileID: -5530718640164776173, guid: 48184e418da5ada4f949d73370ecdde3, type: 3}
 --- !u!114 &771501593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2353,7 +2353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4907627600810948284, guid: 03cf1b97519cf2442ae30ced5c2384dc, type: 3}
+  m_Sprite: {fileID: -2782463093025066816, guid: ac6a61646b9bda64b913b33c960b2707, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
