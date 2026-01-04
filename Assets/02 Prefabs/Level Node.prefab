@@ -465,9 +465,10 @@ MonoBehaviour:
   - {fileID: 6446618704985018747}
   - {fileID: 7131977733615727828}
   - {fileID: 4527346565408028942}
-  starEarnedSprite: {fileID: -8402483982924262342, guid: c6bd600feaab0ff4aa1cbb637ea61cef, type: 3}
-  unearnedStarDaySprite: {fileID: 5321207421828672711, guid: c15033197ec539948b5737ea37a30bb7, type: 3}
-  unearnedStarNightSprite: {fileID: 260089893501521846, guid: a4946ce6b94dd7140aacb8a5b0c8963d, type: 3}
+  starEarnedDaySprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
+  starEarnedNightSprite: {fileID: -5642654969772852654, guid: 9776f6e602538b341ad4d38913f9f6d9, type: 3}
+  unearnedStarDaySprite: {fileID: 5715163460876116209, guid: f8f9f8ede6d928344889e2cf299a8d03, type: 3}
+  unearnedStarNightSprite: {fileID: -1923809834246763172, guid: 4c469d17fb440d94c99b9fff3dae29ea, type: 3}
   lockIcon: {fileID: 1087771609528505040}
   closedLock: {fileID: 636677987818155360}
   starsContainer: {fileID: 8877895621443951894}
@@ -637,7 +638,6 @@ GameObject:
   - component: {fileID: 2993145348229487382}
   - component: {fileID: 3223519987509062137}
   - component: {fileID: 7131977733615727828}
-  - component: {fileID: 1032344124821813356}
   m_Layer: 5
   m_Name: Star2
   m_TagString: Untagged
@@ -654,14 +654,14 @@ RectTransform:
   m_GameObject: {fileID: 3809003230252090937}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 860553470394661426}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -24.400002}
+  m_AnchoredPosition: {x: 0, y: -20}
   m_SizeDelta: {x: 55, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3223519987509062137
@@ -702,22 +702,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1032344124821813356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3809003230252090937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
 --- !u!1 &3829172830441352893
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,7 +777,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4280289536
   m_fontColor: {r: 0, g: 0.03529412, b: 0.1254902, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -881,7 +865,6 @@ GameObject:
   - component: {fileID: 3334819519003008191}
   - component: {fileID: 7648491076372080301}
   - component: {fileID: 6446618704985018747}
-  - component: {fileID: 3887654400052409940}
   m_Layer: 5
   m_Name: Star1
   m_TagString: Untagged
@@ -898,14 +881,14 @@ RectTransform:
   m_GameObject: {fileID: 3893674900167190091}
   m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 860553470394661426}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 15, y: -41.5}
+  m_AnchoredPosition: {x: 10, y: -41.5}
   m_SizeDelta: {x: 55, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7648491076372080301
@@ -946,22 +929,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3887654400052409940
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3893674900167190091}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
 --- !u!1 &5454097080815174085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,7 +1399,6 @@ GameObject:
   - component: {fileID: 1249991497397360079}
   - component: {fileID: 4751515165914960329}
   - component: {fileID: 4527346565408028942}
-  - component: {fileID: 2694309122686595121}
   m_Layer: 5
   m_Name: Star3
   m_TagString: Untagged
@@ -1449,14 +1415,14 @@ RectTransform:
   m_GameObject: {fileID: 8298598912582922883}
   m_LocalRotation: {x: 0, y: 0, z: -0.13052624, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 860553470394661426}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -15}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15, y: -46.5}
+  m_AnchoredPosition: {x: -10, y: -46.5}
   m_SizeDelta: {x: 55, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4751515165914960329
@@ -1497,22 +1463,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2694309122686595121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8298598912582922883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
 --- !u!1 &8454010055481255037
 GameObject:
   m_ObjectHideFlags: 0
@@ -1688,6 +1638,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
+  m_AnchoredPosition: {x: 0, y: -59.8}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}

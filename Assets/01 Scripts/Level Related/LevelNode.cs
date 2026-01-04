@@ -13,8 +13,9 @@ public class LevelNode : MonoBehaviour
     [Header("Star References")]
     public Image[] starImages;
     
-    [Header("Star Sprites")]
-    public Sprite starEarnedSprite;
+    [Header("Earned Star Theme Sprites")]
+    [SerializeField] private Sprite starEarnedDaySprite;
+    [SerializeField] private Sprite starEarnedNightSprite;
     
     [Header("Unearned Star Theme Sprites")]
     [SerializeField] private Sprite unearnedStarDaySprite;
@@ -74,7 +75,7 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    // Called when theme changes. Updates unearned star sprites.
+    // Called when theme changes. Updates both earned and unearned star sprites.
     private void OnThemeChanged(ThemeMode newTheme)
     {
         currentTheme = newTheme;
@@ -86,7 +87,13 @@ public class LevelNode : MonoBehaviour
         }
     }
     
-    // Returns the appropriate unearned star sprite for the given theme.
+    // Returns the earned star sprite matching the current theme (day or night).
+    private Sprite GetEarnedSpriteForTheme(ThemeMode theme)
+    {
+        return theme == ThemeMode.Day ? starEarnedDaySprite : starEarnedNightSprite;
+    }
+    
+    // Returns the unearned star sprite matching the current theme (day or night).
     private Sprite GetUnearnedSpriteForTheme(ThemeMode theme)
     {
         return theme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
@@ -159,7 +166,6 @@ public class LevelNode : MonoBehaviour
     // DOTween's Play On Enable will automatically start the animation sequence.
     private void SetupForUnlockAnimation()
     {
-        // Hide normal lock icon since closedLock will handle the animation
         if (lockIcon != null)
         {
             lockIcon.SetActive(false);
@@ -170,7 +176,6 @@ public class LevelNode : MonoBehaviour
             starsContainer.SetActive(false);
         }
         
-        // Activate closedLock to trigger DOTween's Play On Enable
         if (closedLock != null)
         {
             closedLock.SetActive(true);
@@ -192,7 +197,6 @@ public class LevelNode : MonoBehaviour
             lockIcon.SetActive(!unlocked);
         }
         
-        // Ensure closedLock is disabled for normal display
         if (closedLock != null)
         {
             closedLock.SetActive(false);
@@ -208,7 +212,7 @@ public class LevelNode : MonoBehaviour
     }
     
     // Updates star visuals based on stars earned and current theme.
-    // Earned stars use starEarnedSprite, unearned use day/night themed sprite.
+    // Both earned and unearned stars now use theme-specific sprites.
     private void UpdateStars(int starsEarned, bool unlocked)
     {
         currentStarsEarned = starsEarned;
@@ -220,6 +224,7 @@ public class LevelNode : MonoBehaviour
         
         if (starImages == null) return;
         
+        Sprite earnedSprite = GetEarnedSpriteForTheme(currentTheme);
         Sprite unearnedSprite = GetUnearnedSpriteForTheme(currentTheme);
         
         for (int i = 0; i < starImages.Length; i++)
@@ -229,7 +234,7 @@ public class LevelNode : MonoBehaviour
             starImages[i].gameObject.SetActive(true);
             
             bool isEarned = i < starsEarned;
-            starImages[i].sprite = isEarned ? starEarnedSprite : unearnedSprite;
+            starImages[i].sprite = isEarned ? earnedSprite : unearnedSprite;
             starImages[i].color = Color.white;
         }
     }
@@ -288,7 +293,7 @@ public class LevelNode : MonoBehaviour
     }
     
     // Updates the star preview in editor based on ThemeManager's current theme.
-    // Allows seeing theme changes without entering play mode.
+    // Shows both earned and unearned sprites with correct theme variants.
     public void UpdatePreview()
     {
         if (starImages == null) return;
@@ -296,6 +301,7 @@ public class LevelNode : MonoBehaviour
         ThemeManager manager = FindObjectOfType<ThemeManager>();
         ThemeMode previewTheme = manager != null ? manager.CurrentTheme : ThemeMode.Day;
         
+        Sprite earnedSprite = previewTheme == ThemeMode.Day ? starEarnedDaySprite : starEarnedNightSprite;
         Sprite unearnedSprite = previewTheme == ThemeMode.Day ? unearnedStarDaySprite : unearnedStarNightSprite;
         
         for (int i = 0; i < starImages.Length; i++)
@@ -303,9 +309,11 @@ public class LevelNode : MonoBehaviour
             if (starImages[i] == null) continue;
             
             bool isEarned = i < currentStarsEarned;
-            if (!isEarned && unearnedSprite != null)
+            Sprite targetSprite = isEarned ? earnedSprite : unearnedSprite;
+            
+            if (targetSprite != null)
             {
-                starImages[i].sprite = unearnedSprite;
+                starImages[i].sprite = targetSprite;
             }
         }
     }
