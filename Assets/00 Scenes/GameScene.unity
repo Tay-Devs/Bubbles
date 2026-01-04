@@ -835,7 +835,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.957, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9558, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -1643,7 +1643,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1842,9 +1842,9 @@ MonoBehaviour:
   - {fileID: 1101657976}
   - {fileID: 1882143304}
   - {fileID: 1596679338}
-  starYOffset: 0.75
-  starEarned: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
-  starEmpty: {fileID: 8738577774504964545, guid: 55a0ba904a48c9a4b92ecc3b7cadea4e, type: 3}
+  starYOffset: 0.9
+  starEarnedTheme: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  starEmptyTheme: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
   flyingStarPrefab: {fileID: 7417871910002395890, guid: 225f28ff5d147774ab97e9afc20dd272, type: 3}
   flyingStarParent: {fileID: 1625556471}
   flyDuration: 0.8
@@ -4003,8 +4003,8 @@ MonoBehaviour:
   - {fileID: 413544086}
   - {fileID: 1905309847}
   - {fileID: 73119116}
-  starEarned: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
-  starEmpty: {fileID: 8738577774504964545, guid: 55a0ba904a48c9a4b92ecc3b7cadea4e, type: 3}
+  starEarnedTheme: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  starEmptyTheme: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
   enableDebugLogs: 0
 --- !u!114 &883647504
 MonoBehaviour:
@@ -4019,12 +4019,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
   m_Padding:
-    m_Left: 0
+    m_Left: 14
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: -75
+  m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -4874,6 +4874,7 @@ GameObject:
   - component: {fileID: 1101657975}
   - component: {fileID: 1101657977}
   - component: {fileID: 1101657976}
+  - component: {fileID: 1101657978}
   m_Layer: 5
   m_Name: Star 1
   m_TagString: Untagged
@@ -4890,14 +4891,14 @@ RectTransform:
   m_GameObject: {fileID: 1101657974}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.000034, y: 1.000034, z: 1.000034}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -36.6, y: -40}
+  m_AnchoredPosition: {x: -35.549988, y: -17}
   m_SizeDelta: {x: 82, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1101657976
@@ -4920,7 +4921,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4938,6 +4939,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101657974}
   m_CullTransparentMesh: 1
+--- !u!114 &1101657978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101657974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
+  themeSprite: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  useThemeSprite: 1
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &1139186100
 GameObject:
   m_ObjectHideFlags: 0
@@ -6741,6 +6758,7 @@ GameObject:
   - component: {fileID: 1596679337}
   - component: {fileID: 1596679339}
   - component: {fileID: 1596679338}
+  - component: {fileID: 1596679340}
   m_Layer: 5
   m_Name: Star 1 (2)
   m_TagString: Untagged
@@ -6757,14 +6775,14 @@ RectTransform:
   m_GameObject: {fileID: 1596679336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.000034, y: 1.000034, z: 1.000034}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 104.3, y: -40}
+  m_AnchoredPosition: {x: 104.70004, y: -17.000011}
   m_SizeDelta: {x: 82, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1596679338
@@ -6787,7 +6805,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6805,6 +6823,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1596679336}
   m_CullTransparentMesh: 1
+--- !u!114 &1596679340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596679336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
+  themeSprite: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  useThemeSprite: 1
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &1625556467
 GameObject:
   m_ObjectHideFlags: 0
@@ -7969,6 +8003,7 @@ GameObject:
   - component: {fileID: 1882143303}
   - component: {fileID: 1882143305}
   - component: {fileID: 1882143304}
+  - component: {fileID: 1882143306}
   m_Layer: 5
   m_Name: Star 1 (1)
   m_TagString: Untagged
@@ -7985,14 +8020,14 @@ RectTransform:
   m_GameObject: {fileID: 1882143302}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.000034, y: 1.000034, z: 1.000034}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 32.7, y: -40}
+  m_AnchoredPosition: {x: 33.30002, y: -17.000011}
   m_SizeDelta: {x: 82, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1882143304
@@ -8015,7 +8050,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8033,6 +8068,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1882143302}
   m_CullTransparentMesh: 1
+--- !u!114 &1882143306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1882143302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
+  themeSprite: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
+  useThemeSprite: 1
+  daySprite: {fileID: 0}
+  nightSprite: {fileID: 0}
 --- !u!1 &1893935071
 GameObject:
   m_ObjectHideFlags: 0
@@ -8345,7 +8396,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7773435684712398890, guid: 6e504b2333358134ca6584f855fb247a, type: 3}
+  m_Sprite: {fileID: -2181968415917804876, guid: 8839d836e0d2bb349a9c5e2ceb7bb03f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

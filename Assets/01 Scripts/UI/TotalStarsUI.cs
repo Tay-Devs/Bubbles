@@ -70,8 +70,7 @@ public class TotalStarsUI : MonoBehaviour
         if (rectTransform != null)
         {
             rectTransform.DOKill();
-            rectTransform.localScale = Vector3.one;
-            rectTransform.DOPunchScale(Vector3.one * punchScale, punchDuration, 5, 0.5f);
+            rectTransform.DOPunchScale(rectTransform.localScale * punchScale, punchDuration, 5, 0.5f);
         }
         
         if (enableDebugLogs)

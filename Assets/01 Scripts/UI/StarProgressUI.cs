@@ -15,9 +15,9 @@ public class StarProgressUI : MonoBehaviour
     [SerializeField] private List<Image> sliderStarImages = new List<Image>();
     [SerializeField] private float starYOffset = 30f;
     
-    [Header("Star Sprites")]
-    [SerializeField] private Sprite starEarned;
-    [SerializeField] private Sprite starEmpty;
+    [Header("Star Sprites (Themeable)")]
+    [SerializeField] private ThemeSprite starEarnedTheme;
+    [SerializeField] private ThemeSprite starEmptyTheme;
     
     [Header("Flying Star")]
     [SerializeField] private GameObject flyingStarPrefab;
@@ -51,6 +51,7 @@ public class StarProgressUI : MonoBehaviour
     
     private LevelConfig currentLevel;
     private WinConditionType winCondition;
+    private ThemeMode currentTheme;
     
     // Tracks which milestone stars have been passed/claimed (index 0=first star, 1=second, 2=third)
     private bool[] milestoneReached = new bool[3];
@@ -67,6 +68,7 @@ public class StarProgressUI : MonoBehaviour
     void Start()
     {
         CacheReferences();
+        CacheCurrentTheme();
         SubscribeToEvents();
         InitializeSlider();
     }
@@ -99,7 +101,16 @@ public class StarProgressUI : MonoBehaviour
         }
     }
     
-    // Subscribes to game events for end-of-level handling.
+    // Stores the current theme from ThemeManager for sprite lookups.
+    private void CacheCurrentTheme()
+    {
+        if (ThemeManager.Instance != null)
+        {
+            currentTheme = ThemeManager.Instance.CurrentTheme;
+        }
+    }
+    
+    // Subscribes to game events and theme changes for end-of-level handling.
     private void SubscribeToEvents()
     {
         if (GameManager.Instance != null)
@@ -107,6 +118,8 @@ public class StarProgressUI : MonoBehaviour
             GameManager.Instance.onVictory.AddListener(OnGameEnd);
             GameManager.Instance.onGameOver.AddListener(OnGameEnd);
         }
+        
+        ThemeManager.OnThemeChanged += OnThemeChanged;
     }
     
     private void UnsubscribeFromEvents()
@@ -116,6 +129,24 @@ public class StarProgressUI : MonoBehaviour
             GameManager.Instance.onVictory.RemoveListener(OnGameEnd);
             GameManager.Instance.onGameOver.RemoveListener(OnGameEnd);
         }
+        
+        ThemeManager.OnThemeChanged -= OnThemeChanged;
+    }
+    
+    // Called when theme changes. Updates cached theme and refreshes slider star visuals.
+    private void OnThemeChanged(ThemeMode newTheme)
+    {
+        currentTheme = newTheme;
+        UpdateSliderStarVisuals();
+        Log($"Theme changed to {newTheme}, updated slider star visuals");
+    }
+    
+    // Returns the correct sprite from a ThemeSprite based on current theme.
+    // Returns null if ThemeSprite is not assigned.
+    private Sprite GetSpriteFromTheme(ThemeSprite themeSprite)
+    {
+        if (themeSprite == null) return null;
+        return themeSprite.GetSprite(currentTheme);
     }
     
     // Sets up slider range, thresholds, and positions stars automatically.
@@ -399,6 +430,7 @@ public class StarProgressUI : MonoBehaviour
     }
     
     // Burns a star on the slider (Classic mode) - grows, spins, and fades away.
+    // Uses theme-appropriate earned sprite for the flying star.
     private void BurnSliderStar(int starIndex)
     {
         if (starIndex < 0 || starIndex >= sliderStarImages.Count) return;
@@ -427,9 +459,11 @@ public class StarProgressUI : MonoBehaviour
         // Match source star size and sprite
         RectTransform sourceRect = sliderStar.rectTransform;
         starRect.sizeDelta = sourceRect.sizeDelta;
-        if (starImage != null && starEarned != null)
+        
+        Sprite earnedSprite = GetSpriteFromTheme(starEarnedTheme);
+        if (starImage != null && earnedSprite != null)
         {
-            starImage.sprite = starEarned;
+            starImage.sprite = earnedSprite;
         }
         
         // Position at slider star location
@@ -490,8 +524,7 @@ public class StarProgressUI : MonoBehaviour
     }
     
     // Spawns a flying star from the slider position to the indicator position.
-    // sourceStarIndex: which slider star to animate from
-    // targetIndicatorIndex: which indicator slot to fly to
+    // Uses theme-appropriate earned sprite for the animation.
     private void FlyStarToIndicator(int sourceStarIndex, int targetIndicatorIndex)
     {
         if (sourceStarIndex < 0 || sourceStarIndex >= sliderStarImages.Count) return;
@@ -530,9 +563,11 @@ public class StarProgressUI : MonoBehaviour
         {
             starRect.sizeDelta = sliderStar.rectTransform.sizeDelta;
         }
-        if (starImage != null && starEarned != null)
+        
+        Sprite earnedSprite = GetSpriteFromTheme(starEarnedTheme);
+        if (starImage != null && earnedSprite != null)
         {
-            starImage.sprite = starEarned;
+            starImage.sprite = earnedSprite;
         }
         
         // Position at source
@@ -568,9 +603,11 @@ public class StarProgressUI : MonoBehaviour
         Log($"Flying star from slider {sourceStarIndex} to indicator {targetIndicatorIndex}");
     }
     
-    // Updates the visual state of all slider star images.
+    // Updates the visual state of all slider star images using theme-appropriate sprites.
     private void UpdateSliderStarVisuals()
     {
+        Sprite earnedSprite = GetSpriteFromTheme(starEarnedTheme);
+        
         for (int i = 0; i < sliderStarImages.Count; i++)
         {
             if (sliderStarImages[i] == null) continue;
@@ -578,9 +615,9 @@ public class StarProgressUI : MonoBehaviour
             bool isAvailable = !milestoneReached[i];
             sliderStarImages[i].gameObject.SetActive(isAvailable);
             
-            if (isAvailable && starEarned != null)
+            if (isAvailable && earnedSprite != null)
             {
-                sliderStarImages[i].sprite = starEarned;
+                sliderStarImages[i].sprite = earnedSprite;
             }
         }
     }
@@ -625,6 +662,7 @@ public class StarProgressUI : MonoBehaviour
     public void Reset()
     {
         CacheReferences();
+        CacheCurrentTheme();
         InitializeSlider();
     }
     

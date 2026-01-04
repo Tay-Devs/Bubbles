@@ -3462,7 +3462,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
-  m_Spacing: 25
+  m_Spacing: 40
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -3483,7 +3483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TotalStarsUI
   starsText: {fileID: 387745450}
-  punchScale: 0.2
+  punchScale: 0.5
   punchDuration: 0.15
   enableDebugLogs: 0
 --- !u!114 &1471198331
@@ -3509,8 +3509,8 @@ MonoBehaviour:
   delayBetweenStars: 0.5
   flyDuration: 1
   flyEase: 7
-  startScale: 1.5
-  endScale: 0.5
+  startScale: 1
+  endScale: 1.5
   rotationAmount: 360
   punchScale: 0.5
   punchDuration: 0.3

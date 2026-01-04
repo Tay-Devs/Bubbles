@@ -273,8 +273,8 @@ public class StarCollectionUI : MonoBehaviour
         if (targetPosition != null)
         {
             targetPosition.DOKill();
-            targetPosition.localScale = Vector3.one;
-            targetPosition.DOPunchScale(Vector3.one * punchScale, punchDuration, 5, 0.5f);
+
+            targetPosition.DOPunchScale(targetPosition.localScale * punchScale, punchDuration, 5, 0.5f);
         }
         
         // Destroy the star

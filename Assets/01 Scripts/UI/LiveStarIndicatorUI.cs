@@ -8,9 +8,9 @@ public class LiveStarIndicatorUI : MonoBehaviour
     [Header("Star Images")]
     public List<Image> starImages = new List<Image>();
     
-    [Header("Star States")]
-    public Sprite starEarned;
-    public Sprite starEmpty;
+    [Header("Star States (Themeable)")]
+    [SerializeField] private ThemeSprite starEarnedTheme;
+    [SerializeField] private ThemeSprite starEmptyTheme;
     
     [Header("Debug")]
     public bool enableDebugLogs = false;
@@ -19,6 +19,7 @@ public class LiveStarIndicatorUI : MonoBehaviour
     private WinConditionType currentMode;
     private int displayedStars = 0;
     private bool isTracking = false;
+    private ThemeMode currentTheme;
     
     public int DisplayedStars => displayedStars;
     
@@ -28,6 +29,7 @@ public class LiveStarIndicatorUI : MonoBehaviour
     void Start()
     {
         CacheReferences();
+        CacheCurrentTheme();
         SubscribeToEvents();
         InitializeDisplay();
     }
@@ -51,7 +53,16 @@ public class LiveStarIndicatorUI : MonoBehaviour
         }
     }
     
-    // Subscribes to game events for state tracking.
+    // Stores the current theme from ThemeManager for sprite lookups.
+    private void CacheCurrentTheme()
+    {
+        if (ThemeManager.Instance != null)
+        {
+            currentTheme = ThemeManager.Instance.CurrentTheme;
+        }
+    }
+    
+    // Subscribes to game events and theme changes for state tracking.
     private void SubscribeToEvents()
     {
         if (GameManager.Instance != null)
@@ -61,6 +72,8 @@ public class LiveStarIndicatorUI : MonoBehaviour
             GameManager.Instance.onVictory.AddListener(OnGameEnd);
             GameManager.Instance.onGameOver.AddListener(OnGameEnd);
         }
+        
+        ThemeManager.OnThemeChanged += OnThemeChanged;
     }
     
     private void UnsubscribeFromEvents()
@@ -72,13 +85,22 @@ public class LiveStarIndicatorUI : MonoBehaviour
             GameManager.Instance.onVictory.RemoveListener(OnGameEnd);
             GameManager.Instance.onGameOver.RemoveListener(OnGameEnd);
         }
+        
+        ThemeManager.OnThemeChanged -= OnThemeChanged;
+    }
+    
+    // Called when theme changes. Updates cached theme and refreshes star visuals.
+    private void OnThemeChanged(ThemeMode newTheme)
+    {
+        currentTheme = newTheme;
+        UpdateStarVisuals();
+        Log($"Theme changed to {newTheme}, updated star visuals");
     }
     
     // Sets up the initial star display. All modes now start with empty stars
     // since StarProgressUI handles earning/burning via slider milestones.
     private void InitializeDisplay()
     {
-        // All modes start with 0 displayed stars - earned via slider milestones
         displayedStars = 0;
         UpdateStarVisuals();
         
@@ -136,7 +158,6 @@ public class LiveStarIndicatorUI : MonoBehaviour
     {
         if (wasEarned)
         {
-            // Simply increment - works for all modes since each earned star adds 1
             displayedStars = Mathf.Min(displayedStars + 1, 3);
         }
     
@@ -153,20 +174,33 @@ public class LiveStarIndicatorUI : MonoBehaviour
         Log($"Force display: {displayedStars} stars");
     }
     
-    // Updates the visual state of all star images.
+    // Updates the visual state of all star images using theme-appropriate sprites.
+    // Gets sprites from ThemeSprite ScriptableObjects based on current theme.
     private void UpdateStarVisuals()
     {
+        Sprite earnedSprite = GetSpriteFromTheme(starEarnedTheme);
+        Sprite emptySprite = GetSpriteFromTheme(starEmptyTheme);
+        
         for (int i = 0; i < starImages.Count; i++)
         {
             if (starImages[i] == null) continue;
             
             bool isEarned = i < displayedStars;
+            Sprite targetSprite = isEarned ? earnedSprite : emptySprite;
             
-            if (starEarned != null && starEmpty != null)
+            if (targetSprite != null)
             {
-                starImages[i].sprite = isEarned ? starEarned : starEmpty;
+                starImages[i].sprite = targetSprite;
             }
         }
+    }
+    
+    // Returns the correct sprite from a ThemeSprite based on current theme.
+    // Returns null if ThemeSprite is not assigned.
+    private Sprite GetSpriteFromTheme(ThemeSprite themeSprite)
+    {
+        if (themeSprite == null) return null;
+        return themeSprite.GetSprite(currentTheme);
     }
     
     // Resets the indicator for a new game.
@@ -174,6 +208,7 @@ public class LiveStarIndicatorUI : MonoBehaviour
     {
         isTracking = false;
         CacheReferences();
+        CacheCurrentTheme();
         InitializeDisplay();
     }
     
