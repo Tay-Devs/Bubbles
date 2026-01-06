@@ -220,11 +220,7 @@ public class StarCollectionUI : MonoBehaviour
         starRect.anchoredPosition = spawnPos;
         starRect.localScale = Vector3.one * startScale;
         
-        // Play SFX at animation start with combo pitch
-        if (starCollectSFX != null)
-        {
-            SFXManager.Play(starCollectSFX, starIndex);
-        }
+   
         
         // Calculate target position in local space
         Vector2 targetLocalPos = GetTargetLocalPosition();
@@ -243,7 +239,9 @@ public class StarCollectionUI : MonoBehaviour
             .SetEase(Ease.Linear));
         
         // On complete
-        sequence.OnComplete(() => OnStarArrived(star));
+        sequence.OnComplete(() => OnStarArrived(star, starIndex));
+        // Play SFX at animation start with combo pitch
+  
         
         if (enableDebugLogs)
         {
@@ -261,11 +259,15 @@ public class StarCollectionUI : MonoBehaviour
     }
     
     // Called when a star reaches the target position.
-    private void OnStarArrived(GameObject star)
+    private void OnStarArrived(GameObject star,int starIndex )
     {
         // Increment counter with punch effect
         if (totalStarsUI != null)
         {
+            if (starCollectSFX != null)
+            {
+                SFXManager.Play(starCollectSFX, starIndex);
+            }
             totalStarsUI.IncrementWithPunch();
         }
         

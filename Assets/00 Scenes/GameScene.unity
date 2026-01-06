@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9375, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9233, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -1861,7 +1861,7 @@ MonoBehaviour:
   burnGrowEase: 27
   burnFadeEase: 5
   starEarnedSFX: {fileID: 11400000, guid: 1184acac2ad381d49aece3f779f8166d, type: 2}
-  starLostSFX: {fileID: 11400000, guid: ef3a25692d56679458d46f41eef7f9f5, type: 2}
+  starLostSFX: {fileID: 0}
   enableDebugLogs: 0
 --- !u!1 &459994493
 GameObject:

@@ -619,7 +619,7 @@ public class StarProgressUI : MonoBehaviour
                 Destroy(boomParticles.gameObject, boomParticles.main.startLifetime.constantMax);
             }
     
-           // Destroy(flyingStar);
+            Destroy(flyingStar);
             pendingAnimations--;
             starIndicator.OnStarAnimationComplete(capturedTargetIndex, true);
         });
