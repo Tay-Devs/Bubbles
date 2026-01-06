@@ -448,7 +448,6 @@ public class StarProgressUI : MonoBehaviour
         GameObject flyingStar = Instantiate(flyingStarPrefab, flyingStarParent);
         RectTransform starRect = flyingStar.GetComponent<RectTransform>();
         Image starImage = flyingStar.GetComponent<Image>();
-        
         if (starRect == null)
         {
             Destroy(flyingStar);
@@ -500,6 +499,7 @@ public class StarProgressUI : MonoBehaviour
         
         sequence.OnComplete(() =>
         {
+    
             Destroy(flyingStar);
             pendingAnimations--;
             
@@ -550,6 +550,8 @@ public class StarProgressUI : MonoBehaviour
         GameObject flyingStar = Instantiate(flyingStarPrefab, flyingStarParent);
         RectTransform starRect = flyingStar.GetComponent<RectTransform>();
         Image starImage = flyingStar.GetComponent<Image>();
+            
+        ParticleSystem particles = flyingStar.GetComponentInChildren<ParticleSystem>();
         
         if (starRect == null)
         {
@@ -595,6 +597,22 @@ public class StarProgressUI : MonoBehaviour
         int capturedTargetIndex = targetIndicatorIndex;
         sequence.OnComplete(() =>
         {
+            print("Here1");
+            // Detach particle system before destroying
+            if (particles != null)
+            {
+                // Store current position before reparenting
+                Vector3 currentPos = particles.transform.position;
+        
+                // Reparent to canvas root (stays in UI hierarchy)
+                particles.transform.SetParent(flyingStarParent, true);
+        
+                // Ensure position is maintained
+                particles.transform.position = currentPos;
+        
+                particles.Stop();
+                Destroy(particles.gameObject, particles.main.startLifetime.constantMax);
+            }
             Destroy(flyingStar);
             pendingAnimations--;
             starIndicator.OnStarAnimationComplete(capturedTargetIndex, true);

@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9495, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9375, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -1842,12 +1842,12 @@ MonoBehaviour:
   - {fileID: 1101657976}
   - {fileID: 1882143304}
   - {fileID: 1596679338}
-  starYOffset: 0.9
+  starYOffset: 0.8
   starEarnedTheme: {fileID: 11400000, guid: 7156c0ee94b19314eb512b2ea4fac286, type: 2}
   starEmptyTheme: {fileID: 11400000, guid: 7cd1ac3f3c261d34cb655686b8e9d9b9, type: 2}
   flyingStarPrefab: {fileID: 7417871910002395890, guid: 225f28ff5d147774ab97e9afc20dd272, type: 3}
   flyingStarParent: {fileID: 1625556471}
-  flyDuration: 0.8
+  flyDuration: 1.25
   flyEase: 7
   startScale: 1
   endScale: 1
@@ -4892,7 +4892,7 @@ RectTransform:
   m_GameObject: {fileID: 1101657974}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
@@ -6776,7 +6776,7 @@ RectTransform:
   m_GameObject: {fileID: 1596679336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
@@ -8021,7 +8021,7 @@ RectTransform:
   m_GameObject: {fileID: 1882143302}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 459548395}
