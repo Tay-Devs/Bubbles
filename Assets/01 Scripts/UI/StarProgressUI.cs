@@ -550,8 +550,8 @@ public class StarProgressUI : MonoBehaviour
         GameObject flyingStar = Instantiate(flyingStarPrefab, flyingStarParent);
         RectTransform starRect = flyingStar.GetComponent<RectTransform>();
         Image starImage = flyingStar.GetComponent<Image>();
-            
-        ParticleSystem particles = flyingStar.GetComponentInChildren<ParticleSystem>();
+        ParticleSystem trailParticles = flyingStar.transform.GetChild(1).GetComponent<ParticleSystem>();
+        ParticleSystem boomParticles = flyingStar.transform.GetChild(2).GetComponent<ParticleSystem>();
         
         if (starRect == null)
         {
@@ -597,23 +597,29 @@ public class StarProgressUI : MonoBehaviour
         int capturedTargetIndex = targetIndicatorIndex;
         sequence.OnComplete(() =>
         {
-            print("Here1");
-            // Detach particle system before destroying
-            if (particles != null)
+            if (trailParticles != null)
             {
-                // Store current position before reparenting
-                Vector3 currentPos = particles.transform.position;
+                Vector3 currentPos = trailParticles.transform.position;
         
-                // Reparent to canvas root (stays in UI hierarchy)
-                particles.transform.SetParent(flyingStarParent, true);
-        
-                // Ensure position is maintained
-                particles.transform.position = currentPos;
-        
-                particles.Stop();
-                Destroy(particles.gameObject, particles.main.startLifetime.constantMax);
+                // Reparent trail
+                trailParticles.transform.SetParent(flyingStarParent, true);
+                trailParticles.transform.position = currentPos;
+                trailParticles.Stop();
+                Destroy(trailParticles.gameObject, trailParticles.main.startLifetime.constantMax);
             }
-            Destroy(flyingStar);
+    
+            if (boomParticles != null)
+            {
+                Vector3 currentPos = boomParticles.transform.position;
+        
+                // Reparent boom
+                boomParticles.transform.SetParent(flyingStarParent, true);
+                boomParticles.transform.position = currentPos;
+                boomParticles.Play();
+                Destroy(boomParticles.gameObject, boomParticles.main.startLifetime.constantMax);
+            }
+    
+           // Destroy(flyingStar);
             pendingAnimations--;
             starIndicator.OnStarAnimationComplete(capturedTargetIndex, true);
         });
