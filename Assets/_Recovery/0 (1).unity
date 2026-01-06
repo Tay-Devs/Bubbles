@@ -202,10 +202,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 231013676}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.9505457}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -87.5}
-  m_SizeDelta: {x: 531, y: 125}
+  m_AnchorMin: {x: 0.04346807, y: 0.6152149}
+  m_AnchorMax: {x: 0.96221274, y: 0.9483511}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &11985184
 MonoBehaviour:
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.85
+  m_fontSize: 54.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 25.51532}
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -375,7 +375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 390678776559940941, guid: 9beaf4299c3c5c344b561d6411499608, type: 3}
+  daySprite: {fileID: 7910238707312281067, guid: a5e060c62ea35f7478375a4629805488, type: 3}
   nightSprite: {fileID: -5872603023100764874, guid: d96337bedd95e454496aaa7d85fc2635, type: 3}
 --- !u!114 &25839261
 MonoBehaviour:
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 390678776559940941, guid: 9beaf4299c3c5c344b561d6411499608, type: 3}
+  m_Sprite: {fileID: 7910238707312281067, guid: a5e060c62ea35f7478375a4629805488, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -805,8 +805,8 @@ RectTransform:
   m_GameObject: {fileID: 73119114}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 883647502}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9495, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9546, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -1493,10 +1493,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
+  themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
-  nightSprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  daySprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  nightSprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
 --- !u!114 &347963059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1510,14 +1510,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1547,8 +1547,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 1
-  nightOpacity: 1
+  dayOpacity: 0.4
+  nightOpacity: 0.12
   enableDebugLogs: 0
 --- !u!1 &403377027
 GameObject:
@@ -1613,8 +1613,8 @@ RectTransform:
   m_GameObject: {fileID: 413544084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 883647502}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1861,7 +1861,7 @@ MonoBehaviour:
   burnGrowEase: 27
   burnFadeEase: 5
   starEarnedSFX: {fileID: 11400000, guid: 1184acac2ad381d49aece3f779f8166d, type: 2}
-  starLostSFX: {fileID: 11400000, guid: ef3a25692d56679458d46f41eef7f9f5, type: 2}
+  starLostSFX: {fileID: 0}
   enableDebugLogs: 0
 --- !u!1 &459994493
 GameObject:
@@ -3020,7 +3020,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -294068101135506387, guid: 63251ad6971d4214bae7ca8f72f15090, type: 3}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3710,7 +3710,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15.630005, y: -35.57007}
+  m_AnchoredPosition: {x: -15.630005, y: -35.570084}
   m_SizeDelta: {x: 282.98, y: 337.37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &865837592
@@ -4020,12 +4020,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
   m_Padding:
-    m_Left: 0
+    m_Left: 14
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: -50
+  m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -4625,8 +4625,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -2.5, y: 0}
-  m_SizeDelta: {x: 5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1033756081
 MonoBehaviour:
@@ -4678,7 +4678,7 @@ GameObject:
   - component: {fileID: 1053949124}
   - component: {fileID: 1053949123}
   m_Layer: 5
-  m_Name: Milestone 2
+  m_Name: Fill (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4700,7 +4700,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 25.400002, y: 0}
+  m_AnchoredPosition: {x: 27.2, y: 0}
   m_SizeDelta: {x: -105.57, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1053949123
@@ -4716,7 +4716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4877,7 +4877,7 @@ GameObject:
   - component: {fileID: 1101657976}
   - component: {fileID: 1101657978}
   m_Layer: 5
-  m_Name: Left Star
+  m_Name: Star 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5574,14 +5574,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5613,8 +5613,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
   useThemeSprite: 0
-  daySprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
-  nightSprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  daySprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  nightSprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
 --- !u!114 &1266398197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5627,8 +5627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 1
-  nightOpacity: 1
+  dayOpacity: 0.4
+  nightOpacity: 0.12
   enableDebugLogs: 0
 --- !u!1 &1303338810
 GameObject:
@@ -6761,7 +6761,7 @@ GameObject:
   - component: {fileID: 1596679338}
   - component: {fileID: 1596679340}
   m_Layer: 5
-  m_Name: Right Star
+  m_Name: Star 1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7950,10 +7950,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 231013676}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0.044454332}
-  m_AnchoredPosition: {x: 0, y: 138.1}
-  m_SizeDelta: {x: 284, y: 212}
+  m_AnchorMin: {x: 0.377, y: 0.12863278}
+  m_AnchorMax: {x: 0.377, y: 0.12863278}
+  m_AnchoredPosition: {x: 68, y: 84}
+  m_SizeDelta: {x: 284, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1862332155
 CanvasRenderer:
@@ -7983,7 +7983,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7325192552632596920, guid: f8fa50a1ddfacde479a14774ffbc14bb, type: 3}
+  m_Sprite: {fileID: -7806871258996146044, guid: dc163d7958fbabf4d8bd4c3158b02d5a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8006,7 +8006,7 @@ GameObject:
   - component: {fileID: 1882143304}
   - component: {fileID: 1882143306}
   m_Layer: 5
-  m_Name: Middle Star
+  m_Name: Star 1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8367,8 +8367,8 @@ RectTransform:
   m_GameObject: {fileID: 1905309845}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 883647502}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8630,7 +8630,7 @@ GameObject:
   - component: {fileID: 2002109260}
   - component: {fileID: 2002109259}
   m_Layer: 5
-  m_Name: Milestone 1
+  m_Name: Fill (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8652,7 +8652,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -28.800003, y: 0}
+  m_AnchoredPosition: {x: -18.699997, y: 0}
   m_SizeDelta: {x: -104.785, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2002109259
@@ -8668,7 +8668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -9069,8 +9069,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 2.5, y: 0}
-  m_SizeDelta: {x: -5, y: 0}
+  m_AnchoredPosition: {x: -5, y: 0}
+  m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2066336611
 GameObject:
@@ -9125,8 +9125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 7275602739284069779, guid: 7cfd9402a9c57b948bfccef434573109, type: 3}
-  nightSprite: {fileID: -195620875209501211, guid: 4c9450cf72e750f4f9b93f77420f534b, type: 3}
+  daySprite: {fileID: -195620875209501211, guid: 4c9450cf72e750f4f9b93f77420f534b, type: 3}
+  nightSprite: {fileID: 7275602739284069779, guid: 7cfd9402a9c57b948bfccef434573109, type: 3}
 --- !u!114 &2066336614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9140,14 +9140,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7275602739284069779, guid: 7cfd9402a9c57b948bfccef434573109, type: 3}
+  m_Sprite: {fileID: -195620875209501211, guid: 4c9450cf72e750f4f9b93f77420f534b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9177,8 +9177,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 1
-  nightOpacity: 1
+  dayOpacity: 0.4
+  nightOpacity: 0.12
   enableDebugLogs: 0
 --- !u!1 &2077940425
 GameObject:
@@ -9355,7 +9355,7 @@ GameObject:
   - component: {fileID: 2088882876}
   - component: {fileID: 2088882875}
   m_Layer: 5
-  m_Name: Milestone 3
+  m_Name: Fill (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9543,8 +9543,8 @@ MonoBehaviour:
   grid: {fileID: 2107963924}
   targetCamera: {fileID: 519420031}
   topUIBoundary: {fileID: 2025937963}
-  bubbleRadius: 0.44
-  horizontalPadding: 0.05
+  bubbleRadius: 0.4
+  horizontalPadding: 0
   topOffset: 0
 --- !u!114 &2107963929
 MonoBehaviour:
@@ -9638,7 +9638,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1773017583293547574, guid: a365aa7381550374babc13b86c86fb4b, type: 3}
+  m_Sprite: {fileID: -1773017583293547574, guid: 41e554a9909294a4aa2a30184c1887da, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

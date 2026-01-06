@@ -485,6 +485,10 @@ public class StarProgressUI : MonoBehaviour
         
         pendingAnimations++;
         
+        if (starLostSFX != null)
+        {
+            SFXManager.PlayAtPosition(starLostSFX,Vector3.zero);
+        }
         // Animation sequence: grow -> spin/move/fade
         Sequence sequence = DOTween.Sequence();
         
@@ -499,10 +503,6 @@ public class StarProgressUI : MonoBehaviour
             Destroy(flyingStar);
             pendingAnimations--;
             
-            if (starLostSFX != null)
-            {
-                SFXManager.Play(starLostSFX);
-            }
         });
         
         Log($"Burning slider star {starIndex}");
