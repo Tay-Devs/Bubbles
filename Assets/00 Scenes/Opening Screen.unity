@@ -498,7 +498,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: -5009079430546197639, guid: 0331b9545d8578a4c8707ab390532d25, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -525,7 +525,6 @@ GameObject:
   - component: {fileID: 1477107834}
   - component: {fileID: 1477107836}
   - component: {fileID: 1477107835}
-  - component: {fileID: 1477107837}
   m_Layer: 5
   m_Name: Button outline
   m_TagString: Untagged
@@ -574,7 +573,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: c33d8eb3fc89f9340bf03594540ea384, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -590,21 +589,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477107833}
   m_CullTransparentMesh: 1
---- !u!114 &1477107837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1477107833}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab13cce98badd74bb03631ddb3b56c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SceneTransfer
-  levelSelectSceneName: Main Menu
-  buttonClickSFX: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
-  enableDebugLogs: 0
 --- !u!1 &1790899798
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,7 +601,7 @@ GameObject:
   - component: {fileID: 1790899801}
   - component: {fileID: 1790899800}
   - component: {fileID: 1790899803}
-  - component: {fileID: 1790899802}
+  - component: {fileID: 1790899804}
   m_Layer: 5
   m_Name: START Text
   m_TagString: Untagged
@@ -666,7 +650,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 28b34ca7b28be1042aa5ae7718872c84, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -682,21 +666,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790899798}
   m_CullTransparentMesh: 1
---- !u!114 &1790899802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1790899798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab13cce98badd74bb03631ddb3b56c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SceneTransfer
-  levelSelectSceneName: Main Menu
-  buttonClickSFX: {fileID: 11400000, guid: e3bf451a083fcad4387ad90ffb4057dc, type: 2}
-  enableDebugLogs: 0
 --- !u!114 &1790899803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -741,18 +710,31 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1477107837}
-        m_TargetAssemblyTypeName: SceneTransfer, Assembly-CSharp
-        m_MethodName: GoToLevelSelect
-        m_Mode: 1
+      - m_Target: {fileID: 1790899804}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Main Menu
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1790899804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790899798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38c3b98fe13c48746adb07e445b15e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
+  enableDebugLogs: 0
 --- !u!1 &2016666351
 GameObject:
   m_ObjectHideFlags: 0
