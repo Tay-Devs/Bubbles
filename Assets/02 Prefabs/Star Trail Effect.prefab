@@ -927,8 +927,8 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 12
-      minScalar: 6
+      scalar: 18
+      minScalar: 12
       maxCurve:
         serializedVersion: 2
         m_Curve:
