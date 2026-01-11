@@ -116,13 +116,13 @@ TextureImporter:
       name: score-4_0
       rect:
         serializedVersion: 2
-        x: 228
+        x: 232
         y: 1020
-        width: 635
-        height: 421
+        width: 628
+        height: 420
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 73, y: 51, z: 60, w: 53}
       customData: 
       outline: []
       physicsShape: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5473d443b70825544bb701eb61ebf813
     internalID: 0
     vertices: []
     indices: 

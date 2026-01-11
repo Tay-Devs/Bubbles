@@ -204,8 +204,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.9505457}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -87.5}
-  m_SizeDelta: {x: 531, y: 125}
+  m_AnchoredPosition: {x: 0, y: -66.892944}
+  m_SizeDelta: {x: 531, y: 116.38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &11985184
 MonoBehaviour:
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.85
+  m_fontSize: 65.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 25.51532}
+  m_margin: {x: 0, y: 15.133858, z: 0, w: -41.786255}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -476,7 +476,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Level
 
-    1'
+    X'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 815049e44d7d2a34698a9919e05f738d, type: 2}
   m_sharedMaterial: {fileID: -5798139950659009932, guid: 815049e44d7d2a34698a9919e05f738d, type: 2}
@@ -1261,7 +1261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.14500001, y: 0.4935556}
   m_AnchorMax: {x: 0.85376954, y: 0.74600005}
-  m_AnchoredPosition: {x: -2227.9216, y: 73.42999}
+  m_AnchoredPosition: {x: -2227.9172, y: 73.42999}
   m_SizeDelta: {x: -188.05, y: -77.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &231013678
@@ -1493,10 +1493,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
+  themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
-  nightSprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  daySprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
 --- !u!114 &347963059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1510,14 +1510,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1547,8 +1547,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 0
-  nightOpacity: 0.9
+  dayOpacity: 1
+  nightOpacity: 1
   enableDebugLogs: 0
 --- !u!1 &403377027
 GameObject:
@@ -1712,10 +1712,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
+  themeSprite: {fileID: 0}
+  useThemeSprite: 0
+  daySprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
 --- !u!114 &447575431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1736,7 +1736,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1951,8 +1951,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
-  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
+  daySprite: {fileID: 6491302561943623002, guid: 5f4e48d6b5e2de944abb7d3ec7700c26, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: 1ed85cf2ce9442641b7ca54061eb5598, type: 3}
 --- !u!114 &471868381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1973,7 +1973,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
+  m_Sprite: {fileID: 6491302561943623002, guid: 5f4e48d6b5e2de944abb7d3ec7700c26, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3638,7 +3638,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
+  m_Sprite: {fileID: -3695615076767752664, guid: c8096df92772c294db8513efd14a8bb7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3670,8 +3670,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
-  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
+  daySprite: {fileID: -3695615076767752664, guid: c8096df92772c294db8513efd14a8bb7, type: 3}
+  nightSprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
 --- !u!1 &865837590
 GameObject:
   m_ObjectHideFlags: 0
@@ -3710,7 +3710,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15.630005, y: -35.570084}
+  m_AnchoredPosition: {x: -15.630005, y: -35.57007}
   m_SizeDelta: {x: 282.98, y: 337.37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &865837592
@@ -3733,7 +3733,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3831,10 +3831,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
+  themeSprite: {fileID: 0}
+  useThemeSprite: 0
+  daySprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
 --- !u!114 &865837596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5574,14 +5574,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.9}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5611,10 +5611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
+  themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
-  nightSprite: {fileID: 2254799000897870670, guid: bd2630b3a2b403942bffafb28eeefe2c, type: 3}
+  daySprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
 --- !u!114 &1266398197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5627,8 +5627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 0.9
-  nightOpacity: 0.9
+  dayOpacity: 1
+  nightOpacity: 1
   enableDebugLogs: 0
 --- !u!1 &1303338810
 GameObject:
@@ -5957,7 +5957,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9022771218065139572, guid: bce0da7f7d18b064da65c147972babdc, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5987,10 +5987,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7a7ed4e6ce49945a58e55c037ececc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
-  themeSprite: {fileID: 11400000, guid: 9303583913ce3b348aa4ff8f3b2ad6c7, type: 2}
-  useThemeSprite: 1
-  daySprite: {fileID: 0}
-  nightSprite: {fileID: 0}
+  themeSprite: {fileID: 0}
+  useThemeSprite: 0
+  daySprite: {fileID: 6104038681114906497, guid: e17bd12fc8fad7041bf69ca768f6aeac, type: 3}
+  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
 --- !u!114 &1471090985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7945,15 +7945,15 @@ RectTransform:
   m_GameObject: {fileID: 1862332152}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 231013676}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0.044454332}
-  m_AnchoredPosition: {x: 0, y: 138.1}
-  m_SizeDelta: {x: 284, y: 212}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 125.2}
+  m_SizeDelta: {x: 284, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1862332155
 CanvasRenderer:
@@ -8306,7 +8306,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
+  m_Sprite: {fileID: -3695615076767752664, guid: c8096df92772c294db8513efd14a8bb7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8338,8 +8338,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
-  nightSprite: {fileID: -2638730469792501841, guid: e6d97ce41d1de93409b37140d1e27cdc, type: 3}
+  daySprite: {fileID: -3695615076767752664, guid: c8096df92772c294db8513efd14a8bb7, type: 3}
+  nightSprite: {fileID: 6491302561943623002, guid: b38ee083ecfa49942bb09376f1756391, type: 3}
 --- !u!1 &1905309845
 GameObject:
   m_ObjectHideFlags: 0
@@ -9125,8 +9125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableUIImage
   themeSprite: {fileID: 0}
   useThemeSprite: 0
-  daySprite: {fileID: 7275602739284069779, guid: 7cfd9402a9c57b948bfccef434573109, type: 3}
-  nightSprite: {fileID: -195620875209501211, guid: 4c9450cf72e750f4f9b93f77420f534b, type: 3}
+  daySprite: {fileID: 6104038681114906497, guid: 9437af99c63dc5c4993b7b72d0fc37fe, type: 3}
+  nightSprite: {fileID: -3695615076767752664, guid: 8decdbb622150e945941f4e798a350d0, type: 3}
 --- !u!114 &2066336614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9140,14 +9140,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.9}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7275602739284069779, guid: 7cfd9402a9c57b948bfccef434573109, type: 3}
+  m_Sprite: {fileID: 6104038681114906497, guid: 9437af99c63dc5c4993b7b72d0fc37fe, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9177,8 +9177,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585968929dadeb4b9f27cc084f68201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThemeableOpacity
-  dayOpacity: 0.9
-  nightOpacity: 0.9
+  dayOpacity: 1
+  nightOpacity: 1
   enableDebugLogs: 0
 --- !u!1 &2077940425
 GameObject:

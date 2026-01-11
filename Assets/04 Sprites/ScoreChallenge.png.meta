@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 932ca6b29a10d3b4b8d8a17a0694cdc0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8124551862722928488
+    second: ScoreChallenge_0
+  - first:
+      213: -6783181719531636287
+    second: ScoreChallenge_1
+  - first:
+      213: -4864097337139296299
+    second: ScoreChallenge_2
+  - first:
+      213: -2374990080388269120
+    second: ScoreChallenge_3
+  - first:
+      213: 8005136123557359930
+    second: ScoreChallenge_4
+  - first:
+      213: 1230454399632357228
+    second: ScoreChallenge_5
+  - first:
+      213: -561559672861501138
+    second: ScoreChallenge_6
+  - first:
+      213: 203636640940132664
+    second: ScoreChallenge_7
+  - first:
+      213: 9029114202347696162
+    second: ScoreChallenge_8
+  - first:
+      213: 4921452418270681138
+    second: ScoreChallenge_9
+  - first:
+      213: -2979457459116828710
+    second: ScoreChallenge_10
+  - first:
+      213: -1354492127105905905
+    second: ScoreChallenge_11
+  - first:
+      213: -8773381373297968035
+    second: ScoreChallenge_12
+  - first:
+      213: -4080893171360947578
+    second: ScoreChallenge_13
+  - first:
+      213: 2349124255021240406
+    second: ScoreChallenge_14
+  - first:
+      213: -7791806386329259943
+    second: ScoreChallenge_15
+  - first:
+      213: 6878244146849601323
+    second: ScoreChallenge_16
+  - first:
+      213: 6513275845898041055
+    second: ScoreChallenge_17
+  - first:
+      213: 7100279620353759325
+    second: ScoreChallenge_18
+  - first:
+      213: 7615151674048459022
+    second: ScoreChallenge_19
+  - first:
+      213: -1869288417280838109
+    second: ScoreChallenge_20
+  - first:
+      213: -6794943871245392689
+    second: ScoreChallenge_21
+  - first:
+      213: -1772914810929365626
+    second: ScoreChallenge_22
+  - first:
+      213: 3848842580844199956
+    second: ScoreChallenge_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ScoreChallenge_0
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 1121
+        width: 304
+        height: 91
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8906927602bcf3f80800000000000000
+      internalID: -8124551862722928488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_1
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 1121
+        width: 53
+        height: 73
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c9b4683a2c4dd1a0800000000000000
+      internalID: -6783181719531636287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_2
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 1193
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d783e23e314f7cb0800000000000000
+      internalID: -4864097337139296299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_3
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 1184
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cb7169ea175a0fd0800000000000000
+      internalID: -2374990080388269120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_4
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 1181
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a31b84f24e4f71f60800000000000000
+      internalID: 8005136123557359930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_5
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 1121
+        width: 53
+        height: 73
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c67376ad1c3731110800000000000000
+      internalID: 1230454399632357228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_6
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 1193
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e29d7eae370f438f0800000000000000
+      internalID: -561559672861501138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_7
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 1184
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8398d7e227673d200800000000000000
+      internalID: 203636640940132664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_8
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 1181
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2207e5b578bdd4d70800000000000000
+      internalID: 9029114202347696162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_9
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 1121
+        width: 53
+        height: 73
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 238d20246e28c4440800000000000000
+      internalID: 4921452418270681138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_10
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 1193
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad714fd0a37d6a6d0800000000000000
+      internalID: -2979457459116828710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_11
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 1184
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0b0ac83690e33de0800000000000000
+      internalID: -1354492127105905905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_12
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 1158
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5cbb85df10be3680800000000000000
+      internalID: -8773381373297968035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_13
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 1160
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 682a6ba3841cd57c0800000000000000
+      internalID: -4080893171360947578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_14
+      rect:
+        serializedVersion: 2
+        x: 494
+        y: 1158
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6509bc15014c99020800000000000000
+      internalID: 2349124255021240406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_15
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 1160
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9507938df51fdd390800000000000000
+      internalID: -7791806386329259943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_16
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 1158
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b27516beb9e647f50800000000000000
+      internalID: 6878244146849601323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_17
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 1160
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd672ee7fddc36a50800000000000000
+      internalID: 6513275845898041055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_18
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 1134
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d58912122b2498260800000000000000
+      internalID: 7100279620353759325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_19
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 1134
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e01316ac9147ea960800000000000000
+      internalID: 7615151674048459022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_20
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 1134
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3263931a614fe06e0800000000000000
+      internalID: -1869288417280838109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_21
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 1134
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc463bddc8283b1a0800000000000000
+      internalID: -6794943871245392689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_22
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 1134
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68db68d6f575567e0800000000000000
+      internalID: -1772914810929365626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ScoreChallenge_23
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 1134
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 410cd9b6fe5d96530800000000000000
+      internalID: 3848842580844199956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6238cb53516a9224da2d52f73df442d0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ScoreChallenge_0: -8124551862722928488
+      ScoreChallenge_1: -6783181719531636287
+      ScoreChallenge_10: -2979457459116828710
+      ScoreChallenge_11: -1354492127105905905
+      ScoreChallenge_12: -8773381373297968035
+      ScoreChallenge_13: -4080893171360947578
+      ScoreChallenge_14: 2349124255021240406
+      ScoreChallenge_15: -7791806386329259943
+      ScoreChallenge_16: 6878244146849601323
+      ScoreChallenge_17: 6513275845898041055
+      ScoreChallenge_18: 7100279620353759325
+      ScoreChallenge_19: 7615151674048459022
+      ScoreChallenge_2: -4864097337139296299
+      ScoreChallenge_20: -1869288417280838109
+      ScoreChallenge_21: -6794943871245392689
+      ScoreChallenge_22: -1772914810929365626
+      ScoreChallenge_23: 3848842580844199956
+      ScoreChallenge_3: -2374990080388269120
+      ScoreChallenge_4: 8005136123557359930
+      ScoreChallenge_5: 1230454399632357228
+      ScoreChallenge_6: -561559672861501138
+      ScoreChallenge_7: 203636640940132664
+      ScoreChallenge_8: 9029114202347696162
+      ScoreChallenge_9: 4921452418270681138
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
